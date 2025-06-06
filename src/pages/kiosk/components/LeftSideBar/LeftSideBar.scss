@@ -1,0 +1,15 @@
+/* Example selector, adjust as needed */
+.left-side-bar-buttons-container {
+    height: 100vh;
+    display: flex;
+    align-content: center;
+    gap: 2rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    position: fixed;
+    left: 3rem;
+    top: 0;
+    z-index: 1000;
+    transform: translateY(-13vh); /* Shift the buttons up so they align with the user's eye level on the Holobox */
+}

@@ -1,0 +1,121 @@
+.pageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100vw;
+  min-height: 100vh;
+  opacity: 0.95;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  width: 100%; 
+  min-height: 70vh; 
+  max-width: 80vw;
+  border-radius: 24px; 
+  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.25); 
+  background: rgba(30, 34, 54, 0.35);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  overflow: hidden; 
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  z-index: 1;
+}
+
+@media (min-height: 2000px) and (max-width: 3000px) {
+  .panel {
+    width: 100%;
+    max-width: 80vw;
+    min-height: 35vh;
+    transform: translateY(-8vh);
+  }
+}
+
+
+/* Animated organic gradient overlay */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 80% at 70% 30%, rgba(0, 255, 255, 0.10) 0%, transparent 80%),
+              radial-gradient(ellipse 40% 60% at 20% 70%, rgba(255, 0, 255, 0.10) 0%, transparent 80%),
+              linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.04) 100%);
+  mix-blend-mode: lighten;
+  animation: organicMove 12s ease-in-out infinite alternate;
+}
+
+@keyframes organicMove {
+  0% {
+    background-position: 70% 30%, 20% 70%, 0% 0%;
+  }
+  100% {
+    background-position: 60% 40%, 30% 60%, 100% 100%;
+  }
+}
+
+/* Subtle noise texture overlay */
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.18;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="120" height="120" filter="url(%23noise)" opacity="0.5"/></svg>');
+  background-size: 200px 200px;
+}
+
+.leftHalf {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0; 
+  background-color: rgba(26, 26, 38, 0.7); 
+  position: relative;
+  overflow: hidden;
+}
+
+/* Reflection effect at the bottom of the panel */
+.panel::after, .panel::before {
+  pointer-events: none;
+}
+.panel-reflection {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 60px;
+  z-index: 4;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.02) 80%, transparent 100%);
+  opacity: 0.25;
+  border-radius: 0 0 24px 24px;
+  pointer-events: none;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 0 0 0 0;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.10);
+}
+
+.rightHalf {
+  flex: 1;
+  padding: 40px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;
+  color: #fff; 
+  position: relative;
+  z-index: 5;
+}
+
+

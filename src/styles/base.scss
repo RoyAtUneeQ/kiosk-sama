@@ -1,0 +1,134 @@
+@import url('./reset.scss');
+
+:root {
+  --theme-primary-main: #E20074;
+  --theme-primary-light: #F062A6;
+  --theme-primary-dark: #A00053;
+  --theme-primary-contrast: #FFFFFF;
+  --theme-primary-gradient: linear-gradient(135deg, #F062A6 0%, #E20074 100%);
+  --theme-primary-glow: 0 0 15px #E2007490;
+
+  --theme-secondary-main: #4A4A4A;
+  --theme-secondary-light: #6E6E6E;
+  --theme-secondary-dark: #2C2C2C;
+  --theme-secondary-contrast: #FFFFFF;
+  --theme-secondary-gradient: linear-gradient(135deg, #6E6E6E 0%, #4A4A4A 100%);
+  --theme-secondary-glow: 0 0 15px #4A4A4A70;
+
+  --theme-status-success: #00ff7d;
+  --theme-status-error: #E20074;
+  --theme-status-warning: #f1fa8c;
+  --theme-status-info: #9CCEDC;
+
+  --theme-neutral-darkest: #000000;
+  --theme-neutral-dark: #4A4A4A;
+  --theme-neutral-medium: #D1D1D1;
+  --theme-neutral-light: #E5E5E5;
+  --theme-neutral-lighter: #F0F0F0;
+  --theme-neutral-lightest: #FFFFFF;
+  --theme-neutral-white: #FFFFFF;
+
+  /* Alpha variants for neutrals */
+  --theme-neutral-lightest-alpha-15: rgba(255, 255, 255, 0.15);
+  --theme-neutral-lightest-alpha-20: rgba(255, 255, 255, 0.20);
+  --theme-neutral-lightest-alpha-30: rgba(255, 255, 255, 0.30);
+  --theme-neutral-light-alpha-30: rgba(229, 229, 229, 0.30);
+  --theme-neutral-medium-alpha-25: rgba(209, 209, 209, 0.25);
+  --theme-neutral-dark-alpha-40: rgba(74, 74, 74, 0.40);
+
+  --theme-background-default: #FFFFFF;
+  --theme-background-paper: #FFFFFF;
+  --theme-background-elevated: #F0F0F0;
+
+  --theme-gradients-primary: linear-gradient(135deg, #F062A6 0%, #E20074 100%);
+  --theme-gradients-secondary: linear-gradient(135deg, #D1D1D1 0%, #4A4A4A 100%);
+  --theme-gradients-accent: linear-gradient(135deg, #D1D1D1 0%, #E20074 100%);
+  --theme-gradients-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  /* Attention-grabbing gradient with opacity and glow */
+  --theme-attention-gradient: linear-gradient(135deg, rgba(240, 98, 166, 0.7) 0%, rgba(226, 0, 116, 0.7) 100%);
+  --theme-attention-glow: 0 0 20px rgba(226, 0, 116, 0.8);
+
+  --theme-effects-primary-glow: 0 0 15px #E2007490;
+  --theme-effects-secondary-glow: 0 0 15px #4A4A4A70;
+  --theme-effects-subtle-glow: 0 0 10px #D1D1D130;
+  --theme-effects-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+
+  /* ---- Spacing ---- */
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-spacing-xxl: 48px;
+
+  /* ---- Border Radius ---- */
+  --theme-border-radius-sm: 4px;
+  --theme-border-radius-md: 8px;
+  --theme-border-radius-lg: 12px;
+  --theme-border-radius-xl: 16px;
+  --theme-border-radius-round: 50%;
+
+  /* ---- Font Sizes ---- */
+  --theme-font-size-xs: 0.75rem;
+  --theme-font-size-sm: 0.875rem;
+  --theme-font-size-md: 1rem;
+  --theme-font-size-lg: 1.125rem;
+  --theme-font-size-xl: 1.25rem;
+  --theme-font-size-xxl: 1.5rem;
+  --theme-font-size-h1: 2rem;
+  --theme-font-size-h2: 1.75rem;
+  --theme-font-size-h3: 1.5rem;
+  --theme-font-size-h4: 1.25rem;
+  --theme-font-size-h5: 1.125rem;
+  --theme-font-size-h6: 1rem;
+
+  /* ---- Font Weights ---- */
+  --theme-font-weight-light: 300;
+  --theme-font-weight-regular: 400;
+  --theme-font-weight-medium: 500;
+  --theme-font-weight-semi-bold: 600;
+  --theme-font-weight-bold: 700;
+
+  /* ---- Alpha Colors for specific uses ---- */
+  --theme-background-paper-alpha-10: rgba(255, 255, 255, 0.1);
+  --theme-neutral-darkest-alpha-50: rgba(0, 0, 0, 0.5);
+  --theme-primary-glow-alpha-30: rgba(226, 0, 116, 0.3);
+  --main-color: #E20074;
+}
+
+body {
+  background: linear-gradient(120deg, #1f1f39 0%, #221a27 100%);
+  height: 100vh;
+  margin: 0;
+}
+
+
+#root {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: 60px 60px;
+}
+
+/* Add a subtle pattern or texture for visual appeal */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(var(--theme-neutral-lightest-alpha-15) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.5;
+  z-index: -1;
+}
+
+
+/* ---- Buttons ---- */

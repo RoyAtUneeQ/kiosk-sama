@@ -1,0 +1,81 @@
+.remote-connection-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 1rem;
+  left: 1.4rem;
+  z-index: 1000;
+}
+
+.remote-connection-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.remote-connection-icon:focus,
+.remote-connection-icon:hover {
+  box-shadow: 0 8px 32px 0 var(--theme-effects-primary-glow);
+}
+
+.remote-connection-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--theme-primary-main);
+  letter-spacing: 0.01em;
+}
+
+.remote-connection-tooltip {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 134%;
+  transform: translateX(-5%);
+  min-width: 400px;
+  background: var(--theme-background-paper);
+  color: var(--theme-primary-dark);
+  border-radius: var(--theme-border-radius-md);
+  box-shadow: 0 8px 32px 0 var(--theme-effects-primary-glow);
+  padding: 1rem 1.25rem;
+  z-index: 10;
+  font-size: .8rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.remote-connection-icon:hover .remote-connection-tooltip,
+.remote-connection-icon:focus .remote-connection-tooltip {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tooltip-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--theme-primary-main);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.01em;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.25rem;
+  gap: 0.2rem;
+}
+
+.tooltip-label {
+  color: var(--theme-neutral-dark);
+  font-weight: 500;
+}
+
+.tooltip-value {
+  color: var(--theme-primary-dark);
+  font-weight: 600;
+} 

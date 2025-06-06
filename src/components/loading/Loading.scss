@@ -1,0 +1,359 @@
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  min-height: 150px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.loading-visible {
+  opacity: 1;
+}
+
+.loading-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(28, 40, 51, 0.85);
+  z-index: 9999;
+  min-height: 100vh;
+}
+
+.loading-ring {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0 0 10px var(--theme-primary-glow-alpha-30));
+  z-index: 2;
+}
+
+.loading-ring:before,
+.loading-ring:after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+/* Outer ring with gradient */
+.loading-ring:before {
+  width: 100%;
+  height: 100%;
+  border: 4px solid transparent;
+  border-top: 4px solid var(--theme-primary-main);
+  border-left: 4px solid var(--theme-primary-light);
+  animation: spinClockwise 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  box-shadow: 0 0 15px var(--theme-primary-glow-alpha-30);
+}
+
+/* Inner ring with opposite rotation */
+.loading-ring:after {
+  width: 70%;
+  height: 70%;
+  border: 3px solid transparent;
+  border-bottom: 3px solid var(--theme-secondary-light);
+  border-right: 3px solid var(--theme-neutral-lightest);
+  animation: spinCounterClockwise 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+/* Pulsing core */
+.loading-core {
+  width: 20px;
+  height: 20px;
+  background: var(--theme-primary-gradient);
+  border-radius: 50%;
+  box-shadow: var(--theme-effects-primary-glow);
+  animation: pulse 2s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+/* Particles that float around */
+.loading-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--theme-primary-light);
+  opacity: 0;
+  animation: float 3s ease-in-out infinite;
+}
+
+.particle:nth-child(1) {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+  top: 70%;
+  left: 30%;
+  animation-delay: 0.3s;
+  width: 4px;
+  height: 4px;
+}
+
+.particle:nth-child(3) {
+  top: 40%;
+  left: 80%;
+  animation-delay: 0.6s;
+  width: 6px;
+  height: 6px;
+}
+
+.particle:nth-child(4) {
+  top: 60%;
+  left: 60%;
+  animation-delay: 0.9s;
+  width: 3px;
+  height: 3px;
+}
+
+.particle:nth-child(5) {
+  top: 30%;
+  left: 60%;
+  animation-delay: 1.2s;
+}
+
+.particle:nth-child(6) {
+  top: 70%;
+  left: 20%;
+  animation-delay: 1.5s;
+  width: 4px;
+  height: 4px;
+}
+
+.loading-elements-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Text container positioning */
+.loading-text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Glowing text */
+.loading-text {
+  position: relative;
+  font-size: var(--theme-font-size-md);
+  font-weight: var(--theme-font-weight-medium);
+  color: var(--theme-neutral-lightest);
+  text-shadow: 0 0 8px var(--theme-primary-glow-alpha-30);
+  letter-spacing: 2px;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+/* Subtext with organic flowing animation */
+.loading-subtext {
+  position: relative;
+  font-size: var(--theme-font-size-md);
+  font-weight: var(--theme-font-weight-regular);
+  color: var(--theme-neutral-lighter);
+  letter-spacing: 1px;
+  text-align: center;
+  animation: flowFade 3s ease-in-out infinite;
+  transform-origin: center;
+  background: linear-gradient(90deg, rgb(103, 46, 58) 0%, rgb(138, 81, 98) 50%, rgb(138, 81, 98) 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0 8px;
+}
+
+/* Size variants */
+.loading-small .loading-ring {
+  width: 50px;
+  height: 50px;
+}
+
+.loading-small .loading-core {
+  width: 12px;
+  height: 12px;
+}
+
+.loading-small .loading-text-container {
+  bottom: -60px;
+}
+
+.loading-small .loading-text {
+  font-size: var(--theme-font-size-sm);
+}
+
+.loading-small .loading-subtext {
+  font-size: var(--theme-font-size-xs);
+}
+
+.loading-small .loading-ring:before {
+  border-width: 3px;
+}
+
+.loading-small .loading-ring:after {
+  border-width: 2px;
+}
+
+.loading-medium .loading-ring {
+  width: 80px;
+  height: 80px;
+}
+
+.loading-medium .loading-core {
+  width: 20px;
+  height: 20px;
+}
+
+.loading-large .loading-ring {
+  width: 120px;
+  height: 120px;
+}
+
+.loading-large .loading-core {
+  width: 30px;
+  height: 30px;
+}
+
+.loading-large .loading-text-container {
+  bottom: -80px;
+}
+
+.loading-large .loading-text {
+  font-size: var(--theme-font-size-lg);
+}
+
+.loading-large .loading-subtext {
+  font-size: var(--theme-font-size-md);
+}
+
+.loading-large .loading-ring:before {
+  border-width: 5px;
+}
+
+.loading-large .loading-ring:after {
+  border-width: 4px;
+}
+
+@keyframes spinClockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinCounterClockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.8;
+  }
+  75% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-15px) translateX(10px);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Replace the typing animation with flowing animation */
+@keyframes flowFade {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translateY(0px) scale(0.98);
+    background-position: 0% center;
+  }
+  
+  50% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02);
+    background-position: 100% center;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .loading-medium .loading-ring {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .loading-medium .loading-core {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .loading-large .loading-ring {
+    width: 90px;
+    height: 90px;
+  }
+  
+  .loading-large .loading-core {
+    width: 24px;
+    height: 24px;
+  }
+}

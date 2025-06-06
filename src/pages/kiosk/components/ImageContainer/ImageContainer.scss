@@ -1,0 +1,70 @@
+.image-container {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 20rem;
+  right: 15%;
+  border-radius: 1rem;
+  /* Added styles for the frame */
+  border: 3px solid #2e2e2e;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: add a slight background */
+  /* Animation styles */
+  animation: fadeIn 1s ease-in-out;
+  /* Add transitions for smooth movement and resizing */
+  transition: top 0.5s ease-in-out, right 0.5s ease-in-out, transform 0.5s ease-in-out, max-width 0.5s ease-in-out, max-height 0.5s ease-in-out;
+}
+
+.image-container img {
+    max-width: min(800px, 50vw);
+    max-height: min(800px, 50vh);
+    object-fit: contain; /* Ensures the entire image is visible within the container */
+}
+
+@media (max-width: 2300px) {
+  .image-container {
+    right: 10%;
+    /* Add transitions for smooth movement and resizing */
+    transition: top 0.5s ease-in-out, right 0.5s ease-in-out, transform 0.5s ease-in-out, max-width 0.5s ease-in-out, max-height 0.5s ease-in-out;
+  }
+
+  .image-container img {
+    max-width: min(800px, 50vw);
+    max-height: min(800px, 50vh);
+    object-fit: contain; /* Ensures the entire image is visible within the container */
+  }
+}
+
+@media (max-width: 2000px) {
+  .image-container {
+    right: 6%;
+    /* Add transitions for smooth movement and resizing */
+    transition: top 0.5s ease-in-out, right 0.5s ease-in-out, transform 0.5s ease-in-out, max-width 0.5s ease-in-out, max-height 0.5s ease-in-out;
+  }
+
+  .image-container img {
+    max-width: min(800px, 40vw);
+    max-height: min(800px, 40vh);
+    object-fit: contain; /* Ensures the entire image is visible within the container */
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

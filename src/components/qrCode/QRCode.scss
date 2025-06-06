@@ -1,0 +1,26 @@
+.qr-code-container {
+  background: var(--theme-background-paper);
+  border-radius: var(--theme-border-radius-md);
+  box-shadow: var(--theme-effects-subtle-glow);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  padding: 0.1rem;
+  opacity: 0.8;
+  text-decoration: none;
+  position: fixed;
+  top: 2rem;
+  right: 3rem;
+  z-index: 1000;
+}
+
+/* Add a subtle border */
+.qr-code-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--theme-border-radius-md);
+  border: 1px solid var(--theme-neutral-lighter);
+  pointer-events: none;
+} 
