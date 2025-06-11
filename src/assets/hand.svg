@@ -2,13 +2,15 @@
   <defs>
     <!-- Gradiente principal com cor base E20074 -->
     <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#E20074;stop-opacity:1" />
-      <stop offset="25%" style="stop-color:#E20074;stop-opacity:0.95" />
-      <stop offset="50%" style="stop-color:#E20074;stop-opacity:0.9" />
-      <stop offset="75%" style="stop-color:#E20074;stop-opacity:0.95" />
-      <stop offset="100%" style="stop-color:#E20074;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#E20074;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#EB4634;stop-opacity:1" />
     </linearGradient>
-    
+
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0" style="stop-color:#D968D0;stop-opacity:0.1" ></stop>
+      <stop offset="1" style="stop-color:#EB4634;stop-opacity:1"></stop>
+    </linearGradient>
+
     <!-- Gradiente para sombra com tons complementares -->
     <linearGradient id="shadowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#FFB3D1;stop-opacity:0.4" />

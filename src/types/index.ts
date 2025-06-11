@@ -6,3 +6,4 @@ export * from './UneeqEvent';
 export * from './UneeqEventType';
 export * from './UneeqActions';
 export * from './UneeqEmotions';
+export * from './UneeqCamera';

@@ -3,11 +3,17 @@ export interface UneeqOptions {
    * URL for the connection endpoint.
    */
   connectionUrl: string;
+
   /**
-   * Unique identifier for the persona.
-   * This value can be copied from the UneeQ configuration portal -> Digital Human page.
+   * Cloud or MiniPrem config.
    */
-  personaId: string;
+  renderMode: "cloud" | "miniprem";
+
+  /**
+   * Language for the UneeQ frame.
+   */
+  language: string;
+
   /**
    * Layout mode for the UneeQ frame ('fullScreen', 'overlay', or 'contained').
    * Default value is 'overlay'.
@@ -176,10 +182,7 @@ export interface UneeqOptions {
    * Default value is "Hello".
    */
   welcomePrompt?: string;
-  /**
-   * Additional UneeQ options.
-   */
-  [key: string]: any;
+ 
 }
 
 /**
