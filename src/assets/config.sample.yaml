@@ -1,0 +1,39 @@
+# Application Configuration
+app:
+  name: "Deutsche Telekom"
+  environment: "development" # development, staging, production
+
+# Personas Configuration
+personas:
+  en:
+    cloud: 
+      CDN: "https://cdn-eu.uneeq.io/hosted-experience/deploy/index.js"  
+      API: "https://api-eu.uneeq.io"
+      key: "5ea797da-38f7-426a-84ae-b13d2142618b"
+    miniprem: 
+      CDN: "https://cdn.enterprise.uneeq.io/hosted-experience/deploy/index.js"
+      API: "https://api.enterprise.uneeq.io"
+      key: "8547f9dd-bad2-47ff-b625-02ae71e12a98"
+  de:
+    cloud: 
+      CDN: "https://cdn-eu.uneeq.io/hosted-experience/deploy/index.js"
+      API: "https://api-eu.uneeq.io"
+      key: "9aa69844-45b6-4296-a0c0-9a4356fcf224"
+    miniprem: 
+      CDN: "https://cdn.enterprise.uneeq.io/hosted-experience/deploy/index.js" 
+      API: "https://api.enterprise.uneeq.io"
+      key: "82885b99-7d96-4dba-bdea-bf52b0a06cb4"
+
+# WebSocket Configuration
+websocket:
+  url: "wss://ztvorge3e7.execute-api.eu-central-1.amazonaws.com/prod"
+
+# External API Configuration
+apis:
+  pixabay:
+    api_key: "USE_YOUR_PIXABAY_API_KEY"
+    api_url: "https://pixabay.com/api/"
+    
+  deepgram:
+    api_key: "USE_YOUR_DEEPGRAM_API_KEY"
+    api_url: "https://api.deepgram.com/v1/listen"
