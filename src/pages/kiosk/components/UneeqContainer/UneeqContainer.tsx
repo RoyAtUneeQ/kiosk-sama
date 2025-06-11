@@ -4,18 +4,22 @@ import { Loading } from '@/components';
 
 interface UneeqContainerProps {
   id: string;
+  loaded: boolean;
   onInit: () => void;
 }
 
-const UneeqContainer: React.FC<UneeqContainerProps> = ({ id, onInit }) => {
+const UneeqContainer: React.FC<UneeqContainerProps> = ({ id, loaded = false, onInit }) => {
     useEffect(() => {
         onInit();
     }, []);
     
   return (
     <div className="uneeq-container">
-        <Loading text="Loading..." subText="Please wait while we prepare your experience." />
-        <div id={id} />
+        <div className="uneeq-container-content">
+            {!loaded && <Loading />}
+            <div id={id} />
+        </div>
+        <div className="uneeq-container-protection"></div>
     </div>
   );
 };

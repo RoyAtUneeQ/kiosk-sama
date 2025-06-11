@@ -1,18 +1,132 @@
-.mic-button {
-    cursor: pointer;
-    z-index: 999;
+@import '@/styles/breakpoints.scss';
+
+.mic-button-container {
+    background: transparent;
+    pointer-events: auto;
+    z-index: 50;
     position: fixed;
     top: 30vh;
-    right: 0vw;
+    right: 5vw;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    height: 20vw;
+    width: 25vw;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    
+    // Prevent dragging and selection on all child elements
+    * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+        pointer-events: none;
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        user-drag: none;
+    }
 }
 
-.hand-icon {
-    width: 25vw;
-    height: 20vw;
-    z-index: 1000;
-    opacity: 0.5;
-    backdrop-filter: blur(5px);
+.mic-button-container-inner {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.mic-button-container::before,
+.mic-button-container::after {
+    content: '';
+    position: absolute;
+    opacity: 0;
+    width: 20%; /* Initial size of the wave */
+    height: 25%; /* Initial size of the wave */
     border-radius: 50%;
+    background-color: #E20074; /* Color matching the particle effect */
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 57; /* Below the hand icon */
+    left: 45%;
+    top: 45%;
+}
+
+.mic-button-container.pressed::after {
+    animation: wave-expand 1.5s linear infinite;
+}
+
+.mic-button-container.pressed::before {
+    animation: wave-expand 1.5s linear infinite;
+    animation-delay: 0.5s;
+}
+
+@keyframes wave-expand {
+    0% {
+        opacity: 0.8; /* Start with higher opacity */
+    }
+    50% {
+        opacity: 0.4; /* Mid-point opacity */
+    }
+    100% {
+        transform: scale(10); /* Expand the wave */
+        opacity: 0; /* Fade out completely */
+    }
+}
+
+.mic-button {
+    background: transparent;
+    pointer-events: auto;
+    z-index: 60;
+    position: absolute;
+    background-color: #E20074;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.mic-protection {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #E20074;
+    opacity: 0;
+    z-index: 59;
+}
+
+.mic-icon-container {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 58;
+}
+
+.mic-icon {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.denied, .unknown, .prompt {
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+
+.finger-icon .granted {
+    display: none;
+}
+
+
+.finger-icon {
+    display: none;
+    height: 100%;
+    width: 100%;
+    left: 25px;
+    top: 25px;
 }
 
 @keyframes pulse {
@@ -29,21 +143,19 @@
 
 .particle {
     position: absolute;
-    width: 6px;
-    height: 6px;
     border-radius: 50%;
     background-color: #E20074;
     pointer-events: none;
     opacity: 0;
-    top: var(--start-y, 50%);
-    left: var(--start-x, 50%);
+    top: var(--start-y, 0%);
+    left: var(--start-x, 0%);
     animation-name: particle-effect;
     animation-timing-function: ease-out;
     animation-iteration-count: infinite;
     animation-duration: 2s;
     animation-delay: 0s;
-    --dx: 0;
-    --dy: 0;
+    --dx: 0px;
+    --dy: 0px;
 }
 
 @keyframes particle-effect {
@@ -117,42 +229,97 @@
     animation-duration: 1s;
 }
 
-.mic-button::before,
-.mic-button::after {
-    content: '';
+// Permission status indicators
+.permission-status {
     position: absolute;
-    opacity: 0;
-    top: 55%;
-    left: 56%;
-    transform: translate(-50%, -50%);
-    width: 5vw; /* Initial size of the wave */
-    height: 5vw; /* Initial size of the wave */
+    top: -15%;
+    right: -15%;
+    z-index: 61;
+    background: rgba(0, 0, 0, 0.8);
     border-radius: 50%;
-    background-color: #E20074; /* Color matching the particle effect */
-    pointer-events: none; /* Allow clicks to pass through */
-    z-index: 998; /* Below the hand icon */
-}
-
-.mic-button.pressed::after {
-    animation: wave-expand 1.5s linear infinite;
-    /* animation-delay: 0s; */
-}
-
-.mic-button.pressed::before {
-    animation: wave-expand 1.5s linear infinite;
-    animation-delay: 0.5s; /* Delay the second wave */
-}
-
-@keyframes wave-expand {
-    0% {
-        transform: translate(-50%, -50%) scale(0); /* Start from very small */
-        opacity: 0.6; /* Start with higher opacity */
+    width: 30%;
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    pointer-events: none;
+    
+    &.denied {
+        background: rgba(255, 0, 0, 0.8);
+        animation: shake 0.5s ease-in-out infinite alternate;
     }
-    50% {
-        opacity: 0.4; /* Mid-point opacity */
+    
+    &.requesting {
+        background: rgba(255, 165, 0, 0.8);
+        animation: pulse-permission 1s ease-in-out infinite;
     }
-    100% {
-        transform: translate(-50%, -50%) scale(10); /* Expand the wave */
-        opacity: 0; /* Fade out completely */
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-2px); }
+}
+
+@keyframes pulse-permission {
+    0% { 
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% { 
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% { 
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+// Requesting permission state styling
+.mic-button-container.requesting-permission {
+    opacity: 0.7;
+    cursor: wait;
+    
+    .mic-icon {
+        filter: grayscale(50%);
+    }
+}
+
+@include tablet-and-smartphone {
+    .finger-icon {
+        display: block;
+    }
+
+    .mic-protection {
+        right: -20px;
+        top: 20px;
+    }
+
+    .mic-button-container::before,
+    .mic-button-container::after {
+        left: 65%;
+        top: 62%;
+    }
+
+    .hand-icon {
+        display: none;
+    }
+    
+    .permission-status {
+        width: 25%;
+        height: 25%;
+        font-size: 1em;
+        top: -10%;
+        right: -10%;
+    }
+}
+
+@include desktop {
+    .hand-icon {
+        display: block;
+    }
+    .finger-icon {
+        display: none;
     }
 }

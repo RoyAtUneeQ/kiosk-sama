@@ -1,8 +1,10 @@
+@import "@/styles/breakpoints.scss";
 
 .kiosk-form-slot {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
+  overflow-y: auto;
   justify-content: space-between;
   padding: 1.5rem;
   align-items: center; /* This centers .kiosk-welcome-message, .kiosk-description, .kiosk-actions, and .kiosk-config-container */
@@ -10,6 +12,7 @@
   color: var(--theme-neutral-white, #F5F5F5);
   width: 100%;
   max-width: 500px; /* Max width of the main content area */
+  box-sizing: border-box;
 }
 
 .kiosk-content {
@@ -498,4 +501,22 @@ button.kiosk-start-button:disabled .buttonText::before {
   border: 1px solid rgba(58, 95, 138, 0.2);
   box-shadow: none;
   font-weight: normal;
+}
+
+// SMARTPHONE (mobile)
+@include smartphone {
+  .kiosk-connection-status-row {
+    display: none;
+  }
+  .kiosk-connection-statuses {
+    margin-top: 0;
+  }
+  .kiosk-form-slot {
+    gap: 4rem;
+  }
+
+  .kiosk-welcome-message{
+    font-size: 2rem;
+  }
+  
 }

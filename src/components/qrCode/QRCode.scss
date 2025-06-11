@@ -1,8 +1,12 @@
+@import "@/styles/breakpoints.scss";
+
+
+
 .qr-code-container {
   background: var(--theme-background-paper);
   border-radius: var(--theme-border-radius-md);
   box-shadow: var(--theme-effects-subtle-glow);
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   width: fit-content;
@@ -13,6 +17,7 @@
   top: 2rem;
   right: 3rem;
   z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Add a subtle border */
@@ -24,3 +29,9 @@
   border: 1px solid var(--theme-neutral-lighter);
   pointer-events: none;
 } 
+
+@include smartphone {
+  .qr-code-container {
+    display: none;
+  }
+}

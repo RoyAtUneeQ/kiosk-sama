@@ -1,7 +1,27 @@
 .uneeq-container {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: fixed;
+  height: 100%;
+  width: 100%;
   z-index: 0;
+}
+
+.uneeq-container-content {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.uneeq-container-content #uneeqFrame {
+  z-index: 0;
+}
+
+.uneeq-container-protection {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  z-index: 10;
+  background-color: #E20074;
+  pointer-events: none;
+  user-select: none;
 }

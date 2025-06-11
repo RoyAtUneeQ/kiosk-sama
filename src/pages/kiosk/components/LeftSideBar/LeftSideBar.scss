@@ -1,4 +1,5 @@
-/* Example selector, adjust as needed */
+@import "@/styles/breakpoints.scss";
+
 .left-side-bar-buttons-container {
     height: 100vh;
     display: flex;
@@ -12,4 +13,16 @@
     top: 0;
     z-index: 1000;
     transform: translateY(-13vh); /* Shift the buttons up so they align with the user's eye level on the Holobox */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+@include smartphone {
+    .left-side-bar-buttons-container {
+        gap: 1rem;
+        left: 1rem;
+        transform: translateY(-9vh);
+    }
 }

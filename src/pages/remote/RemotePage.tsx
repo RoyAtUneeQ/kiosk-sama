@@ -1,173 +1,144 @@
 import './RemotePage.scss';
 import { useEffect, useState, useRef } from 'react';
-import { WebSocketService } from '@/services/WebsocketService'; 
+import { useWebSocket, useUserInspect } from '@/hooks'; 
 import { WebsocketState } from '@/types/WebsocketState';
 import { SessionMessageGenerator } from '@/utils';
 import { useParams } from 'react-router-dom';
-import { UserInspectService } from '@/services/UserInspectService';
 import { Loading } from '@/components';
 import type { Message } from '@/types/Message';
-
+import { useConfig } from '@/hooks/useConfig';
 
 function RemotePage() {
+  // Config is now guaranteed to be available
+  const { config } = useConfig();
   const { sessionId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const checkRemoteConnection = useRef<NodeJS.Timeout | null>(null);
-  const [peerConnected, setPeerConnected] = useState<boolean>(false);
 
-  if (!sessionId)
-    return <div className="error-container">No session ID found</div>;
+  // Initialize hooks with config values (now guaranteed to be available)
+  const { webSocketState, connectionId, sendMessage } = useWebSocket({
+    webSocketUrl: config.websocket.url
+  });
 
-  const { webSocketState, sendMessage, connectionId, on } = WebSocketService({webSocketUrl: `${import.meta.env.VITE_WEBSOCKET_URL}/session/${sessionId}`});
-  
-  // Join session when connectionId and sessionId are available
   useEffect(() => {
-    if (connectionId) {
-      sendMessage(SessionMessageGenerator.joinSession(sessionId, UserInspectService(connectionId)));
-      checkRemoteConnection.current = setInterval(() => {   
-        sendMessage({
-          type: "CheckPeerConnection",
-          remoteId: sessionId
-        });
-      }, 1000);
+    if (webSocketState === WebsocketState.CONNECTED && sessionId && connectionId) {
+      const userInfo = useUserInspect(connectionId);
+      sendMessage(SessionMessageGenerator.joinSession(sessionId, userInfo));
     }
-    setPeerConnected(true);
-  }, [connectionId, sessionId, sendMessage]);
-  
-  const handleRemoteDisconnected = () => {
-    if (checkRemoteConnection.current)
-      clearInterval(checkRemoteConnection.current);
-    setPeerConnected(false);
+  }, [webSocketState, sessionId, connectionId, sendMessage]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    on("PeerDisconnected", handleRemoteDisconnected);
-  }, []);
-  
-
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    scrollToBottom();
   }, [messages]);
-  
-  // Focus input when component loads
-  useEffect(() => {
-    if (webSocketState === WebsocketState.CONNECTED) {
-      inputRef.current?.focus();
-    }
-  }, [webSocketState]);
 
-  const handleSendMessage = () => {
-    if (!inputText.trim()) return;
-    
-    // Add user message
-    const userMessage: Message = {
-      id: crypto.randomUUID(),
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date()
+  const addMessage = (text: string, sender: 'user' | 'assistant') => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      text,
+      sender,
+      timestamp: new Date(),
     };
-    
-    setMessages(prev => [...prev, userMessage]);
-    
-    // Simulate sending the message via websocket
-    //sendMessage(SessionMessageFactory.sendMessage(sessionId, inputText));
-    
-    // Clear input
-    setInputText('');
-    
-    // Simulate typing indicator
-    setIsTyping(true);
-    
-    // Simulate response (this would be replaced with actual websocket response handling)
-    setTimeout(() => {
-      setIsTyping(false);
-      const assistantMessage: Message = {
-        id: crypto.randomUUID(),
-        text: "I've received your message and I'm processing your request.",
-        sender: 'assistant',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, assistantMessage]);
-    }, 2000);
+    setMessages(prev => [...prev, newMessage]);
   };
 
-  // Handle pressing Enter to send message
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
+  const handleSendMessage = async () => {
+    if (inputText.trim() && !isTyping) {
+      const messageContent = inputText.trim();
+      setInputText('');
+      
+      // Add user message
+      addMessage(messageContent, 'user');
+      
+      // Show typing indicator
+      setIsTyping(true);
+      
+      // Send message via WebSocket
+      sendMessage({
+        type: "ChatMessage",
+        content: messageContent,
+        timestamp: new Date().toISOString()
+      });
+      
+             // For demo purposes, simulate AI response
+       setTimeout(() => {
+         addMessage("I received your message: " + messageContent, 'assistant');
+         setIsTyping(false);
+       }, 1500);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       handleSendMessage();
     }
   };
 
-  // Determine if websocket is in connecting state based on current state
-  const connected = webSocketState === WebsocketState.CONNECTED && peerConnected;
+  useEffect(() => {
+    // Focus input on mount
+    inputRef.current?.focus();
+  }, []);
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <h1>Remote Assistant</h1>
+    <div className="remote-page">
+      <div className="remote-header">
+        <h1>Remote Control</h1>
         <div className="connection-status">
-          {connected && <span className="status connected">Connected</span>}
-          {!connected && <span className="status disconnected">Disconnected</span>}
+          <span className={`status ${webSocketState.toLowerCase()}`}>
+            {webSocketState}
+          </span>
+          {connectionId && <span className="connection-id">ID: {connectionId}</span>}
         </div>
       </div>
 
       <div className="messages-container">
-        {messages.map((message) => (
-          <div 
-            key={message.id} 
-            className={`message ${message.sender === 'user' ? 'user-message' : 'assistant-message'}`}
-          >
-            <div className="message-bubble">
-              <p>{message.text}</p>
-              <span className="message-time">
-                {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-              </span>
+        <div className="messages">
+                   {messages.map((message) => (
+           <div key={message.id} className={`message ${message.sender}`}>
+             <div className="message-content">{message.text}</div>
+             <div className="message-time">
+               {message.timestamp.toLocaleTimeString()}
+             </div>
+           </div>
+         ))}
+          {isTyping && (
+            <div className="message ai typing">
+              <div className="message-content">
+                <Loading />
+              </div>
             </div>
-          </div>
-        ))}
-        
-        {isTyping && (
-          <div className="message assistant-message">
-            <div className="message-bubble typing-indicator">
-              <div className="typing-dot"></div>
-              <div className="typing-dot"></div>
-              <div className="typing-dot"></div>
-            </div>
-          </div>
-        )}
-        
-        <div ref={messagesEndRef} />
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
-      {!connected ? (
-        <div className="loading-overlay">
-          <Loading text="Lost connection!" size="medium" />
-        </div>
-      ) : (
-        <div className="input-container">
+      <div className="input-container">
+        <div className="input-wrapper">
           <input
-            type="text"
             ref={inputRef}
+            type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type your message..."
-            disabled={!connected}
+            disabled={webSocketState !== WebsocketState.CONNECTED || isTyping}
           />
           <button 
-            onClick={handleSendMessage} 
-            disabled={!inputText.trim() || !connected}
-            className="send-button remote-page-send-button"
+            onClick={handleSendMessage}
+            disabled={!inputText.trim() || webSocketState !== WebsocketState.CONNECTED || isTyping}
+            className="send-button"
           >
             Send
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
