@@ -1,0 +1,60 @@
+{
+  "welcome": {
+    "title": "¡Bienvenido a bordo!",
+    "description": "Tu experiencia digital está a punto de comenzar."
+  },
+  "actions": {
+    "startExperience": "Iniciar experiencia"
+  },
+  "status": {
+    "webSocket": "WebSocket",
+    "uneeqScript": "Script Uneeq",
+    "sessionId": "ID de sesión",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "ready": "Listo",
+    "notReady": "No listo"
+  },
+  "renderMode": {
+    "label": "Modo de renderizado",
+    "cloud": "Nube",
+    "miniPrem": "MiniPrem"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "ar": "العربية",
+    "pt": "Português",
+    "de": "Deutsch"
+  },
+  "loading": {
+    "default": "Cargando...",
+    "initializing": "Inicializando...",
+    "connecting": "Conectando...",
+    "phrases": [
+      "Calentando procesadores neurales",
+      "Ajustando frecuencia del latido",
+      "Sincronizando alma con circuitos",
+      "Alineando firmware emocional",
+      "Ejecutando protocolo de autoconciencia",
+      "Activando chispa de conciencia",
+      "Calibrando sensores del alma",
+      "niveles de bondad aumentando"
+    ]
+  },
+  "errors": {
+    "microphonePermission": "Permiso de micrófono denegado",
+    "connectionFailed": "Falló la conexión",
+    "sessionError": "Error de sesión"
+  },
+  "accessibility": {
+    "micButton": "Mantén presionado para hablar",
+    "zoomIn": "Acercar cámara",
+    "zoomOut": "Alejar cámara",
+    "emotion": "Mostrar emoción",
+    "action": "Realizar acción",
+    "image": "Mostrar imagen",
+    "tutorial": "Mostrar tutorial"
+  }
+} 

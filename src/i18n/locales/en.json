@@ -1,0 +1,60 @@
+{
+  "welcome": {
+    "title": "Welcome Aboard!",
+    "description": "Your digital experience is about to begin."
+  },
+  "actions": {
+    "startExperience": "Start Experience"
+  },
+  "status": {
+    "webSocket": "WebSocket",
+    "uneeqScript": "Uneeq Script",
+    "sessionId": "Session ID",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "ready": "Ready",
+    "notReady": "Not Ready"
+  },
+  "renderMode": {
+    "label": "Render Mode",
+    "cloud": "Cloud",
+    "miniPrem": "MiniPrem"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "ar": "العربية",
+    "pt": "Português",
+    "de": "Deutsch"
+  },
+  "loading": {
+    "default": "Loading...",
+    "initializing": "Initializing...",
+    "connecting": "Connecting...",
+    "phrases": [
+      "Warming up neural processors",
+      "Fine-tuning heartbeat frequency",
+      "Synchronizing soul with circuitry",
+      "Aligning emotional firmware",
+      "Running self-awareness protocol",
+      "Activating spark of consciousness",
+      "Calibrating soul sensors",
+      "kindness levels rising"
+    ]
+  },
+  "errors": {
+    "microphonePermission": "Microphone permission denied",
+    "connectionFailed": "Connection failed",
+    "sessionError": "Session error occurred"
+  },
+  "accessibility": {
+    "micButton": "Press and hold to speak",
+    "zoomIn": "Zoom in camera",
+    "zoomOut": "Zoom out camera",
+    "emotion": "Show emotion",
+    "action": "Perform action",
+    "image": "Show image",
+    "tutorial": "Show tutorial"
+  }
+} 

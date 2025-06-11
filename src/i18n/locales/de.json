@@ -1,0 +1,60 @@
+{
+  "welcome": {
+    "title": "Willkommen an Bord!",
+    "description": "Ihr digitales Erlebnis steht kurz vor dem Beginn."
+  },
+  "actions": {
+    "startExperience": "Erlebnis starten"
+  },
+  "status": {
+    "webSocket": "WebSocket",
+    "uneeqScript": "Uneeq-Skript",
+    "sessionId": "Sitzungs-ID",
+    "connected": "Verbunden",
+    "disconnected": "Getrennt",
+    "ready": "Bereit",
+    "notReady": "Nicht bereit"
+  },
+  "renderMode": {
+    "label": "Render-Modus",
+    "cloud": "Cloud",
+    "miniPrem": "MiniPrem"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "ar": "العربية",
+    "pt": "Português",
+    "de": "Deutsch"
+  },
+  "loading": {
+    "default": "Laden...",
+    "initializing": "Initialisierung...",
+    "connecting": "Verbindung wird hergestellt...",
+    "phrases": [
+      "Aufwärmen der neuralen Prozessoren",
+      "Feinabstimmung der Herzschlagfrequenz",
+      "Synchronisierung der Seele mit Schaltkreisen",
+      "Ausrichtung der emotionalen Firmware",
+      "Selbstbewusstseinsprotokoll läuft",
+      "Aktivierung des Bewusstseinsfunkens",
+      "Kalibrierung der Seelensensoren",
+      "Freundlichkeitslevel steigen"
+    ]
+  },
+  "errors": {
+    "microphonePermission": "Mikrofon-Berechtigung verweigert",
+    "connectionFailed": "Verbindung fehlgeschlagen",
+    "sessionError": "Sitzungsfehler aufgetreten"
+  },
+  "accessibility": {
+    "micButton": "Drücken und halten zum Sprechen",
+    "zoomIn": "Kamera vergrößern",
+    "zoomOut": "Kamera verkleinern",
+    "emotion": "Emotion anzeigen",
+    "action": "Aktion ausführen",
+    "image": "Bild anzeigen",
+    "tutorial": "Tutorial anzeigen"
+  }
+} 
