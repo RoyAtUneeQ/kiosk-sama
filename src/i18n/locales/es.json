@@ -55,6 +55,10 @@
     "emotion": "Mostrar emoción",
     "action": "Realizar acción",
     "image": "Mostrar imagen",
-    "tutorial": "Mostrar tutorial"
+    "tutorial": "Mostrar tutorial",
+    "chat": "Botón de chat",
+    "stadium": "Mostrar información del estadio",
+    "schedule": "Mostrar horario de la ciudad",
+    "culture": "Mostrar cultura de la ciudad"
   }
 } 

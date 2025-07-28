@@ -55,6 +55,17 @@
     "emotion": "Show emotion",
     "action": "Perform action",
     "image": "Show image",
-    "tutorial": "Show tutorial"
+    "tutorial": "Show tutorial",
+    "chat": "Chat button",
+    "stadium": "Show stadium information",
+    "schedule": "Show city schedule",
+    "culture": "Show city culture"
+  },
+  "micButton": {
+    "startListening": "Start Listening",
+    "listening": "Listening...",
+    "stopListening": "Stop Listening",
+    "requestPermission": "Allow Microphone",
+    "permissionDenied": "Microphone Access Denied"
   }
 } 

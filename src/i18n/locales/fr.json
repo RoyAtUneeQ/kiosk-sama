@@ -1,0 +1,71 @@
+{
+  "welcome": {
+    "title": "Bienvenue à bord !",
+    "description": "Votre expérience numérique va commencer."
+  },
+  "actions": {
+    "startExperience": "Commencer l'expérience"
+  },
+  "status": {
+    "webSocket": "WebSocket",
+    "uneeqScript": "Script Uneeq",
+    "sessionId": "ID de session",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté",
+    "ready": "Prêt",
+    "notReady": "Pas prêt"
+  },
+  "renderMode": {
+    "label": "Mode de rendu",
+    "cloud": "Cloud",
+    "miniPrem": "MiniPrem"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "ar": "العربية",
+    "pt": "Português",
+    "de": "Deutsch"
+  },
+  "loading": {
+    "default": "Chargement...",
+    "initializing": "Initialisation...",
+    "connecting": "Connexion...",
+    "phrases": [
+      "Réchauffement des processeurs neuronaux",
+      "Ajustement de la fréquence cardiaque",
+      "Synchronisation de l'âme avec les circuits",
+      "Alignement du firmware émotionnel",
+      "Exécution du protocole de conscience de soi",
+      "Activation de l'étincelle de conscience",
+      "Calibrage des capteurs d'âme",
+      "les niveaux de bienveillance augmentent"
+    ]
+  },
+  "errors": {
+    "microphonePermission": "Permission du microphone refusée",
+    "connectionFailed": "Échec de la connexion",
+    "sessionError": "Une erreur de session s'est produite"
+  },
+  "accessibility": {
+    "micButton": "Appuyez et maintenez pour parler",
+    "zoomIn": "Zoomer la caméra",
+    "zoomOut": "Dézoomer la caméra",
+    "emotion": "Afficher l'émotion",
+    "action": "Effectuer l'action",
+    "image": "Afficher l'image",
+    "tutorial": "Afficher le tutoriel",
+    "chat": "Bouton de chat",
+    "stadium": "Afficher les informations du stade",
+    "schedule": "Afficher l'horaire de la ville",
+    "culture": "Afficher la culture de la ville"
+  },
+  "micButton": {
+    "startListening": "Commencer l'écoute",
+    "listening": "Écoute en cours...",
+    "stopListening": "Arrêter l'écoute",
+    "requestPermission": "Autoriser le microphone",
+    "permissionDenied": "Accès au microphone refusé"
+  }
+} 

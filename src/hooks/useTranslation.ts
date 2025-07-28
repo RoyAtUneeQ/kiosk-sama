@@ -20,7 +20,7 @@ export const useTranslation = () => {
     changeLanguage,
     getCurrentLanguage,
     getAvailableLanguages,
-    i18n,
+    i18n
   };
 };
 
