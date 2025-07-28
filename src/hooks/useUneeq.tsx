@@ -1,171 +1,90 @@
-// Import necessary hooks and types
-import { useEffect, useState, useRef } from "react";
-import type { Uneeq, UneeqConstructor, UneeqOptions } from "@/types/Uneeq";
-import type { UneeqEvent } from "@/types/UneeqEvent";
+import { useEffect, useCallback } from "react";
+import useScript from "react-script-hook";
 import { useConfig } from "@/hooks/useConfig";
-import { useTranslation } from "@/hooks/useTranslation";
+import type { Uneeq, UneeqOptions, Event } from "@/types";
+import { useSession } from "@/contexts/SessionContext";
+import { EventType } from "@/types/uneeq/EventType";
 
-declare const Uneeq: UneeqConstructor;
+declare const Uneeq: any;
 
 declare global {
   interface Window {
     uneeq?: Uneeq;
+    uneeqSessionKey?: string; // Track current session to prevent re-initialization
   }
 }
 
-export const useUneeq = (options: UneeqOptions) => {
+export const useUneeq = (options: UneeqOptions, language: string = 'en', type: 'cloud' | 'miniprem' = 'cloud') => {
   const { config, loading } = useConfig();
-  const [events, setEvents] = useState<UneeqEvent[]>([]);
-  const eventsRef = useRef<UneeqEvent[]>([]);
-  const [uneeq, setUneeq] = useState<Uneeq | null>(null);
-  const scriptLoaded = useRef(false);
-  const previousOptions = useRef<{ language: string; renderMode: string } | null>(null);
-  const { i18n } = useTranslation();
+  const { actions, state } = useSession();
 
-  // Calculate persona ID directly from config and options
-  const getPersonaId = () => {
-    if (!config?.personas?.[options.language]?.[options.renderMode]?.key) {
-      return null;
-    }
-    return config.personas[options.language][options.renderMode].key;
-  };
+  // Get config values
+  const scriptUrl = config?.personas?.[language]?.[type]?.CDN || '';
+  const connectionUrl = config?.personas?.[language]?.[type]?.API || '';
+  const personaId = config?.personas?.[language]?.[type]?.key || '';
+  const sessionKey = `${connectionUrl}-${personaId}`;
 
-  // Get script URL from config
-  const getScriptUrl = () => {
-    return config?.personas?.[options.language]?.[options.renderMode]?.CDN;
-  };
+  // Load script using external library
+  const [scriptLoading, scriptError] = useScript({ src: scriptUrl });
 
-  // Check if language or renderMode changed
-  const hasOptionsChanged = () => {
-    if (!previousOptions.current) {
-      return true;
-    }
-    return (
-      previousOptions.current.language !== options.language ||
-      previousOptions.current.renderMode !== options.renderMode
-    );
-  };
+  // Create stable event handler using useCallback
+  const handleUneeqMessage = useCallback((e: CustomEvent) => {
+    console.log("=== Uneeq Event:  ", e.detail as Event);
+    actions.setUneeqEvents([...state.uneeqEvents, e.detail as Event]);
+  }, []);
 
-  // Clean up existing Uneeq instance
-  const cleanupUneeq = () => {
-    if (window.uneeq) {
-      try {
-        window.uneeq.endSession?.();
-      } catch (error) {
-        console.warn('Error ending Uneeq session:', error);
-      }
-      window.uneeq = undefined;
-    }
-    setUneeq(null);
-  };
+  // Initialize Uneeq when script is ready (simple singleton pattern)
+  useEffect(() => {
+    if (scriptLoading || scriptError || !connectionUrl || !personaId || loading) return;
 
-  const prompt = (prompt: string) => {
-    //Force the answer to be in the language of the user
-    const language = `** THE ANSWER SHOULD BE IN ${i18n.language}, BUT NEVER TRANSLATE THE TAGS, JUST USE THE TAGS AS THEY ARE **`;
-    const promptWithLanguage = `${prompt} ${language}`;
-    if (window.uneeq) {
-      window.uneeq.chatPrompt(promptWithLanguage);
-    }
-  };
-  
-  const initializeUneeq = () => {
-    // Safety checks
-    if (typeof Uneeq === 'undefined') {
-      console.error('Uneeq constructor not found');
-      return;
-    }
-    
-    const personaId = getPersonaId();
-    if (!options.connectionUrl || !options.language || !options.renderMode || !personaId) {
-      console.error('Invalid Uneeq options: missing required parameters');
-      return;
-    }
-
-    // Clean up existing instance if options changed
-    if (hasOptionsChanged() && window.uneeq) {
-      cleanupUneeq();
-    }
-
-    // Don't initialize if already initialized with same options
-    if (window.uneeq && !hasOptionsChanged()) {
+    // Skip if already initialized for this session
+    if (window.uneeqSessionKey === sessionKey && window.uneeq) {
+      actions.setUneeq(window.uneeq as Uneeq);
       return;
     }
     
     try {
-      window.uneeq = new Uneeq({ ...options, personaId } as UneeqOptions);
+      // Clean up previous session
+      window.uneeq?.endSession?.();
       
-      window.addEventListener('UneeqMessage', ((e: CustomEvent) => {
-        const newEvent = {
-          type: e.detail.uneeqMessageType,
-          data: e.detail
-        };
-        eventsRef.current = [...eventsRef.current, newEvent];
-        setEvents(prev => [...prev, newEvent]);
-      }) as EventListener);
+      // Initialize new session
+      window.uneeq = new Uneeq({
+        ...options,
+        connectionUrl,
+        personaId
+      });
+      window.uneeqSessionKey = sessionKey;
+      const uneeq = window.uneeq as Uneeq;
+      actions.setUneeq(uneeq);
 
-      setUneeq(window.uneeq);
+      uneeq.setWebRtcStatsEnabled(false, false);
       
-      // Update previous options
-      previousOptions.current = {
-        language: options.language,
-        renderMode: options.renderMode
-      };
-    } catch (error) {
-      console.error('Failed to initialize Uneeq:', error);
-    }
-  };
-
-  // Load Uneeq script
-  useEffect(() => {
-    if (scriptLoaded.current || window.uneeq || loading) {
-      return;
-    }
-    
-    const scriptUrl = getScriptUrl();
-    if (!scriptUrl) {
-      console.error('Uneeq script URL not found in configuration');
-      return;
-    }
-    
-    // Check if script is already in the DOM
-    const existingScript = document.getElementById('uneeq-script');
-    if (existingScript) {
-      initializeUneeq();
-      return;
+      // Add event listener with stable callback reference
+      window.addEventListener('UneeqMessage', handleUneeqMessage as EventListener);
+      
+    } catch (err) {
+      console.error('Uneeq initialization failed:', err);
     }
 
-    scriptLoaded.current = true;
-    
-    const script = document.createElement('script');
-    script.src = scriptUrl;
-    script.id = 'uneeq-script';
-    script.async = true;
-    
-    script.onload = () => {
-      setTimeout(initializeUneeq, 100);
+    // Cleanup function to remove event listener
+    return () => {
+      window.removeEventListener('UneeqMessage', handleUneeqMessage as EventListener);
     };
-
-    script.onerror = () => {
-      console.error('Failed to load Uneeq script from:', scriptUrl);
-      scriptLoaded.current = false;
-    };
-    
-    document.body.appendChild(script);
-  }, [config, loading, options.connectionUrl, options.language, options.renderMode]);
-
-  // Initialize or reinitialize Uneeq when dependencies change
-  useEffect(() => {
-    if (typeof Uneeq !== 'undefined' && !loading && config && getPersonaId()) {
-      initializeUneeq();
-    }
-  }, [loading, config, options.connectionUrl, options.language, options.renderMode]);
+  }, [scriptLoading, scriptError, connectionUrl, personaId, loading, sessionKey, handleUneeqMessage]);
   
-  const clearEvents = () => {
-    eventsRef.current = [];
-    setEvents([]);
-  };
 
-  return { uneeq, events, clearEvents, prompt };
+  // Send instruction to Uneeq
+  useEffect(() => {
+    if (state.outgoingInstruction) {
+      // Use async/await to handle the promise
+      (async () => {
+        if (!state.outgoingInstruction) return;
+        const instruction = await state.outgoingInstruction.generate();
+        console.log(`instruction: ${instruction}`);
+        window.uneeq?.chatPrompt(instruction as string);
+      })();
+    }
+  }, [state.outgoingInstruction]);
 };
 
 export default useUneeq; 

@@ -1,7 +1,6 @@
-// Hook exports
-export { useUneeq } from './useUneeq';
-export { useWebSocket } from './useWebSocket';
-export { useUserInspect } from './useUserInspect';
-export { useDeepgram } from './useDeepgram';
-export { useMicrophone } from './useMicrophone';    
-export { useTranslation } from './useTranslation';
+export * from './useConfig';
+export * from './useUneeq';
+export * from './useUneeqEvents';
+export * from './useUserInspect';
+export * from './useWebSocket';
+export * from './useTranslation';
