@@ -1,6 +1,6 @@
 import './RemoteConnectionInfo.scss';
 import React from 'react';
-import type { RemoteSessionInfo } from '@/types/RemoteSessionInfo';
+import type { RemoteSessionInfo } from '@/types/transport/RemoteSessionInfo';
 
 // Keep the existing RemoteInfo type for backward compatibility
 export type RemoteInfo = RemoteSessionInfo;

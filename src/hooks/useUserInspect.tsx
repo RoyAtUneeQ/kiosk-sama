@@ -1,4 +1,4 @@
-import type { RemoteSessionInfo } from '@/types/RemoteSessionInfo';
+import type { RemoteSessionInfo } from '@/types/transport/RemoteSessionInfo';
 
 export function useUserInspect(connectionId: string): RemoteSessionInfo {
   // Helper functions to extract information
@@ -68,6 +68,7 @@ export function useUserInspect(connectionId: string): RemoteSessionInfo {
     // Time information
     timestamp: new Date().toISOString(),
   };
+  console.log('[useUserInspect] connectionId:', connectionId, 'userInfo:', userInfo);
 
   return userInfo;
 }

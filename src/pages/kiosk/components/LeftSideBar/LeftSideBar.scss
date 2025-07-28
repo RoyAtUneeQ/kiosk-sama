@@ -1,4 +1,4 @@
-@import "@/styles/breakpoints.scss";
+@use "@/styles/breakpoints" as *;
 
 .left-side-bar-buttons-container {
     height: 100vh;
@@ -10,7 +10,7 @@
     align-items: flex-start;
     position: fixed;
     left: 3rem;
-    top: 0;
+    top: 10%;
     z-index: 1000;
     transform: translateY(-13vh); /* Shift the buttons up so they align with the user's eye level on the Holobox */
     user-select: none;

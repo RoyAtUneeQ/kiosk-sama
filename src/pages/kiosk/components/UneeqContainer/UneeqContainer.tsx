@@ -1,23 +1,21 @@
 import './UneeqContainer.scss';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Loading } from '@/components';
+import { SessionStatus } from '@/types';
+import { useSession } from '@/contexts/SessionContext';
 
 interface UneeqContainerProps {
-  id: string;
-  loaded: boolean;
-  onInit: () => void;
+  uneeqContainerId: string;
 }
 
-const UneeqContainer: React.FC<UneeqContainerProps> = ({ id, loaded = false, onInit }) => {
-    useEffect(() => {
-        onInit();
-    }, []);
-    
+const UneeqContainer: React.FC<UneeqContainerProps> = ({ uneeqContainerId }) => {
+    const { state } = useSession();
+
   return (
     <div className="uneeq-container">
         <div className="uneeq-container-content">
-            {!loaded && <Loading />}
-            <div id={id} />
+            {state.status === SessionStatus.LOADING && <Loading />}
+            <div id={uneeqContainerId} />
         </div>
         <div className="uneeq-container-protection"></div>
     </div>

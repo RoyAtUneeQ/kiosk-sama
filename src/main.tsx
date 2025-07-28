@@ -20,16 +20,19 @@ import './styles/base.scss'
 import './i18n'
 import { LanguageProvider } from './i18n/LanguageProvider'
 import { ConfigProvider } from './hooks/useConfig'
+import { SessionProvider } from './contexts/SessionContext'
 
 createRoot(document.getElementById('root')!).render(
   <ConfigProvider fallback={<div>Loading application...</div>}>
     <LanguageProvider>
-      <BrowserRouter>
-        <Routes> 
-          <Route path="/" element={<KioskPage />} />
-          <Route path="/remote/:sessionId" element={<RemotePage />} />
-        </Routes>
-      </BrowserRouter>
+      <SessionProvider>
+        <BrowserRouter>
+          <Routes> 
+            <Route path="/" element={<KioskPage />} />
+            <Route path="/remote/:kioskConnectionId" element={<RemotePage />} />
+          </Routes>
+        </BrowserRouter>
+      </SessionProvider>
     </LanguageProvider>
   </ConfigProvider>
 )

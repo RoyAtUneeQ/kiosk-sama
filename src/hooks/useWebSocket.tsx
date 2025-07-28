@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback, useRef } from "react";
-import { WebsocketState } from "@/types/WebsocketState";
+import { useEffect, useState, useCallback } from "react";
+import { WebsocketStatus } from "@/types/transport/WebsocketStatus";
 import { SessionMessageGenerator } from "@/utils/SessionMessageGenerator";
+import { useSession } from "@/contexts/SessionContext";
 
 interface UseWebSocketProps {
     webSocketUrl: string;
@@ -8,27 +9,22 @@ interface UseWebSocketProps {
 
 export const useWebSocket = (props: UseWebSocketProps) => {
     const { webSocketUrl } = props;
-    const [webSocketState, setWebSocketState] = useState<WebsocketState>(WebsocketState.DISCONNECTED);
-    const [connectionId, setConnectionId] = useState<string | null>(null);
+    const { actions, state } = useSession();
     const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
     const [message, setMessage] = useState<any>(null);
-    const actionsRef = useRef<Map<string, any>>(new Map());
-
-    const on = useCallback((type: string, callback: any) => {
-        actionsRef.current.set(type, callback);
-    }, []);
-     
+    
     const sendMessage = useCallback((message: any) => {
+        console.log('Sending message', message);
         if (webSocket && webSocket.readyState === WebSocket.OPEN) {
             webSocket.send(JSON.stringify(message));
         } else {
             console.warn('useWebSocket: WebSocket not open or undefined. Message not sent.', {
                 message,
-                connectionId,
+                connectionId: state.connectionId,
                 currentSocketReadyState: webSocket?.readyState,
             });
         }
-    }, [webSocket, connectionId]);
+    }, [webSocket]);
 
     useEffect(() => {
         if (!webSocketUrl || webSocketUrl.trim() === '') {
@@ -43,30 +39,44 @@ export const useWebSocket = (props: UseWebSocketProps) => {
             setWebSocket(ws);
 
             ws.onopen = () => {
-                console.info('WebSocket connected');
-                setWebSocketState(WebsocketState.CONNECTED);
+                actions.setWebSocketState(WebsocketStatus.CONNECTED);
                 ws.send(JSON.stringify(SessionMessageGenerator.getConnectionId()));
             };
 
             ws.onmessage = (event) => {
                 const messageData = JSON.parse(event.data);
-                setMessage(messageData);
-
-                actionsRef.current.get(messageData.type)?.(messageData);
-
-                if (messageData.connectionId && !connectionId) {
-                    setConnectionId(messageData.connectionId);
+                console.groupCollapsed('[WebSocket] %c%s', 'color: #a6e22e;', messageData.type);                
+                console.table(messageData);
+                console.groupEnd();
+                switch (messageData.type) {
+                    case 'connectionId':
+                        actions.setConnectionId(messageData.connectionId);
+                        break;
+                    case 'RegisterRemote':
+                        console.log('RegisterRemote', messageData);
+                        actions.setRemoteInfo(messageData.remoteInfo);
+                        break;
+                    case 'PeerChecked':
+                        console.log('PeerChecked %c%s %c%s', 'color: #a6e22e;', messageData.data.Origin, 'color:rgb(221, 67, 255);', messageData.data.Destination);
+                        break;
+                    case 'PeerDisconnected':
+                        console.log('PeerDisconnected ', messageData);
+                        actions.setRemoteInfo(null);                            
+                        break;      
+                    default:
+                        console.log('Default', messageData);
+                        break;
                 }
             };
 
             ws.onerror = (error) => {
                 console.error('WebSocket error:', error);
-                setWebSocketState(WebsocketState.DISCONNECTED);
+                actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
             };
 
             ws.onclose = (event) => {
                 console.info('WebSocket closed:', event.code, event.reason);
-                setWebSocketState(WebsocketState.DISCONNECTED);
+                actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
             };
 
             return () => {
@@ -75,20 +85,17 @@ export const useWebSocket = (props: UseWebSocketProps) => {
                 }
                 ws.close();
                 setWebSocket(null);
-                setWebSocketState(WebsocketState.DISCONNECTED);
+                actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
             };
         } catch (error) {
             console.error('Failed to create WebSocket:', error);
-            setWebSocketState(WebsocketState.DISCONNECTED);
+            actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
         }
     }, [webSocketUrl]);
 
     return {
-        webSocketState,
-        connectionId,
         sendMessage,
         message,
-        on
     };
 };
 

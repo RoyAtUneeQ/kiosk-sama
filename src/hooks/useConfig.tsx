@@ -11,6 +11,7 @@ interface ConfigContextType {
   error: Error | null;
   getSupportedLanguages: () => string[];
   getDefaultLanguage: () => string;
+  getRenderByLanguage: (language: string ) => string[];
 }
 
 const ConfigContext = createContext<ConfigContextType | null>(null);
@@ -51,13 +52,18 @@ export function ConfigProvider({ children, fallback }: ConfigProviderProps) {
     return supportedLanguages.includes('en') ? 'en' : supportedLanguages[0] || 'en';
   };
 
+  const getAllAvailableRenderModes = (language: string): string[] => {
+    return Object.keys(config?.personas?.[language] || []);
+  };
+
   const contextValue: ConfigContextType = {
     config: config as unknown as Config,
     reload: loadConfig,
     loading,
     error,
     getSupportedLanguages,
-    getDefaultLanguage
+    getDefaultLanguage,
+    getRenderByLanguage: getAllAvailableRenderModes as (language: string) => string[]
   };
 
   if (loading) {
@@ -84,6 +90,8 @@ export function ConfigProvider({ children, fallback }: ConfigProviderProps) {
     </ConfigContext.Provider>
   );
 }
+
+
 
 export function useConfig() {
   const context = useContext(ConfigContext);

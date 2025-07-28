@@ -1,34 +1,37 @@
 import './RemotePage.scss';
 import { useEffect, useState, useRef } from 'react';
 import { useWebSocket, useUserInspect } from '@/hooks'; 
-import { WebsocketState } from '@/types/WebsocketState';
+import { WebsocketStatus } from '@/types/transport/WebsocketStatus';
 import { SessionMessageGenerator } from '@/utils';
 import { useParams } from 'react-router-dom';
 import { Loading } from '@/components';
-import type { Message } from '@/types/Message';
+import { type Message } from '@/types';
 import { useConfig } from '@/hooks/useConfig';
+import { useSession } from '@/contexts/SessionContext';
 
 function RemotePage() {
   // Config is now guaranteed to be available
   const { config } = useConfig();
-  const { sessionId } = useParams();
+  const { kioskConnectionId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize hooks with config values (now guaranteed to be available)
-  const { webSocketState, connectionId, sendMessage } = useWebSocket({
+  const { state } = useSession();
+
+  const { sendMessage } = useWebSocket({
     webSocketUrl: config.websocket.url
   });
 
   useEffect(() => {
-    if (webSocketState === WebsocketState.CONNECTED && sessionId && connectionId) {
-      const userInfo = useUserInspect(connectionId);
-      sendMessage(SessionMessageGenerator.joinSession(sessionId, userInfo));
+    console.log('useEffect', state.webSocketState, kioskConnectionId, state.connectionId);
+    if (state.webSocketState === WebsocketStatus.CONNECTED && kioskConnectionId && state.connectionId) {
+      console.log('joinSession', kioskConnectionId, " with connectionId ", state.connectionId);
+      sendMessage(SessionMessageGenerator.joinSession(kioskConnectionId, useUserInspect(state.connectionId)));
     }
-  }, [webSocketState, sessionId, connectionId, sendMessage]);
+  }, [state.webSocketState, kioskConnectionId, state.connectionId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -91,10 +94,10 @@ function RemotePage() {
       <div className="remote-header">
         <h1>Remote Control</h1>
         <div className="connection-status">
-          <span className={`status ${webSocketState.toLowerCase()}`}>
-            {webSocketState}
+          <span className={`status ${state.webSocketState.toLowerCase()}`}>
+            {state.webSocketState}
           </span>
-          {connectionId && <span className="connection-id">ID: {connectionId}</span>}
+          {state.connectionId && <span className="connection-id">ID: {state.connectionId}</span>}
         </div>
       </div>
 
@@ -128,11 +131,11 @@ function RemotePage() {
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type your message..."
-            disabled={webSocketState !== WebsocketState.CONNECTED || isTyping}
+            disabled={state.webSocketState !== WebsocketStatus.CONNECTED || isTyping}
           />
           <button 
             onClick={handleSendMessage}
-            disabled={!inputText.trim() || webSocketState !== WebsocketState.CONNECTED || isTyping}
+            disabled={!inputText.trim() || state.webSocketState !== WebsocketStatus.CONNECTED || isTyping}
             className="send-button"
           >
             Send
