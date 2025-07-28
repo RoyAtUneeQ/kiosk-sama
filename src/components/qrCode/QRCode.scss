@@ -1,12 +1,10 @@
-@import "@/styles/breakpoints.scss";
-
+@use "@/styles/breakpoints" as *;
 
 
 .qr-code-container {
   background: var(--theme-background-paper);
   border-radius: var(--theme-border-radius-md);
   box-shadow: var(--theme-effects-subtle-glow);
-  display: none;
   justify-content: center;
   align-items: center;
   width: fit-content;

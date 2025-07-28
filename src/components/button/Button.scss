@@ -1,4 +1,4 @@
-@import "@/styles/breakpoints.scss";
+@use "@/styles/breakpoints" as *;
 
 .button {
   position: relative;
@@ -13,7 +13,7 @@
   z-index: 1;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 20px var(--theme-neutral-lightest-alpha-40) inset;
   color: var(--theme-neutral-white);
-  background-color: rgba(30, 30, 30, 0.3);
+  background-color: var(--theme-neutral-darkest-alpha-50);
 }
 
 .buttonText {
@@ -295,7 +295,7 @@
 
 .circleButton:hover {
   transform: scale(1.08) rotate(-2deg);
-  box-shadow: 0 8px 32px var(--theme-primary-glow), 0 0 0 8px var(--theme-primary-glow-alpha-30);
+  box-shadow: 0 8px 32px var(--theme-primary-glow), 0 0 0 8px var(--theme-primary-glow-alpha-10);
   background: linear-gradient(135deg, var(--theme-primary-light) 0%, var(--theme-primary-main) 100%);
 }
 
@@ -353,27 +353,27 @@
 // Amazing Highlight Effect for Button
 .button.highlight {
     animation: button-highlight-pulse 2s ease-in-out infinite;
-    background: linear-gradient(135deg, #00ff88, #00ccff, #E20074, #ff6b35);
+    background: linear-gradient(135deg, var(--theme-status-success), var(--theme-status-info), var(--theme-status-error), var(--theme-primary-main));
     background-size: 300% 300%;
     box-shadow: 
-        0 12px 50px rgba(0, 255, 136, 0.6),
-        0 0 30px rgba(0, 204, 255, 0.5),
+        0 12px 50px rgba(0, 255, 125, 0.6),
+        0 0 30px rgba(156, 206, 220, 0.5),
         0 0 50px rgba(226, 0, 116, 0.4),
         0 0 20px var(--theme-neutral-lightest-alpha-40) inset;
     
     .buttonText {
         animation: highlight-text-glow 1.8s ease-in-out infinite;
         text-shadow: 
-            0 0 10px #00ff88,
-            0 0 20px #00ccff,
-            0 0 30px #E20074,
-            0 0 40px rgba(255, 255, 255, 0.8);
-        color: #ffffff;
+            0 0 10px var(--theme-status-success),
+            0 0 20px var(--theme-status-info),
+            0 0 30px var(--theme-status-error),
+            0 0 40px var(--theme-neutral-lightest-alpha-20);
+        color: var(--theme-neutral-white);
         font-weight: 600;
     }
     
     .ambientMovement {
-        background: linear-gradient(45deg, #00ff88, #00ccff, #ff00ff, #ffff00);
+        background: linear-gradient(45deg, var(--theme-status-success), var(--theme-status-info), var(--theme-primary-main), var(--theme-status-warning));
         background-size: 400% 400%;
         animation: highlight-ambient-drift 8s linear infinite, gradient-shift 3s ease-in-out infinite;
         opacity: 0.4;
@@ -383,11 +383,11 @@
     .glow {
         background: linear-gradient(
             135deg,
-            rgba(0, 255, 136, 0.8) 0%,
-            rgba(0, 204, 255, 0.6) 25%,
-            rgba(226, 0, 116, 0.8) 50%,
-            rgba(255, 107, 53, 0.6) 75%,
-            rgba(255, 255, 0, 0.4) 100%
+            color-mix(in srgb, var(--theme-status-success) 80%, transparent) 0%,
+            color-mix(in srgb, var(--theme-status-info) 60%, transparent) 25%,
+            color-mix(in srgb, var(--theme-status-error) 80%, transparent) 50%,
+            color-mix(in srgb, var(--theme-primary-main) 60%, transparent) 75%,
+            color-mix(in srgb, var(--theme-status-warning) 40%, transparent) 100%
         );
         opacity: 0.6;
         animation: highlight-glow-pulse 2.5s ease-in-out infinite;
@@ -397,16 +397,16 @@
 
 .button.highlight::before {
     background-image: 
-        radial-gradient(circle, #00ff88 0.8px, transparent 1.5px),
-        radial-gradient(circle, #00ccff 0.6px, transparent 1px),
-        radial-gradient(circle, #ff00ff 0.4px, transparent 0.8px);
+        radial-gradient(circle, var(--theme-status-success) 0.8px, transparent 1.5px),
+        radial-gradient(circle, var(--theme-status-info) 0.6px, transparent 1px),
+        radial-gradient(circle, var(--theme-primary-main) 0.4px, transparent 0.8px);
     background-size: 25px 25px, 15px 15px, 10px 10px;
     opacity: 0.3;
     animation: highlight-contrail 4s linear infinite;
 }
 
 .button.highlight::after {
-    background: linear-gradient(135deg, #00ff88, #00ccff, #E20074, #ff6b35);
+    background: linear-gradient(135deg, var(--theme-status-success), var(--theme-status-info), var(--theme-status-error), var(--theme-primary-main));
     background-size: 400% 400%;
     opacity: 0.7;
     animation: gradient-shift 2s ease-in-out infinite, highlight-border-glow 3s ease-in-out infinite;
@@ -416,10 +416,10 @@
 .button.highlight:hover {
     transform: translateY(-4px) scale(1.05);
     box-shadow: 
-        0 20px 60px rgba(0, 255, 136, 0.8),
-        0 0 40px rgba(0, 204, 255, 0.7),
-        0 0 60px rgba(226, 0, 116, 0.6),
-        0 0 80px rgba(255, 107, 53, 0.5),
+        0 20px 60px color-mix(in srgb, var(--theme-status-success) 80%, transparent),
+        0 0 40px color-mix(in srgb, var(--theme-status-info) 70%, transparent),
+        0 0 60px color-mix(in srgb, var(--theme-status-error) 60%, transparent),
+        0 0 80px color-mix(in srgb, var(--theme-primary-main) 50%, transparent),
         0 0 25px var(--theme-neutral-lightest-alpha-40) inset;
     
     .buttonText {
@@ -434,33 +434,33 @@
 
 // Circle Button Highlight Effect
 .circleButton.highlight {
-    background: linear-gradient(135deg, #00ff88, #00ccff, #E20074, #ff6b35);
+    background: linear-gradient(135deg, var(--theme-status-success), var(--theme-status-info), var(--theme-status-error), var(--theme-primary-main));
     background-size: 300% 300%;
     animation: circle-highlight-pulse 2s ease-in-out infinite, gradient-shift 3s ease-in-out infinite;
     box-shadow: 
-        0 8px 40px rgba(0, 255, 136, 0.8),
-        0 0 30px rgba(0, 204, 255, 0.6),
-        0 0 50px rgba(226, 0, 116, 0.5),
-        0 0 0 6px rgba(0, 255, 136, 0.3);
+        0 8px 40px color-mix(in srgb, var(--theme-status-success) 80%, transparent),
+        0 0 30px color-mix(in srgb, var(--theme-status-info) 60%, transparent),
+        0 0 50px color-mix(in srgb, var(--theme-status-error) 50%, transparent),
+        0 0 0 6px color-mix(in srgb, var(--theme-status-success) 30%, transparent);
     
     .circleIcon {
         filter: 
-            drop-shadow(0 0 10px #00ff88) 
-            drop-shadow(0 0 15px #00ccff) 
-            drop-shadow(0 0 20px #E20074);
+            drop-shadow(0 0 10px var(--theme-status-success)) 
+            drop-shadow(0 0 15px var(--theme-status-info)) 
+            drop-shadow(0 0 20px var(--theme-status-error));
         animation: icon-highlight-glow 1.8s ease-in-out infinite;
-        color: #ffffff;
+        color: var(--theme-neutral-white);
     }
     
     .pulse {
-        background: radial-gradient(circle, #00ff88 0%, rgba(0, 204, 255, 0.6) 40%, transparent 70%);
+        background: radial-gradient(circle, var(--theme-status-success) 0%, color-mix(in srgb, var(--theme-status-info) 60%, transparent) 40%, transparent 70%);
         animation: highlight-pulse-circle 1.5s infinite cubic-bezier(0.4,0,0.2,1);
         opacity: 0.8;
     }
 }
 
 .circleButton.highlight::before {
-    background: radial-gradient(circle, #00ff88 0%, rgba(0, 204, 255, 0.4) 50%, transparent 80%);
+    background: radial-gradient(circle, var(--theme-status-success) 0%, color-mix(in srgb, var(--theme-status-info) 40%, transparent) 50%, transparent 80%);
     opacity: 0.4;
     animation: highlight-circle-aura 3s ease-in-out infinite;
 }
@@ -468,10 +468,10 @@
 .circleButton.highlight:hover {
     transform: scale(1.15) rotate(-5deg);
     box-shadow: 
-        0 12px 50px rgba(0, 255, 136, 1),
-        0 0 40px rgba(0, 204, 255, 0.8),
-        0 0 60px rgba(226, 0, 116, 0.7),
-        0 0 0 8px rgba(0, 255, 136, 0.4);
+        0 12px 50px var(--theme-status-success),
+        0 0 40px color-mix(in srgb, var(--theme-status-info) 80%, transparent),
+        0 0 60px color-mix(in srgb, var(--theme-status-error) 70%, transparent),
+        0 0 0 8px color-mix(in srgb, var(--theme-status-success) 40%, transparent);
     
     .circleIcon {
         animation: icon-highlight-intense 1.2s ease-in-out infinite;
@@ -505,51 +505,51 @@
 @keyframes highlight-text-glow {
     0% {
         text-shadow: 
-            0 0 10px #00ff88,
-            0 0 20px #00ccff,
-            0 0 30px #E20074,
-            0 0 40px rgba(255, 255, 255, 0.8);
+            0 0 10px var(--theme-status-success),
+            0 0 20px var(--theme-status-info),
+            0 0 30px var(--theme-status-error),
+            0 0 40px var(--theme-neutral-lightest-alpha-20);
     }
     50% {
         text-shadow: 
-            0 0 15px #00ff88,
-            0 0 30px #00ccff,
-            0 0 45px #E20074,
-            0 0 60px rgba(255, 255, 255, 1),
-            0 0 80px #ff6b35;
+            0 0 15px var(--theme-status-success),
+            0 0 30px var(--theme-status-info),
+            0 0 45px var(--theme-status-error),
+            0 0 60px var(--theme-neutral-white),
+            0 0 80px var(--theme-primary-main);
     }
     100% {
         text-shadow: 
-            0 0 10px #00ff88,
-            0 0 20px #00ccff,
-            0 0 30px #E20074,
-            0 0 40px rgba(255, 255, 255, 0.8);
+            0 0 10px var(--theme-status-success),
+            0 0 20px var(--theme-status-info),
+            0 0 30px var(--theme-status-error),
+            0 0 40px var(--theme-neutral-lightest-alpha-20);
     }
 }
 
 @keyframes highlight-text-intense {
     0% {
         text-shadow: 
-            0 0 15px #00ff88,
-            0 0 30px #00ccff,
-            0 0 45px #E20074,
-            0 0 60px rgba(255, 255, 255, 1);
+            0 0 15px var(--theme-status-success),
+            0 0 30px var(--theme-status-info),
+            0 0 45px var(--theme-status-error),
+            0 0 60px var(--theme-neutral-white);
     }
     50% {
         text-shadow: 
-            0 0 25px #00ff88,
-            0 0 50px #00ccff,
-            0 0 75px #E20074,
-            0 0 100px rgba(255, 255, 255, 1),
-            0 0 120px #ff6b35,
-            0 0 140px #ffff00;
+            0 0 25px var(--theme-status-success),
+            0 0 50px var(--theme-status-info),
+            0 0 75px var(--theme-status-error),
+            0 0 100px var(--theme-neutral-white),
+            0 0 120px var(--theme-primary-main),
+            0 0 140px var(--theme-status-warning);
     }
     100% {
         text-shadow: 
-            0 0 15px #00ff88,
-            0 0 30px #00ccff,
-            0 0 45px #E20074,
-            0 0 60px rgba(255, 255, 255, 1);
+            0 0 15px var(--theme-status-success),
+            0 0 30px var(--theme-status-info),
+            0 0 45px var(--theme-status-error),
+            0 0 60px var(--theme-neutral-white);
     }
 }
 
@@ -663,45 +663,45 @@
 @keyframes icon-highlight-glow {
     0% {
         filter: 
-            drop-shadow(0 0 10px #00ff88) 
-            drop-shadow(0 0 15px #00ccff) 
-            drop-shadow(0 0 20px #E20074);
+            drop-shadow(0 0 10px var(--theme-status-success)) 
+            drop-shadow(0 0 15px var(--theme-status-info)) 
+            drop-shadow(0 0 20px var(--theme-status-error));
     }
     50% {
         filter: 
-            drop-shadow(0 0 20px #00ff88) 
-            drop-shadow(0 0 30px #00ccff) 
-            drop-shadow(0 0 40px #E20074)
-            drop-shadow(0 0 50px #ff6b35);
+            drop-shadow(0 0 20px var(--theme-status-success)) 
+            drop-shadow(0 0 30px var(--theme-status-info)) 
+            drop-shadow(0 0 40px var(--theme-status-error))
+            drop-shadow(0 0 50px var(--theme-primary-main));
     }
     100% {
         filter: 
-            drop-shadow(0 0 10px #00ff88) 
-            drop-shadow(0 0 15px #00ccff) 
-            drop-shadow(0 0 20px #E20074);
+            drop-shadow(0 0 10px var(--theme-status-success)) 
+            drop-shadow(0 0 15px var(--theme-status-info)) 
+            drop-shadow(0 0 20px var(--theme-status-error));
     }
 }
 
 @keyframes icon-highlight-intense {
     0% {
         filter: 
-            drop-shadow(0 0 20px #00ff88) 
-            drop-shadow(0 0 30px #00ccff) 
-            drop-shadow(0 0 40px #E20074);
+            drop-shadow(0 0 20px var(--theme-status-success)) 
+            drop-shadow(0 0 30px var(--theme-status-info)) 
+            drop-shadow(0 0 40px var(--theme-status-error));
     }
     50% {
         filter: 
-            drop-shadow(0 0 35px #00ff88) 
-            drop-shadow(0 0 50px #00ccff) 
-            drop-shadow(0 0 65px #E20074)
-            drop-shadow(0 0 80px #ff6b35)
-            drop-shadow(0 0 95px #ffff00);
+            drop-shadow(0 0 35px var(--theme-status-success)) 
+            drop-shadow(0 0 50px var(--theme-status-info)) 
+            drop-shadow(0 0 65px var(--theme-status-error))
+            drop-shadow(0 0 80px var(--theme-primary-main))
+            drop-shadow(0 0 95px var(--theme-status-warning));
     }
     100% {
         filter: 
-            drop-shadow(0 0 20px #00ff88) 
-            drop-shadow(0 0 30px #00ccff) 
-            drop-shadow(0 0 40px #E20074);
+            drop-shadow(0 0 20px var(--theme-status-success)) 
+            drop-shadow(0 0 30px var(--theme-status-info)) 
+            drop-shadow(0 0 40px var(--theme-status-error));
     }
 }
 

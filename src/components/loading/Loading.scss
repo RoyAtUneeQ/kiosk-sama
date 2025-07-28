@@ -1,4 +1,4 @@
-@import "@/styles/breakpoints.scss";
+@use "@/styles/breakpoints" as *;
 
 $loading-ring-size: 10vw;
 $particle-size: calc(#{$loading-ring-size} / 8);
@@ -153,8 +153,8 @@ $particle-size: calc(#{$loading-ring-size} / 8);
   text-align: center;
   animation: flowFade 3s ease-in-out infinite;
   transform-origin: center;
-  background: linear-gradient(90deg, rgb(219, 0, 113) 0%,  rgba(254, 254, 254, 0.543) 100%);
-  filter: drop-shadow(0 0 4px rgba(226, 0, 116, 0.4));
+  background: linear-gradient(90deg, var(--theme-primary-main) 0%,  rgba(254, 254, 254, 0.543) 100%);
+  filter: drop-shadow(0 0 4px var(--theme-primary-glow-alpha-30));
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;

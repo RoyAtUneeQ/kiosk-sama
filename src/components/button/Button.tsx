@@ -6,7 +6,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, className, onClick, ...props }) => {
+export const Button: React.FC<ButtonProps> = ({ children, className, onClick, ...props }) => {
   return (
     <button onClick={onClick} className={`button ${className || ''}`} {...props}>
       <span className="buttonText">{children}</span>
@@ -16,12 +16,12 @@ const Button: React.FC<ButtonProps> = ({ children, className, onClick, ...props 
   );
 };
 
-interface CircleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface CircleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: React.ReactNode;
   onClick?: () => void;
 }
 
-export const CircleButton: React.FC<CircleButtonProps> = ({ icon, className, onClick, ...props }) => {
+export const CircleButton: React.FC<CircleButtonProps> = ({ icon, className, onClick, ...props }: CircleButtonProps) => {
   return (
     <button onClick={onClick} className={`circleButton ${className || ''}`} {...props}>
       <span className="pulse"></span>

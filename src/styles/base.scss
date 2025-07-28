@@ -1,12 +1,12 @@
 @import url('./reset.scss');
 
 :root {
-  --theme-primary-main: #E20074;
-  --theme-primary-light: #F062A6;
+  --theme-primary-main: #98042F;
+  --theme-primary-light: #992949;
   --theme-primary-dark: #A00053;
   --theme-primary-contrast: #FFFFFF;
-  --theme-primary-gradient: linear-gradient(135deg, #F062A6 0%, #E20074 100%);
-  --theme-primary-glow: 0 0 15px #E2007490;
+  --theme-primary-gradient: linear-gradient(135deg, #98042F 0%, #992949 100%);
+  --theme-primary-glow: 0 0 15px #98042F90;
 
   --theme-secondary-main: #4A4A4A;
   --theme-secondary-light: #6E6E6E;
@@ -40,16 +40,16 @@
   --theme-background-paper: #FFFFFF;
   --theme-background-elevated: #F0F0F0;
 
-  --theme-gradients-primary: linear-gradient(135deg, #F062A6 0%, #E20074 100%);
+  --theme-gradients-primary: linear-gradient(135deg, #98042F 0%, #992949 100%);
   --theme-gradients-secondary: linear-gradient(135deg, #D1D1D1 0%, #4A4A4A 100%);
-  --theme-gradients-accent: linear-gradient(135deg, #D1D1D1 0%, #E20074 100%);
+  --theme-gradients-accent: linear-gradient(135deg, #D1D1D1 0%, #98042F 100%);
   --theme-gradients-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
 
   /* Attention-grabbing gradient with opacity and glow */
   --theme-attention-gradient: linear-gradient(135deg, rgba(240, 98, 166, 0.7) 0%, rgba(226, 0, 116, 0.7) 100%);
   --theme-attention-glow: 0 0 20px rgba(226, 0, 116, 0.8);
 
-  --theme-effects-primary-glow: 0 0 15px #E2007490;
+  --theme-effects-primary-glow: 0 0 15px #98042F90;
   --theme-effects-secondary-glow: 0 0 15px #4A4A4A70;
   --theme-effects-subtle-glow: 0 0 10px #D1D1D130;
   --theme-effects-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
@@ -94,7 +94,15 @@
   --theme-background-paper-alpha-10: rgba(255, 255, 255, 0.1);
   --theme-neutral-darkest-alpha-50: rgba(0, 0, 0, 0.5);
   --theme-primary-glow-alpha-30: rgba(226, 0, 116, 0.3);
-  --main-color: #E20074;
+  --main-color: #98042F;
+
+  /* ---- Shadow Gradients ---- */
+  --theme-shadow-gradient-primary: 0 10px 20px -5px rgba(226, 5, 68, 0.708), 
+                                   0 5px 10px -5px rgba(74, 74, 74, 0.3);
+  --theme-shadow-gradient-secondary: 0 10px 20px -5px rgba(74, 74, 74, 0.4), 
+                                     0 5px 10px -5px rgba(152, 4, 47, 0.3);
+  --theme-shadow-gradient-accent: 0 15px 30px -10px var(--theme-primary-glow-alpha-30),
+                                  0 10px 20px -10px var(--theme-secondary-glow);
 }
 
 html, body, #root {
@@ -142,5 +150,22 @@ body::before {
   z-index: -1;
 }
 
+/* Example usage */
+.shadow-gradient {
+  box-shadow: var(--theme-shadow-gradient-primary);
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: var(--theme-shadow-gradient-primary), var(--theme-effects-primary-glow);
+  }
+  
+  &--secondary {
+    box-shadow: var(--theme-shadow-gradient-secondary);
+    
+    &:hover {
+      box-shadow: var(--theme-shadow-gradient-secondary), var(--theme-effects-secondary-glow);
+    }
+  }
+}
 
 /* ---- Buttons ---- */
