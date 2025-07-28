@@ -1,7 +1,7 @@
 /**
  * Generator class for creating type-safe message objects
  */
-import type { RemoteSessionInfo } from '@/types/RemoteSessionInfo';
+import type { RemoteSessionInfo } from '@/types/transport/RemoteSessionInfo';
 
 export class SessionMessageGenerator {
   static getConnectionId(): any {
@@ -11,8 +11,8 @@ export class SessionMessageGenerator {
     return { type: "joinSession", sessionId: sessionId, remoteInfo: remoteInfo}
   }
 
-  static checkRemoteConnection(remoteId: string): any {
-    return { type: "checkRemoteConnection", remoteId: remoteId}
+  static CheckPeerConnection(peerId: string): any {
+    return { type: "CheckPeerConnection", peerId: peerId}
   }
 
   static closeSession(): any {
