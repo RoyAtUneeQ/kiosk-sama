@@ -10,7 +10,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Fixed values - no longer interactive
-BUCKET_NAME="deutsche-telekom-kiosk"
+BUCKET_NAME="ram-can2025-kiosk"
 REGION="eu-central-1"
 AWS_PROFILE="admin-access-722136182380"
 BUILD_COMMAND="npm run build"
