@@ -1,4 +1,4 @@
-export enum UneeqEventType {
+export enum EventType {
   Notification = 'Notification',
   SessionStateUpdate = 'SessionStateUpdate',
   CallToActionDismissed = 'CallToActionDismissed',

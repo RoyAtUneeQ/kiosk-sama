@@ -1,4 +1,4 @@
-export enum WebsocketState {
+export enum WebsocketStatus {
     DISCONNECTED = 'disconnected',
     CONNECTED = 'connected',
 }
