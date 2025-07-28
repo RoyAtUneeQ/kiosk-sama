@@ -1,0 +1,351 @@
+/* Coverpage fix - overrides any conflicting styles */
+section.cover {
+  position: relative;
+  align-items: center;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  width: 100%;
+  display: none;
+}
+
+section.cover.show {
+  display: flex !important;
+  background-color: #000 !important;
+  background-image: radial-gradient(circle at 30% 60%, rgba(255, 62, 127, 0.1) 0%, transparent 40%),
+                   radial-gradient(circle at 70% 30%, rgba(255, 138, 91, 0.1) 0%, transparent 40%),
+                   linear-gradient(135deg, #000 0%, #111 100%) !important;
+  background-attachment: fixed !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Add subtle particle effect with pseudo-elements */
+section.cover.show::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 1px),
+    radial-gradient(circle at 30% 60%, rgba(255, 255, 255, 0.02) 0%, transparent 1px),
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.02) 0%, transparent 1px),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 1px),
+    radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.02) 0%, transparent 1px) !important;
+  background-size: 50px 50px !important;
+  animation: twinkling 20s linear infinite !important;
+  z-index: 1 !important;
+}
+
+/* Enhanced floating particles effect */
+section.cover.show::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: 
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.15) 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 90px 40px, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 220px 220px, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 260px 280px, rgba(255, 255, 255, 0.15) 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 350px 320px, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 400px 180px, rgba(255, 255, 255, 0.12) 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 500px 200px, rgba(255, 255, 255, 0.08) 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 550px 280px, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0)) !important;
+  background-size: 550px 550px !important;
+  animation: floating-particles 60s linear infinite !important;
+  opacity: 0.5 !important;
+  z-index: 1 !important;
+}
+
+@keyframes twinkling {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-500px);
+  }
+}
+
+@keyframes floating-particles {
+  0% {
+    background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px;
+  }
+  100% {
+    background-position: 0px -550px, -50px -500px, 100px -500px, -100px -550px, 50px -500px, -200px -500px, 100px -450px, -150px -450px, 200px -450px;
+  }
+}
+
+section.cover.has-mask .mask {
+  background-color: #fff;
+  opacity: 0.8;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+section.cover .cover-main {
+  flex: 1;
+  margin: 0 16px;
+  text-align: center;
+  position: relative;
+  z-index: 11 !important;
+}
+
+section.cover a {
+  color: inherit;
+  text-decoration: none;
+}
+
+section.cover a:hover {
+  text-decoration: none;
+}
+
+section.cover p {
+  line-height: 1.5rem;
+  margin: 1em 0;
+}
+
+section.cover h1 {
+  color: inherit;
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin: 0.625rem 0 2.5rem;
+  position: relative;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+section.cover h1 a {
+  display: block;
+}
+
+section.cover h1 small {
+  bottom: -0.4375rem;
+  font-size: 1rem;
+  position: absolute;
+}
+
+section.cover blockquote {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+section.cover ul {
+  line-height: 1.8;
+  list-style-type: none;
+  margin: 1em auto;
+  max-width: 500px;
+  padding: 0;
+}
+
+/* ENHANCED MODERN BUTTON STYLES 2024 */
+section.cover .cover-main > p:last-child {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  margin-top: 2.5rem !important;
+}
+
+/* Modern Base Button Styles */
+section.cover .cover-main a {
+  border-radius: 16px !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.03em !important;
+  margin: 0.5rem !important;
+  padding: 1em 2.4em !important;
+  text-decoration: none !important;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Primary Button (Get Started) - Modern Gradient */
+section.cover .cover-main a[href*="id=initial"] {
+  background: linear-gradient(135deg, 
+    rgba(255, 64, 129, 0.85) 0%, 
+    rgba(255, 138, 91, 0.85) 100%) !important;
+  color: #fff !important;
+  box-shadow: 
+    0 3px 32px rgba(255, 64, 129, 0.4),
+    0 2px 4px rgba(255, 138, 91, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 0 0px rgba(255, 64, 129, 0.3) !important;
+  padding-right: 3.2em !important;
+  text-shadow: 0 2px 12px rgba(255, 64, 129, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Secondary Button (Gitlab) - Glass Effect */
+section.cover .cover-main a[href^="https://gitlab.com"] {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  padding-right: 3.2em !important;
+}
+
+/* Modern Hover Effects */
+section.cover .cover-main a[href*="id=initial"]:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 64, 129, 0.95) 0%, 
+    rgba(255, 138, 91, 0.95) 100%) !important;
+  box-shadow: 
+    0 8px 40px rgba(255, 64, 129, 0.5),
+    0 4px 8px rgba(255, 138, 91, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 0 10px rgba(255, 64, 129, 0.4) !important;
+}
+
+section.cover .cover-main a[href^="https://gitlab.com"]:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Animated Border Gradient - Updated colors */
+section.cover .cover-main a::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -2px !important;
+  left: -2px !important;
+  right: -2px !important;
+  bottom: -2px !important;
+  border-radius: 18px !important;
+  background: linear-gradient(45deg, 
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 64, 129, 0.4),
+    rgba(255, 138, 91, 0.4),
+    rgba(255, 255, 255, 0.2)) !important;
+  z-index: -1 !important;
+  background-size: 400% 400% !important;
+  animation: borderGradient 8s ease infinite !important;
+  opacity: 0 !important;
+  transition: opacity 0.5s ease !important;
+}
+
+/* Modern Icon Styling */
+section.cover .cover-main a span.icon {
+  position: absolute !important;
+  right: 1.4rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.1rem !important;
+  opacity: 0.8 !important;
+  transition: all 0.3s ease !important;
+  transform: translateX(-5px) !important;
+}
+
+section.cover .cover-main a:hover span.icon {
+  transform: translateX(0) !important;
+  opacity: 1 !important;
+}
+
+/* Glass Reflection Effect - Enhanced */
+section.cover .cover-main a::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 200% !important;
+  height: 100% !important;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  ) !important;
+  transform: rotate(45deg) !important;
+  transition: 0.5s !important;
+}
+
+section.cover .cover-main a:hover::after {
+  left: 100% !important;
+}
+
+/* New Animations */
+@keyframes borderGradient {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+/* Active State */
+section.cover .cover-main a:active {
+  transform: scale(0.98) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Button Press Effect */
+section.cover .cover-main a:active::before {
+  opacity: 0.5 !important;
+}
+
+/* Reset pseudo-elements for coverpage */
+section.cover .markdown-section *::before,
+section.cover .markdown-section *::after {
+  content: normal !important;
+}
+
+/* Logo styling */
+.coverpage-logo {
+  max-width: 200px;
+  margin: 0 auto 40px auto;
+  display: block;
+  filter: drop-shadow(0 5px 15px rgba(255, 64, 129, 0.3));
+  animation: logoFloat 6s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 5px 15px rgba(255, 64, 129, 0.3));
+  }
+  50% {
+    transform: translateY(-10px);
+    filter: drop-shadow(0 20px 25px rgba(255, 64, 129, 0.4));
+  }
+}
+
+/* Enhanced hover glow effect */
+@keyframes buttonGlow {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(255, 64, 129, 0.4),
+      0 2px 4px rgba(255, 138, 91, 0.2),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+      0 0 25px rgba(255, 64, 129, 0.3) !important;
+  }
+  50% {
+    box-shadow: 
+      0 8px 32px rgba(255, 64, 129, 0.5),
+      0 2px 4px rgba(255, 138, 91, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+      0 0 35px rgba(255, 64, 129, 0.4) !important;
+  }
+}
+
+section.cover .cover-main a[href*="id=initial"] {
+  animation: buttonGlow 3s ease-in-out infinite !important;
+} 

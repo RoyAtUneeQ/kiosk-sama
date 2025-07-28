@@ -1,0 +1,1934 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto+Mono|Source+Sans+Pro:300,400,600");
+
+:root {
+  --theme-color-primary: #FF3E7F;
+  --theme-color-secondary: #FF8A5B;
+  --theme-color-gradient: linear-gradient(135deg, var(--theme-color-primary) 0%, var(--theme-color-secondary) 100%);
+  --theme-shadow-color: rgba(255, 62, 127, 0.5);
+  --cover-bg         : url('path/to/image.png');
+  --cover-bg-overlay : rgba(0, 0, 0, 0.5);
+  --cover-color      : #fff;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-text-size-adjust: none;
+  -webkit-touch-callout: none;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffeef2 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.cover-main {
+  color: #7e7e7f !important;
+  margin-top: -10% !important;
+}
+
+body:not(.ready) {
+  overflow: hidden;
+}
+body:not(.ready) [data-cloak],
+body:not(.ready) .app-nav,
+body:not(.ready) > nav {
+  display: none;
+}
+div#app {
+  font-size: 30px;
+  font-weight: lighter;
+  margin: 40vh auto;
+  text-align: center;
+}
+div#app:empty::before {
+  content: 'Loading...';
+}
+img.emoji {
+  height: 1.2em;
+  vertical-align: middle;
+}
+span.emoji {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+.progress {
+  background-color: var(--theme-color-primary);
+  background-color: var(--theme-color, var(--theme-color-primary));
+  height: 2px;
+  left: 0px;
+  position: fixed;
+  right: 0px;
+  top: 0px;
+  transition: width 0.2s, opacity 0.4s;
+  width: 0%;
+  z-index: 999999;
+}
+.search a:hover {
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+}
+.search .search-keyword {
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+  font-style: normal;
+  font-weight: bold;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  color: #34495e;
+  font-family: 'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  letter-spacing: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+img {
+  max-width: 100%;
+}
+a[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+kbd {
+  border: solid 1px #ccc;
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 12px !important;
+  line-height: 12px;
+  margin-bottom: 3px;
+  padding: 3px 5px;
+  vertical-align: middle;
+}
+li input[type='checkbox'] {
+  margin: 0 0.2em 0.25em 0;
+  vertical-align: middle;
+}
+.app-nav {
+  margin: 25px 60px 0 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  z-index: 10;
+/* navbar dropdown */
+}
+.app-nav.no-badge {
+  margin-right: 25px;
+}
+.app-nav p {
+  margin: 0;
+}
+.app-nav > a {
+  margin: 0 1rem;
+  padding: 5px 0;
+}
+.app-nav ul,
+.app-nav li {
+  display: inline-block;
+  list-style: none;
+  margin: 0;
+}
+.app-nav a {
+  color: inherit;
+  font-size: 16px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.app-nav a:hover {
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+}
+.app-nav a.active {
+  border-bottom: 2px solid var(--theme-color-primary);
+  border-bottom: 2px solid var(--theme-color, var(--theme-color-primary));
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+}
+.app-nav li {
+  display: inline-block;
+  margin: 0 1rem;
+  padding: 5px 0;
+  position: relative;
+  cursor: pointer;
+}
+.app-nav li ul {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-bottom-color: #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: none;
+  max-height: calc(100vh - 61px);
+  overflow-y: auto;
+  padding: 10px 0;
+  position: absolute;
+  right: -15px;
+  text-align: left;
+  top: 100%;
+  white-space: nowrap;
+}
+.app-nav li ul li {
+  display: block;
+  font-size: 14px;
+  line-height: 1rem;
+  margin: 0;
+  margin: 8px 14px;
+  white-space: nowrap;
+}
+.app-nav li ul a {
+  display: block;
+  font-size: inherit;
+  margin: 0;
+  padding: 0;
+}
+.app-nav li ul a.active {
+  border-bottom: 0;
+}
+.app-nav li:hover ul {
+  display: block;
+}
+.github-corner {
+  border-bottom: 0;
+  position: fixed;
+  right: 0;
+  text-decoration: none;
+  top: 0;
+  z-index: 1;
+}
+.github-corner:hover .octo-arm {
+  animation: octocat-wave 560ms ease-in-out;
+}
+.github-corner svg {
+  color: #fff;
+  fill: var(--theme-color-primary);
+  fill: var(--theme-color, var(--theme-color-primary));
+  height: 80px;
+  width: 80px;
+}
+main {
+  display: block;
+  position: relative;
+  width: 100vw;
+  height: 100%;
+  z-index: 0;
+}
+main.hidden {
+  display: none;
+}
+.anchor {
+  display: inline-block;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.anchor span {
+  color: #34495e;
+}
+.anchor:hover {
+  text-decoration: underline;
+}
+.sidebar {
+  border-right: 1px solid rgba(0,0,0,0.07);
+  overflow-y: auto;
+  padding: 40px 0 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  transition: transform 250ms ease-out;
+  width: 300px;
+  z-index: 20;
+}
+.sidebar > h1 {
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+  font-weight: 300;
+  text-align: center;
+}
+.sidebar > h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+.sidebar > h1 .app-nav {
+  display: block;
+  position: static;
+}
+.sidebar .sidebar-nav {
+  line-height: 2em;
+  padding-bottom: 40px;
+}
+.sidebar li.collapse .app-sub-sidebar {
+  display: none;
+}
+.sidebar ul {
+  margin: 0 0 0 15px;
+  padding: 0;
+}
+.sidebar li > p {
+  font-weight: 700;
+  margin: 0;
+}
+.sidebar ul,
+.sidebar ul li {
+  list-style: none;
+}
+.sidebar ul li a {
+  border-bottom: none;
+  display: block;
+}
+.sidebar ul li ul {
+  padding-left: 20px;
+}
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+.sidebar:hover::-webkit-scrollbar-thumb {
+  background: rgba(136,136,136,0.4);
+}
+.sidebar:hover::-webkit-scrollbar-track {
+  background: rgba(136,136,136,0.1);
+}
+.sidebar-toggle {
+  background-color: transparent;
+  background-color: rgba(255,255,255,0.8);
+  border: 0;
+  outline: none;
+  padding: 10px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+  transition: opacity 0.3s;
+  width: 284px;
+  z-index: 30;
+  cursor: pointer;
+}
+.sidebar-toggle:hover .sidebar-toggle-button {
+  opacity: 0.4;
+}
+.sidebar-toggle span {
+  background-color: var(--theme-color-primary);
+  background-color: var(--theme-color, var(--theme-color-primary));
+  display: block;
+  margin-bottom: 4px;
+  width: 16px;
+  height: 2px;
+}
+body.sticky .sidebar,
+body.sticky .sidebar-toggle {
+  position: fixed;
+}
+.content {
+  padding-top: 60px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 300px;
+  transition: left 250ms ease;
+}
+.markdown-section {
+  margin: 0 auto;
+  max-width: 80%;
+  padding: 30px 15px 40px 15px;
+  position: relative;
+}
+.markdown-section > * {
+  box-sizing: border-box;
+  font-size: inherit;
+}
+.markdown-section > :first-child {
+  margin-top: 0 !important;
+}
+.markdown-section hr {
+  border: none;
+  border-bottom: 1px solid #eee;
+  margin: 2em 0;
+}
+.markdown-section iframe {
+  border: 1px solid #eee;
+/* fix horizontal overflow on iOS Safari */
+  width: 1px;
+  min-width: 100%;
+}
+.markdown-section table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  display: block;
+  margin-bottom: 1rem;
+  overflow: auto;
+  width: 100%;
+}
+.markdown-section th {
+  border: 1px solid #ddd;
+  font-weight: bold;
+  padding: 6px 13px;
+}
+.markdown-section td {
+  border: 1px solid #ddd;
+  padding: 6px 13px;
+}
+.markdown-section tr {
+  border-top: 1px solid #ccc;
+}
+.markdown-section tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+.markdown-section p.tip {
+  background-color: #f8f8f8;
+  border-bottom-right-radius: 2px;
+  border-left: 4px solid var(--theme-color-primary);
+  border-top-right-radius: 2px;
+  margin: 2em 0;
+  padding: 12px 24px 12px 30px;
+  position: relative;
+}
+.markdown-section p.tip:before {
+  background-color: var(--theme-color-primary);
+  border-radius: 100%;
+  color: #fff;
+  content: '!';
+  font-family: 'Dosis', 'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  left: -12px;
+  line-height: 20px;
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  text-align: center;
+  top: 14px;
+}
+.markdown-section p.tip code {
+}
+.markdown-section p.tip em {
+  color: #34495e;
+}
+.markdown-section p.warn {
+  background: rgba(255, 62, 127, 0.1);
+  border-radius: 2px;
+  padding: 1rem;
+}
+.markdown-section ul.task-list > li {
+  list-style-type: none;
+}
+body.close .sidebar {
+  transform: translateX(-300px);
+}
+body.close .sidebar-toggle {
+  width: auto;
+}
+body.close .content {
+  left: 0;
+}
+@media print {
+  .github-corner,
+  .sidebar-toggle,
+  .sidebar,
+  .app-nav {
+    display: none;
+  }
+}
+@media screen and (max-width: 768px) {
+  .github-corner,
+  .sidebar-toggle,
+  .sidebar {
+    position: fixed;
+  }
+  .app-nav {
+    margin-top: 16px;
+  }
+  .app-nav li ul {
+    top: 30px;
+  }
+  main {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .sidebar {
+    left: -300px;
+    transition: transform 250ms ease-out;
+  }
+  .content {
+    left: 0;
+    max-width: 100vw;
+    position: static;
+    padding-top: 20px;
+    transition: transform 250ms ease;
+  }
+  .app-nav,
+  .github-corner {
+    transition: transform 250ms ease-out;
+  }
+  .sidebar-toggle {
+    background-color: transparent;
+    width: auto;
+    padding: 30px 30px 10px 10px;
+  }
+  body.close .sidebar {
+    transform: translateX(300px);
+  }
+  body.close .sidebar-toggle {
+    background-color: rgba(255,255,255,0.8);
+    transition: 1s background-color;
+    width: 284px;
+    padding: 10px;
+  }
+  body.close .content {
+    transform: translateX(300px);
+  }
+  body.close .app-nav,
+  body.close .github-corner {
+    display: none;
+  }
+  .github-corner:hover .octo-arm {
+    animation: none;
+  }
+  .github-corner .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+  }
+}
+@keyframes octocat-wave {
+  0%, 100% {
+    transform: rotate(0);
+  }
+  20%, 60% {
+    transform: rotate(-25deg);
+  }
+  40%, 80% {
+    transform: rotate(10deg);
+  }
+}
+section.cover {
+  position: relative;
+  align-items: center;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  width: 100%;
+  display: none;
+}
+section.cover.show {
+  display: flex;
+}
+section.cover.has-mask .mask {
+  background-color: #fff;
+  opacity: 0.8;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+section.cover .cover-main {
+  flex: 1;
+  margin: 0 16px;
+  text-align: center;
+  position: relative;
+}
+section.cover a {
+  color: inherit;
+  text-decoration: none;
+}
+section.cover a:hover {
+  text-decoration: none;
+}
+section.cover p {
+  line-height: 1.5rem;
+  margin: 1em 0;
+}
+section.cover h1 {
+  color: inherit;
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin: 0.625rem 0 2.5rem;
+  position: relative;
+  text-align: center;
+}
+section.cover h1 a {
+  display: block;
+}
+section.cover h1 small {
+  bottom: -0.4375rem;
+  font-size: 1rem;
+  position: absolute;
+}
+section.cover blockquote {
+  font-size: 1.5rem;
+  text-align: center;
+}
+section.cover ul {
+  line-height: 1.8;
+  list-style-type: none;
+  margin: 1em auto;
+  max-width: 500px;
+  padding: 0;
+}
+section.cover .cover-main > p:last-child a {
+  border-color: var(--theme-color-primary);
+  border-color: var(--theme-color, var(--theme-color-primary));
+  border-radius: 2rem;
+  border-style: solid;
+  border-width: 1px;
+  box-sizing: border-box;
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+  display: inline-block;
+  font-size: 1.05rem;
+  letter-spacing: 0.1rem;
+  margin: 0.5rem 1rem;
+  padding: 0.75em 2rem;
+  text-decoration: none;
+  transition: all 0.5s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+section.cover .cover-main > p:last-child a::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  transition: transform 1.5s ease-in-out;
+  transform: translate(-100%, -100%);
+}
+
+section.cover .cover-main > p:last-child a:hover::before {
+  transform: translate(100%, 100%);
+}
+
+section.cover .cover-main > p:last-child a:last-child {
+  background-color: var(--theme-color-primary);
+  background-color: var(--theme-color, var(--theme-color-primary));
+  color: #fff;
+}
+
+section.cover .cover-main > p:last-child a:last-child:hover {
+  background-color: var(--theme-color-primary);
+  background-color: var(--theme-color, var(--theme-color-primary));
+  color: #fff;
+  box-shadow: 0 5px 15px var(--theme-shadow-color);
+}
+
+section.cover .cover-main > p:last-child a:hover {
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+section.cover blockquote > p > a {
+  border-bottom: 2px solid var(--theme-color-primary);
+  border-bottom: 2px solid var(--theme-color, var(--theme-color-primary));
+  transition: color 0.3s;
+}
+section.cover blockquote > p > a:hover {
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+}
+body {
+  background-color: #fff;
+}
+/* sidebar */
+.sidebar {
+  background-color: #fff;
+  color: #364149;
+}
+.sidebar li {
+  margin: 6px 0 6px 0;
+}
+.sidebar ul li a {
+  color: #505d6b;
+  font-size: 14px;
+  font-weight: normal;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sidebar ul li a:hover {
+  text-decoration: underline;
+}
+.sidebar ul li ul {
+  padding: 0;
+}
+.sidebar ul li.active > a {
+  border-right: 2px solid;
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+  font-weight: 600;
+}
+.app-sub-sidebar li::before {
+  content: '-';
+  padding-right: 4px;
+  float: left;
+}
+/* markdown content found on pages */
+.markdown-section h1,
+.markdown-section h2,
+.markdown-section h3,
+.markdown-section h4,
+.markdown-section strong {
+  color: var(--theme-color-primary);
+  font-weight: 3600;
+}
+.markdown-section a {
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+  font-weight: 600;
+}
+.markdown-section h1 {
+  font-size: 2rem;
+  margin: 0 0 1rem;
+}
+.markdown-section h2 {
+  font-size: 1.75rem;
+  margin: 45px 0 0.8rem;
+}
+.markdown-section h3 {
+  font-size: 1.5rem;
+  margin: 40px 0 0.6rem;
+}
+.markdown-section h4 {
+  font-size: 1.25rem;
+}
+.markdown-section h5 {
+  font-size: 1rem;
+}
+.markdown-section h6 {
+  color: #777;
+  font-size: 1rem;
+}
+.markdown-section figure,
+.markdown-section p {
+  margin: 1em 0;
+}
+.markdown-section p,
+.markdown-section ul,
+.markdown-section ol {
+  line-height: 1.6rem;
+  word-spacing: 0.05rem;
+}
+.markdown-section ul,
+.markdown-section ol {
+  padding-left: 1.5rem;
+}
+.markdown-section blockquote {
+  border-left: 4px solid var(--theme-color-primary);
+  border-left: 4px solid var(--theme-color, var(--theme-color-primary));
+  color: #34495e;
+  margin: 2em 0;
+  border-radius: 6px;
+  background-color: #fff;
+  padding: 2px;
+  padding-left: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.markdown-section blockquote p {
+  margin-left: 0;
+}
+.markdown-section iframe {
+  margin: 1em 0;
+}
+.markdown-section em {
+  color: #7f8c8d;
+}
+.markdown-section code,
+.markdown-section pre,
+.markdown-section output::after {
+  font-family: 'Roboto Mono', Monaco, courier, monospace;
+}
+.markdown-section code,
+.markdown-section pre {
+}
+.markdown-section pre,
+.markdown-section output {
+  margin: 1em 0;
+  position: relative;
+}
+.markdown-section pre > code,
+.markdown-section output {
+  border-radius: 2px;
+  display: block;
+}
+.markdown-section pre > code,
+.markdown-section output::after {
+  -moz-osx-font-smoothing: initial;
+  -webkit-font-smoothing: initial;
+}
+.markdown-section code {
+  border-radius: 2px;
+  color: var(--theme-color-primary);
+  margin: 0 2px;
+  padding: 3px 5px;
+  white-space: pre-wrap;
+}
+.markdown-section > :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) code {
+  font-size: 0.8rem;
+}
+.markdown-section pre {
+  background-color: #272822;
+  color: #f8f8f2;
+  border-radius: 0.75rem;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.12);
+  margin: 1.5rem 0;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Add hover effect */
+.markdown-section pre:hover {
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.18),
+    0 3px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Code block header with language badge */
+.markdown-section pre::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #f8f8f2;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  background: var(--theme-color-primary);
+  border-bottom-left-radius: 0.5rem;
+  opacity: 0.9;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+/* Style the code inside pre */
+.markdown-section pre > code {
+  color: #f8f8f2;
+  padding: 1.5rem !important;
+  line-height: 1.5;
+  font-size: 0.9rem !important;
+  background: transparent;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  font-family: 'Roboto Mono', Consolas, Monaco, 'Andale Mono', monospace;
+  display: block;
+  border: none;
+  position: relative;
+  z-index: 5;
+  overflow: auto;
+  white-space: pre;
+  max-width: inherit;
+}
+
+/* Subtle grid pattern background */
+.markdown-section pre::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.15;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Line numbers effect - optional */
+.markdown-section pre.line-numbers {
+  counter-reset: line;
+}
+
+.markdown-section pre.line-numbers > code {
+  padding-left: 3.5rem !important;
+}
+
+.markdown-section pre.line-numbers > code::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2.5rem;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Copy button */
+.markdown-section pre .copy-code-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  color: #f8f8f2;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease, background 0.3s ease;
+  z-index: 10;
+}
+
+.markdown-section pre:hover .copy-code-button {
+  opacity: 1;
+}
+
+.markdown-section pre .copy-code-button:hover {
+  background: var(--theme-color-primary);
+}
+
+/* Inline code styling */
+.markdown-section code:not(pre > code) {
+  color: var(--theme-color-primary);
+  background-color: rgba(255, 62, 127, 0.07);
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0.2rem;
+  border: 1px solid rgba(255, 62, 127, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+}
+
+/* Line highlighting for important code */
+.markdown-section pre .highlight-line {
+  background-color: rgba(255, 62, 127, 0.07);
+  display: block;
+  margin: 0 -1.5rem;
+  padding: 0 1.5rem;
+  border-left: 3px solid var(--theme-color-primary);
+}
+
+/* Animation for highlighted lines when they come into view */
+@keyframes highlight-glow {
+  0% {
+    background-color: rgba(255, 62, 127, 0.07);
+    border-left-color: var(--theme-color-primary);
+  }
+  50% {
+    background-color: rgba(255, 62, 127, 0.12);
+    border-left-color: var(--theme-color-secondary);
+  }
+  100% {
+    background-color: rgba(255, 62, 127, 0.07);
+    border-left-color: var(--theme-color-primary);
+  }
+}
+
+.markdown-section pre .highlight-line-active {
+  animation: highlight-glow 2s ease-in-out infinite;
+}
+
+/* Add vertical gradient fade for scrollable code blocks */
+.markdown-section pre.has-overflow-top::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 20px;
+  background: linear-gradient(to bottom, rgba(39, 40, 34, 1) 0%, rgba(39, 40, 34, 0) 100%);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.markdown-section pre.has-overflow-bottom::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 20px;
+  background: linear-gradient(to top, rgba(39, 40, 34, 1) 0%, rgba(39, 40, 34, 0) 100%);
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Language-specific syntax highlighting tweaks */
+.markdown-section pre[data-lang="json"] .token.property {
+  color: var(--theme-color-secondary);
+}
+
+.markdown-section pre[data-lang="bash"] .token.function {
+  color: #2ecc71;
+}
+
+.markdown-section pre[data-lang="javascript"] .token.keyword,
+.markdown-section pre[data-lang="js"] .token.keyword {
+  color: #e84393;
+}
+
+.markdown-section pre[data-lang="typescript"] .token.keyword,
+.markdown-section pre[data-lang="ts"] .token.keyword {
+  color: #e84393;
+}
+
+.swagger-ui table thead tr td, .swagger-ui table thead tr th,
+.markdown-section td,
+.swagger-ui table {
+  border: 0;  
+}
+
+.swagger-ui .response-col_status{
+  display: table-cell;
+}
+
+.swagger-ui .response-col_description{
+  padding-left: 1rem;
+}
+
+.scheme-container{
+  display: none;
+}
+
+#swagger-ui > div > div:nth-child(2) > div:nth-child(5) > section > section{
+  display: none;
+}
+
+.swagger-ui pre.version{
+  background-color: initial !important;
+}
+
+.base-url{
+  padding:0 !important;
+}
+
+.live-demo {
+  background: var(--theme-color-gradient);
+  color: white;
+  position: fixed;
+  top: 3rem;
+  right: 3rem;
+  padding: 12px 44px;
+  border-radius: 5rem;
+  border: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 20px var(--theme-shadow-color);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 100;
+  animation: pulse-glow 2s infinite;
+  text-decoration: none;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  letter-spacing: 1.2px;
+}
+
+.live-demo:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(255, 62, 127, 0.75);
+  background: linear-gradient(135deg, #ff5090 0%, #ff9a71 100%);
+}
+
+.live-demo:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px var(--theme-shadow-color);
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 10px var(--theme-shadow-color);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 62, 127, 0.9), 0 0 30px rgba(255, 62, 127, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 10px var(--theme-shadow-color);
+  }
+}
+
+/* Add a play icon before the text */
+.live-demo::before {
+  content: "▶";
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+.markdown-section {
+  max-width: 90%; /* Fluid width relative to viewport */
+  min-width: 300px; /* Minimum readable width */
+  margin: 0 auto; /* Centers horizontally */
+  padding: 0 5%; /* Side padding for better readability */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+@media (min-width: 1280px) {
+  .markdown-section {
+    max-width: 1280px; /* Standard max-width for desktop layouts */
+    padding: 0 2rem; /* Reduced padding on wider screens */
+  }
+}
+
+.lang-bash {
+  color: var(--theme-color-primary) !important;
+  padding: 0.9rem !important;
+  margin: 0px !important;
+}
+
+#swagger-ui > div > div:nth-child(2) > div.information-container.wrapper > section > div > div > hgroup > h2 {
+  background: none !important;
+}
+
+/* Card Container and Glass Effect Styles */
+.card-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 60px;
+  padding-top: 30px;
+}
+
+.card {
+  flex: 0 0 auto;
+  min-width: 100px;
+  max-width: 220px;
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(31, 38, 135, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* Glass film effect - top layer */
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.4) 0%, 
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Light reflection effect */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    transparent 70%
+  );
+  transform: rotate(-45deg);
+  opacity: 0.5;
+  transition: all 0.5s ease;
+  z-index: 1;
+}
+
+.card h3, 
+.card p, 
+.card a {
+  position: relative;
+  z-index: 3;
+}
+
+.card h3 {
+  font-size: 16px;
+  margin: 0 0 16px 0;
+  color: #333;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.card p {
+  color: #555;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.card a {
+  display: inline-block;
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px) rotateX(3deg);
+  box-shadow: 
+    0 16px 32px rgba(31, 38, 135, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.card:hover::before {
+  opacity: 0.8;
+  transform: rotate(-25deg);
+}
+
+.card a:hover {
+  border-bottom: 2px solid #2c3e50;
+  padding-left: 3px;
+}
+
+/* Mermaid Sequence Diagram Styles */
+.mermaid .actor {
+  fill: transparent;
+  stroke: #202746 !important;
+  stroke-width: 1.5px !important;
+}
+
+.mermaid .messageText {
+  fill: #2c3e50 !important;
+  stroke: none !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.mermaid .sequenceNumber {
+  fill: white !important;
+}
+
+.mermaid .messageLine0,
+.mermaid .messageLine1 {
+  stroke: #2c3e50 !important;
+  stroke-width: 1.5px !important;
+}
+
+.mermaid .labelBox {
+  fill: #f8f9fa !important;
+  stroke: var(--theme-color-primary) !important;
+  stroke-width: 1.5px !important;
+}
+
+.mermaid .labelText,
+.mermaid .labelText tspan {
+  fill: #2c3e50 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.mermaid .loopText,
+.mermaid .loopText tspan {
+  fill: #2c3e50 !important;
+  font-size: 14px !important;
+}
+
+.mermaid .loopLine {
+  stroke: #3498db !important;
+  stroke-width: 1.5px !important;
+}
+
+.mermaid .note {
+  fill: #fff8dc !important;
+  stroke: #d4ac0d !important;
+  stroke-width: 1.5px !important;
+}
+
+.mermaid .noteText {
+  fill: #2c3e50 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.mermaid .activation0 {
+  fill: #ecf0f1 !important;
+  stroke: #3498db !important;
+}
+
+.mermaid .participant {
+  stroke: none !important;
+}
+
+/* Alternating participant colors for better distinction */
+.mermaid .participant-0 { fill: #d6eaf8 !important; }
+.mermaid .participant-1 { fill: #e8f8f5 !important; }
+.mermaid .participant-2 { fill: #fef9e7 !important; }
+.mermaid .participant-3 { fill: #f4ecf7 !important; }
+.mermaid .participant-4 { fill: #eaeded !important; }
+.mermaid .participant-5 { fill: #ebf5fb !important; }
+
+/* Special styling for sequence diagram alt paths */
+.mermaid .section0 {
+  fill: rgba(52, 152, 219, 0.1) !important;
+}
+
+.mermaid .section1 {
+  fill: rgba(46, 204, 113, 0.1) !important;
+}
+
+.mermaid .divider {
+  stroke: #7f8c8d !important;
+  stroke-width: 1px !important;
+}
+
+.mermaid .diagramTitle {
+  font-size: 18px !important;
+  font-weight: bold !important;
+  fill: #2c3e50 !important;
+}
+
+
+
+/* Target all vertical lines in sequence diagrams */
+.mermaid g.actor-man line,
+.mermaid g.actor line,
+.mermaid svg line[y1][y2]:not([marker-end]):not([marker-start]) {
+  stroke: #202746 !important;
+  stroke-width: 1.5px !important;
+  stroke-dasharray: 3, 3 !important;
+
+}
+
+.mermaid .messageText {
+  fill: #2c3e50 !important;
+  stroke: none !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Mermaid Class Diagram Styles - using ID-based pattern for more specific targeting */
+[id^="mermaid-"] .node rect, 
+[id^="mermaid-"] .node circle, 
+[id^="mermaid-"] .node ellipse, 
+[id^="mermaid-"] .node polygon, 
+[id^="mermaid-"] .node path {
+  fill: #f0f8ff !important;
+  stroke: #3498db !important;
+  stroke-width: 1.5px !important;
+  rx: 6px !important;
+  ry: 6px !important;
+}
+
+/* Class blocks styling - matching sequence actor boxes */
+[id^="mermaid-"] .classGroup rect,
+[id^="mermaid-"] .classGroup circle {
+  fill: #f0f8ff !important;
+  stroke: #3498db !important;
+  stroke-width: 1.5px !important;
+  rx: 4px !important;
+  ry: 4px !important;
+}
+
+/* Class title styling */
+[id^="mermaid-"] .classTitle,
+[id^="mermaid-"] .title {
+  fill: #2c3e50 !important;
+  font-weight: bold !important;
+  font-size: 14px !important;
+}
+
+/* Class labels styling */
+[id^="mermaid-"] .label {
+  fill: #2c3e50 !important;
+  font-size: 14px !important;
+}
+
+/* Methods and properties sections - using same colors as sequence diagram dividers */
+[id^="mermaid-"] line.divider {
+  stroke: #3498db !important;
+  stroke-width: 1px !important;
+}
+
+/* Class diagram arrow markers - same as sequence message arrows */
+[id^="mermaid-"] marker {
+  fill: #3498db !important;
+  stroke: #3498db !important;
+}
+
+/* Inheritance, association and composition lines - matching sequence message lines */
+[id^="mermaid-"] .relationshipLine,
+[id^="mermaid-"] .relation {
+  stroke: #3498db !important;
+  stroke-width: 1.5px !important;
+}
+
+/* Class diagram specific text */
+[id^="mermaid-"] .classText {
+  fill: #2c3e50 !important;
+  font-size: 12px !important;
+}
+
+/* Method and property text */
+[id^="mermaid-"] .classLabel .label text,
+[id^="mermaid-"] .classLabel text {
+  fill: #34495e !important;
+}
+
+/* Apply alternating participant colors from sequence diagrams to class boxes */
+[id^="mermaid-"] .classGroup:nth-of-type(1) rect {
+  fill: #d6eaf8 !important;
+}
+
+[id^="mermaid-"] .classGroup:nth-of-type(2) rect {
+  fill: #e8f8f5 !important;
+}
+
+[id^="mermaid-"] .classGroup:nth-of-type(3) rect {
+  fill: #fef9e7 !important;
+}
+
+[id^="mermaid-"] .classGroup:nth-of-type(4) rect {
+  fill: #f4ecf7 !important;
+}
+
+[id^="mermaid-"] .classGroup:nth-of-type(5) rect {
+  fill: #eaeded !important;
+}
+
+[id^="mermaid-"] .classGroup:nth-of-type(6) rect {
+  fill: #ebf5fb !important;
+}
+
+/* Extension relationships (inheritance) */
+[id^="mermaid-"] defs #extensionStart, 
+[id^="mermaid-"] defs #extensionEnd {
+  fill: #3498db !important;
+  stroke: #3498db !important;
+}
+
+/* Composition relationships - same color scheme as sequence */
+[id^="mermaid-"] defs #compositionStart,
+[id^="mermaid-"] defs #compositionEnd {
+  fill: #3498db !important;
+  stroke: #3498db !important;
+}
+
+/* Aggregation relationships - same color scheme as sequence */
+[id^="mermaid-"] defs #aggregationStart,
+[id^="mermaid-"] defs #aggregationEnd {
+  fill: #3498db !important;
+  stroke: #3498db !important;
+}
+
+/* Dependency relationships - same color scheme as sequence */
+[id^="mermaid-"] defs #dependencyStart,
+[id^="mermaid-"] defs #dependencyEnd {
+  fill: #3498db !important;
+  stroke: #3498db !important;
+}
+
+/* Fix for purple backgrounds in SVG */
+[id^="mermaid-"],
+[id^="mermaid-"] g,
+[id^="mermaid-"] .nodes g,
+[id^="mermaid-"] .nodes,
+[id^="mermaid-"] .root,
+[id^="mermaid-"] > svg {
+  background-color: transparent !important;
+  background: none !important;
+}
+
+/* Class methods and attributes - similar to sequence message text */
+[id^="mermaid-"] .classMethod,
+[id^="mermaid-"] .method {
+  font-weight: normal !important;
+  fill: #2c3e50 !important;
+  font-size: 12px !important;
+}
+
+[id^="mermaid-"] .classAttr,
+[id^="mermaid-"] .attribute {
+  fill: #34495e !important;
+  font-size: 12px !important;
+}
+
+/* For edges and relationship labels */
+[id^="mermaid-"] .edgeLabel {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  color: #2c3e50 !important;
+}
+
+/* For private/public indicators */
+[id^="mermaid-"] .classGroup text .title ~ text {
+  font-size: 12px !important;
+}
+
+/* Default styles for sequence diagrams */
+[id^="mermaid-"] .actor {
+  fill: #f0f8ff !important;
+  stroke: #3498db !important;
+  stroke-width: 1.5px !important;
+}
+
+/* Vertical lifelines */
+[id^="mermaid-"] .actor + line, 
+[id^="mermaid-"] .messageLine0 + line,
+[id^="mermaid-"] line.lifetime {
+  stroke: #3498db !important;
+  stroke-width: 1px !important;
+  stroke-dasharray: 3 !important;
+}
+
+/* Message text for sequence diagrams */
+[id^="mermaid-"] .messageText {
+  fill: #2c3e50 !important;
+  stroke: none !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Remove old selectors to prevent conflicts */
+.mermaid .classDigram,
+.mermaid .classGroup rect,
+.mermaid .classTitle,
+.mermaid .title,
+.mermaid .label,
+.mermaid line.divider,
+.mermaid marker,
+.mermaid .relationshipLine,
+.mermaid .relation,
+.mermaid .classText,
+.mermaid .classLabel .label text,
+.mermaid .classLabel text,
+.mermaid .classGroup:nth-of-type(1) rect,
+.mermaid .classGroup:nth-of-type(2) rect,
+.mermaid .classGroup:nth-of-type(3) rect,
+.mermaid .classGroup:nth-of-type(4) rect,
+.mermaid .classGroup:nth-of-type(5) rect,
+.mermaid .classGroup:nth-of-type(6) rect,
+.mermaid defs #extensionStart,
+.mermaid defs #extensionEnd,
+.mermaid defs #compositionStart,
+.mermaid defs #compositionEnd,
+.mermaid defs #aggregationStart,
+.mermaid defs #aggregationEnd,
+.mermaid defs #dependencyStart,
+.mermaid defs #dependencyEnd,
+.mermaid svg[aria-roledescription="classDiagram"],
+.mermaid svg[aria-roledescription="classDiagram"] g,
+.mermaid .nodes g,
+.mermaid .nodes,
+.mermaid .root,
+.mermaid .mermaid > svg,
+.mermaid .classMethod,
+.mermaid .method,
+.mermaid .classAttr,
+.mermaid .attribute,
+.mermaid .edgeLabel,
+.mermaid .classGroup text .title ~ text {
+  /* Use the ID-based selectors above instead */
+}
+
+.card a:hover {
+  border-bottom: 2px solid #2c3e50;
+  padding-left: 3px;
+}
+
+/* Welcome Banner */
+.welcome-banner {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 20px 30px;
+  margin: 30px 0;
+  box-shadow: 
+    0 8px 32px rgba(31, 38, 135, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.welcome-banner:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 12px 36px rgba(31, 38, 135, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.welcome-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    transparent 70%
+  );
+  transform: rotate(-15deg);
+  opacity: 0.6;
+  transition: all 0.5s ease;
+  z-index: 1;
+}
+
+.welcome-banner:hover::before {
+  opacity: 0.8;
+  transform: rotate(-5deg);
+}
+
+.welcome-icon {
+  font-size: 36px;
+  margin-right: 25px;
+  color: var(--theme-color-primary);
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-content h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 600;
+}
+
+.welcome-content p {
+  margin-bottom: 0;
+  color: #555;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* Custom Callout Styles */
+/* Note: This is similar to blockquotes but with more visual enhancements */
+.custom-callout {
+    display: flex;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    border-left: 4px solid var(--theme-color-primary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.custom-callout.info {
+    background-color: rgba(255, 62, 127, 0.1);
+}
+.callout-icon {
+    margin-right: 12px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+.callout-content {
+    flex: 1;
+}
+.callout-content p {
+    margin: 0;
+}
+
+/* 
+ * Comparison with blockquotes:
+ * - Blockquotes use a red left border (var(--theme-color, #E50914))
+ * - Custom callouts use blue (#0066cc) for info style
+ * - Custom callouts have rounded corners and a shadow
+ * - Custom callouts support an icon element
+ * - Custom callouts use flex layout for icon + content
+ */
+
+/* code highlight */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #8e908c !important;
+}
+.token.namespace {
+  opacity: 0.7;
+}
+.token.boolean,
+.token.number {
+  color: #c76b29;
+}
+.token.punctuation {
+  color: #525252;
+}
+.token.property {
+  color: #c08b30;
+}
+.token.tag {
+  color: #2973b7;
+}
+.token.string {
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+}
+.token.selector {
+  color: #6679cc;
+}
+.token.attr-name {
+  color: #2973b7;
+}
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #22a2c9;
+}
+.token.attr-value,
+.token.control,
+.token.directive,
+.token.unit {
+  color: var(--theme-color-primary);
+  color: var(--theme-color, var(--theme-color-primary));
+}
+.token.keyword,
+.token.function {
+  color: var(--theme-color-primary);
+}
+.token.statement,
+.token.regex,
+.token.atrule {
+  color: #22a2c9;
+}
+.token.placeholder,
+.token.variable {
+  color: #3d8fd1;
+}
+.token.deleted {
+  text-decoration: line-through;
+}
+.token.inserted {
+  border-bottom: 1px dotted #202746;
+  text-decoration: none;
+}
+.token.italic {
+  font-style: italic;
+}
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+.token.important {
+  color: #c94922;
+}
+.token.entity {
+  cursor: help;
+}
+code .token {
+  -moz-osx-font-smoothing: initial;
+  -webkit-font-smoothing: initial;
+  min-height: 1.5rem;
+  position: relative;
+  left: auto;
+}
+
+.info__tos {
+  display: none;
+}
+.info__license {
+  display: none;
+}
+
+.info__contact {
+  display: none;
+}
+
+.info__extdocs  {
+  display: none;
+}
+
+#swagger-ui > div > div:nth-child(2) > div.information-container.wrapper > section > div > div > hgroup > a {
+  display: none;
+}
+
+.markdown-section code, .markdown-section pre {
+  
+}
+
+/* Enhanced Code Box Styling */
+.markdown-section pre {
+  background-color: #272822;
+  color: #f8f8f2;
+  border-radius: 0.75rem;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.12);
+  margin: 1.5rem 0;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Add hover effect */
+.markdown-section pre:hover {
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.18),
+    0 3px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Code block header with language badge */
+.markdown-section pre::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #f8f8f2;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  background: var(--theme-color-primary);
+  border-bottom-left-radius: 0.5rem;
+  opacity: 0.9;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+/* Style the code inside pre */
+.markdown-section pre > code {
+  color: #f8f8f2;
+  padding: 1.5rem !important;
+  line-height: 1.5;
+  font-size: 0.9rem !important;
+  background: transparent;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  font-family: 'Roboto Mono', Consolas, Monaco, 'Andale Mono', monospace;
+  display: block;
+  border: none;
+  position: relative;
+  z-index: 5;
+  overflow: auto;
+  white-space: pre;
+  max-width: inherit;
+}
+
+/* Subtle grid pattern background */
+.markdown-section pre::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.15;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Line numbers effect - optional */
+.markdown-section pre.line-numbers {
+  counter-reset: line;
+}
+
+.markdown-section pre.line-numbers > code {
+  padding-left: 3.5rem !important;
+}
+
+.markdown-section pre.line-numbers > code::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2.5rem;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Copy button */
+.markdown-section pre .copy-code-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  color: #f8f8f2;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease, background 0.3s ease;
+  z-index: 10;
+}
+
+.markdown-section pre:hover .copy-code-button {
+  opacity: 1;
+}
+
+.markdown-section pre .copy-code-button:hover {
+  background: var(--theme-color-primary);
+}
+
+/* Inline code styling */
+.markdown-section code:not(pre > code) {
+  color: var(--theme-color-primary);
+  background-color: rgba(255, 62, 127, 0.07);
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0.2rem;
+  border: 1px solid rgba(255, 62, 127, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+}
+
+.swagger-ui table thead tr td, .swagger-ui table thead tr th,
+.markdown-section td,
+.swagger-ui table {
+  border: 0;  
+}
