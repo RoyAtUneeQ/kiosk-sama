@@ -193,7 +193,7 @@ export const defaultUneeqOptions: UneeqOptions = {
   displayCallToAction: false,
   cameraAnchorDistance: 'medium_shot',
   autoStart: false,
-  enableMicrophone: true,
+  enableMicrophone: false,
   showClosedCaptions: true,
   showUserInputInterface: true,
   layoutMode: "fullScreen",
