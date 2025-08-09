@@ -1,21 +1,19 @@
-# Utilities
+## Utilities
 
-A small set of utilities support integration boundaries and UX affordances.
+Focused helpers that support integration boundaries and UX affordances.
 
-## DynamicIconLoader
+### DynamicIconLoader
 - Loads icon components dynamically based on icon name and library prefix.
-- Exposes `useDynamicIcons` and helpers to retrieve `react-icons` by name at runtime.
+- `useDynamicIcons` returns a `getIconComponent` helper to render icons by name at runtime.
 
-Why: Decouple visual iconography choices from compile-time imports.
+Why: decouple iconography choices from compile‑time imports.
 
-## Action factories (createAction)
-- Centralize creation of typed WebSocket actions (`getConnectionId`, `peerConnect`, `peerMessage`, `closeSession`, etc.).
+### Action factories (createAction)
+Centralize creation of typed WebSocket actions (`getConnectionId`, `peerConnect`, `peerMessage`, `CheckPeerConnection`, `closeSession`).
 
-Why: Keep protocol messages consistent and discoverable.
+Why: keep protocol messages consistent and discoverable.
 
-## Instruction factories
-- Create outgoing instruction instances (e.g., `userInstruction`, `randomActionStory`).
+### Instruction factories
+Create outgoing instruction instances (e.g., `userInstruction`, `generateImage` which maps to `OutRandomActionStoryInstruction`).
 
-Why: Enable higher-level code to express intent while keeping construction details contained.
-
-> Note: These factories are purposefully thin; they exist to improve call-site readability and minimize knowledge of constructor details.
+Why: let higher‑level code express intent and keep construction details contained.

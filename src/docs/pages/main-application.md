@@ -1,21 +1,21 @@
-# Main Application
+## Main Application
 
-The app boots from `src/main.tsx` and composes providers and routes.
+The entry point `src/main.tsx` composes providers and routes, and applies a small polyfill.
 
-## Providers
-- `ConfigProvider`: loads YAML configuration (`config.yaml`) and exposes helper methods (supported languages, default language, render modes). Uses a fallback UI during load and an error UI upon failure.
-- `LanguageProvider`: wraps i18next and keeps document `lang`/`dir` in sync; provides flags/labels/RTL metadata.
-- `SessionProvider`: a lightweight app store managing session status, WebSocket state, Uneeq instance, event queue, media URLs, language, and outgoing instructions.
+### Providers (in order)
+- **ConfigProvider**: loads YAML config and exposes helpers (supported languages, default language, available render modes).
+- **LanguageProvider**: wraps i18next; keeps `lang`/`dir` synced on the `<html>` element; exposes metadata and helpers.
+- **SessionProvider**: a focused app store (status, WS state, Uneeq instance, event queue, media URLs, language, outgoing instruction, remote info).
 
-Order matters: config → language → session ensures dependent providers have what they need.
+Order matters: `config → language → session` ensures each provider has what it needs.
 
-## Routing
-- `/` renders `KioskPage`
-- `/remote/:kioskConnectionId` renders `RemotePage`
+### Routing
+- `/` → `KioskPage`
+- `/remote/:kioskConnectionId` → `RemotePage`
 
-## Polyfills & compatibility
-Before React renders, `main.tsx` polyfills `crypto.randomUUID` with `uuid.v4` for older browsers. This avoids scattering UUID workarounds throughout the codebase and centralizes the compatibility concern.
+### Polyfills
+`crypto.randomUUID` is polyfilled with `uuid.v4` for older browsers to centralize compatibility.
 
-## Rationale
+### Rationale
 - Keep bootstrap lean and legible.
-- Provider composition matches domain dependencies and keeps concerns separated.
+- Provider composition mirrors domain dependencies.

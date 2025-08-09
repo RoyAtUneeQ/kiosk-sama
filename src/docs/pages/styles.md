@@ -1,15 +1,15 @@
-# Styles
+## Styles
 
-Styling follows a component-scoped SCSS approach, powered by CSS custom properties for theme tokens and dedicated breakpoint mixins.
+Styling follows component‑scoped SCSS, aided by CSS variables and responsive mixins.
 
-## Key files
+### Key files
 - `src/styles/reset.scss`: opinionated reset for consistent baselines.
-- `src/styles/base.scss`: theme variables, global layout, and shared effects.
+- `src/styles/base.scss`: theme tokens, global layout, shared effects.
 - `src/styles/breakpoints.scss`: mixins like `@include smartphone`, `@include tablet-and-smartphone`, `@include holobox`.
 
-## Component styles
-Each component has a sibling `.scss` co-located with its `.tsx` to keep view logic and skin together, e.g., `Button.scss`, `Panel.scss`, `Loading.scss`.
+### Component styles
+Each component co‑locates a `.scss` file with its `.tsx` (e.g., `Button.scss`, `Panel.scss`, `Loading.scss`) for cohesion and maintainability.
 
-## Rationale
-- Co-location scales: styles evolve with components.
-- CSS variables enable runtime theming; SCSS mixins provide ergonomic responsive design.
+### Rationale
+- Co‑location scales: styles evolve with components.
+- CSS variables enable runtime theming; SCSS mixins keep responsive design ergonomic.

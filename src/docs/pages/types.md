@@ -1,26 +1,26 @@
-# Types
+## Types
 
-A rich type layer defines integration contracts and UI state shape.
+A clear type layer defines contracts between UI, hooks, transport, and the Uneeq SDK.
 
-## Session types
+### Session
 - `SessionStatus`: IDLE → READY → LOADING → LIVE → ENDED/ERROR
-- `ActionType` and `SessionAction`: narrow, explicit state transitions
+- `ActionType` (and corresponding reducer actions): narrow, explicit transitions
 - `State`: central session state (Uneeq instance, events, media, language, remote info, etc.)
 
-## Uneeq types
-- `Uneeq` interface: the SDK surface used by the app (methods like `init`, `startSession`, `chatPrompt`, etc.)
+### Uneeq
+- `Uneeq` interface: SDK surface used by the app (`init`, `startSession`, `chatPrompt`, etc.)
 - `EventType` and `Event`: structured SDK messages
-- Options (`UneeqOptions`) describe how sessions are configured
+- `UneeqOptions`: how sessions are configured (`defaultUneeqOptions` provided)
 
-## Transport types
+### Transport
 - `RemoteSessionInfo`: device/browser/screen metadata captured for pairing
 - `WebsocketStatus`: connection lifecycle
-- Action unions like `ActionGetConnectionId`, `ActionPeerConnect`, `ActionPeerMessage`
+- Actions: `ActionGetConnectionId`, `ActionPeerConnect`, `ActionPeerMessage`, `ActionCheckPeerConnection`, `ActionCloseSession`
 
-## Instruction types
+### Instructions
 - `OutgoingInstruction`: contract for prompts sent to Uneeq
-- `IncomingInstruction`: contract for client-side effects resolved from events
+- `IncomingInstruction`: contract for client‑side effects resolved from events
 
-## Why explicit types
-- Prevents protocol drift as backends/SDKs evolve.
-- Makes the integration seam self-documenting and safer to refactor.
+### Why explicit types
+- Prevent protocol drift as backends/SDKs evolve
+- Make the integration seam self‑documenting and refactor‑friendly
