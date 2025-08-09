@@ -2,22 +2,35 @@ import './LeftSideBar.scss';
 import { useSession } from '@/contexts/SessionContext';
 import { CircleButton } from '@/components/button/Button';
 import { BsHourglassSplit } from "react-icons/bs";
-import { instructions } from '@/instructions/outgoing';
-import type { ReactNode } from 'react';
-import * as BsIcons from 'react-icons/bs';
 import type { OutgoingInstruction } from '@/types';
-import type { IconType } from 'react-icons';
+import { useDynamicIcons, createOutgoingInstruction } from '@/utils';
+
+// Define interface for instruction items with their icon property
+interface InstructionItem {
+  key: string;
+  instance: OutgoingInstruction & { icon?: string };
+  factory: (payload: any) => OutgoingInstruction;
+}
 
 const LeftSideBar: React.FC = () => {
   const { state, actions } = useSession();
-
-  const getIconComponent = (iconName: string | undefined): ReactNode => {
-    if (!iconName) return <BsHourglassSplit />;
-    
-    // Find the icon in BsIcons
-    const IconComponent = (BsIcons as Record<string, IconType>)[iconName];
-    return IconComponent ? <IconComponent /> : <BsHourglassSplit />;
-  };
+  
+  // Dynamically discover all available instruction factories
+  const instructionInstances: InstructionItem[] = Object.entries(createOutgoingInstruction)
+    .map(([key, factory]) => {
+      // Create an instance to check if it has an icon
+      const instance = factory({}) as OutgoingInstruction & { icon?: string };
+      return { key, instance, factory };
+    })
+    .filter(item => item.instance.icon); // Only keep instructions with icons
+  
+  // Extract all icon names from instruction instances
+  const instructionIcons = instructionInstances
+    .map(item => item.instance.icon)
+    .filter(Boolean);
+  
+  // Use our dynamic icon loading hook
+  const { getIconComponent } = useDynamicIcons(instructionIcons);
 
   return (
     <div className="left-side-bar-buttons-container">
@@ -28,16 +41,22 @@ const LeftSideBar: React.FC = () => {
         icon={<BsHourglassSplit />}  
         draggable={false}
       />
-      {/* Generate buttons from outgoing instructions */}
-      {Object.entries(instructions).filter(([_key, instruction]) => instruction.icon !== undefined).map(([key, instruction]) => (
-        <CircleButton 
-          key={key}
-          className={state.outgoingInstruction && state.outgoingInstruction.icon === instruction.icon ? "highlight" : ""} 
-          icon={getIconComponent(instruction.icon)}
-          draggable={false}   
-          onClick={() => actions.setOutgoingInstruction(instruction as unknown as OutgoingInstruction)}
-        />
-      ))}
+      {/* Generate buttons from instruction instances */}
+      {instructionInstances
+        .map(item => {
+          if (!item.instance.icon) return null;
+          
+          return (
+            <CircleButton 
+              key={item.key}
+              className={state.outgoingInstruction && state.outgoingInstruction.icon === item.instance.icon ? "highlight" : ""} 
+              icon={getIconComponent(item.instance.icon)}
+              draggable={false}   
+              onClick={() => actions.setOutgoingInstruction(item.factory({}))}
+            />
+          );
+        })
+        .filter(Boolean)}
     </div>
   );
 };

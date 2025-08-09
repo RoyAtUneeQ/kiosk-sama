@@ -1,4 +1,4 @@
-import { UneeqContainer, RemoteConnectionInfo, KioskStartForm, LeftSideBar, MediaContainer, MicButton } from './components';
+import { UneeqContainer, RemoteConnectionInfo, KioskStartForm, LeftSideBar, MediaContainer } from './components';
 import { SessionStatus } from '@/types';
 import { QRCode } from '@/components';  
 import { useSession } from '@/contexts/SessionContext';
@@ -8,28 +8,33 @@ import { useUneeq } from '@/hooks/useUneeq';
 import type { UneeqOptions } from '@/types/uneeq';
 import { useConfig } from '@/hooks/useConfig';
 import { useEffect } from 'react';
-import { SessionMessageGenerator } from '@/utils/SessionMessageGenerator';
+import { createAction, createOutgoingInstruction } from '@/utils';
 
 function KioskPage() {
-  const { state } = useSession();
+  const { state, actions } = useSession();
 
   useUneeq({...defaultUneeqOptions} as UneeqOptions);
   useUneeqEvents();
 
   const { config } = useConfig();
 
-  const { sendMessage } = useWebSocket({webSocketUrl: config.websocket.url});
+  const { sendAction } = useWebSocket({webSocketUrl: config.websocket.url});
+
+  useEffect(() => {
+    if (state.peerMessage)
+      actions.setOutgoingInstruction(createOutgoingInstruction.userInstruction(state.peerMessage.data));
+  }, [state.peerMessage]);
   
   // Check remote connection every 1 second
   useEffect(() => {
     const interval = setInterval(() => {
       if (state.remoteInfo && state.remoteInfo.connectionId) {
-        sendMessage(SessionMessageGenerator.CheckPeerConnection(state.remoteInfo.connectionId));
+        sendAction(createAction.CheckPeerConnection(state.remoteInfo.connectionId));
       }
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [state.remoteInfo?.connectionId, sendMessage])
+  }, [state.remoteInfo?.connectionId, sendAction])
 
   if (state.status === SessionStatus.IDLE || state.status === SessionStatus.READY)
       return (<KioskStartForm />);

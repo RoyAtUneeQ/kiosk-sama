@@ -2,7 +2,7 @@ import "./KioskStartForm.scss";
 import React, { useCallback } from 'react';
 import Button from "@/components/button/Button";
 import Panel from "@/components/panel/Panel";
-import leftSideImage from "@/assets/wallpaper.png";
+import splashImage from "@/assets/splash.png";
 import { useConfig, useTranslation } from "@/hooks";  
 import { useSession } from "@/contexts/SessionContext";
 import { SessionStatus, WebsocketStatus } from "@/types";
@@ -23,8 +23,8 @@ const KioskStartForm: React.FC = () => {
   return (
     <div className="kiosk-component">
       <Panel 
-        imageUrl={leftSideImage}
-        imageAltText="Airplane in the sky at sunset"
+        mediaUrl={splashImage}
+        mediaAltText="Uneeq - Digital Human"
         formSlot={
           <div className="kiosk-form-slot"> 
             <div className="kiosk-language-selector">
