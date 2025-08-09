@@ -12,8 +12,8 @@
     "generate-docs": "docsify init public && cp -r src/docs/* public/"
   },
   "dependencies": {
-    "@deepgram/sdk": "^3.13.0",
     "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
     "@types/qrcode": "^1.5.5",
     "@uidotdev/usehooks": "^2.4.1",
     "i18next": "^25.2.1",
@@ -31,7 +31,6 @@
     "react-script-hook": "^1.7.2",
     "react-singleton-hook": "^4.0.1",
     "rxjs": "^7.8.2",
-    "tsparticles": "^3.8.1",
     "tsparticles-engine": "^2.12.0",
     "usehooks-ts": "^3.1.1",
     "uuid": "^11.1.0",
