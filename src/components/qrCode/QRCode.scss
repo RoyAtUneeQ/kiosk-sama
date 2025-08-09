@@ -15,18 +15,8 @@
   top: 2rem;
   right: 3rem;
   z-index: 1000;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Add a subtle border */
-.qr-code-container::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--theme-border-radius-md);
-  border: 1px solid var(--theme-neutral-lighter);
-  pointer-events: none;
-} 
 
 @include smartphone {
   .qr-code-container {

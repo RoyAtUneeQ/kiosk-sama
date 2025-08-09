@@ -1,7 +1,6 @@
 import './QRCode.scss';
 import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import QRCodeStyling, { type Options } from 'qr-code-styling';
-import logo from '@/assets/logo.png';
 
 
 type QRCodeProps = {
@@ -64,15 +63,8 @@ const QRCode = forwardRef<QRCodeRef, QRCodeProps>(({
     qrCodeRef.current = new QRCodeStyling({
       width: size,
       height: size,
-      type: "canvas",
       data: value,
-      image: logo,
-      imageOptions: {
-        margin: 2,
-        crossOrigin: "anonymous",
-        width: 0.2,
-        height: 0.2
-      },
+      margin: 0,
       dotsOptions: {
         color: "#000", // primary-main
         type: "classy-rounded"
