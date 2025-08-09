@@ -1,0 +1,64 @@
+.feedback-line {
+  position: relative;
+  width: 100%;
+  height: var(--thickness, 2px);
+  border-radius: 9999px;
+  overflow: hidden;
+  opacity: calc(0.25 + 0.75 * var(--intensity, 0));
+  /* Fallback sRGB to match the blue→purple mic button */
+  background: linear-gradient(
+    90deg,
+    #3b82f6 0%,   /* blue */
+    #7c4dff 25%, /* violet */
+    #8b5cf6 50%, /* purple */
+    #7c4dff 75%, /* violet */
+    #3b82f6 100% /* blue */
+  );
+  /* Perceptual interpolation where supported for smoother blend */
+  background: linear-gradient(
+    in oklch,
+    oklch(64% 0.19 255) 0%,  /* blue */
+    oklch(62% 0.21 285) 25%, /* violet */
+    oklch(62% 0.22 300) 50%, /* purple */
+    oklch(62% 0.21 285) 75%, /* violet */
+    oklch(64% 0.19 255) 100% /* blue */
+  );
+  background-size: 300% 100%;
+  animation: feedbackPan 7s linear infinite;
+  filter: saturate(calc(1 + 2.2 * var(--intensity, 0)))
+          brightness(calc(0.9 + 0.8 * var(--intensity, 0)));
+  box-shadow: 0 0 10px rgba(123, 77, 255, 0.22);
+  will-change: opacity, filter, background-position, box-shadow;
+
+  /* Visual thickness pulse to reflect intensity more granularly */
+  transform: scaleY(calc(0.85 + 0.6 * var(--intensity, 0)));
+  transition:
+    opacity 140ms ease-out,
+    filter 140ms ease-out,
+    transform 120ms ease-out;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -8px 0 -8px 0;
+    background: inherit;
+    background-size: inherit;
+    background-position: inherit;
+    filter: blur(calc(6px + 10px * var(--intensity, 0)))
+            saturate(calc(1.2 + 1.8 * var(--intensity, 0)))
+            brightness(calc(0.8 + 0.9 * var(--intensity, 0)));
+    opacity: calc(0.18 + 0.55 * var(--intensity, 0));
+    pointer-events: none;
+  }
+
+  &.speaking {
+    box-shadow: 0 0 calc(12px + 20px * var(--intensity, 0)) rgba(60, 130, 246, 0.30),
+                0 0 calc(10px + 16px * var(--intensity, 0)) rgba(123, 77, 255, 0.26);
+  }
+}
+
+@keyframes feedbackPan {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+

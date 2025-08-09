@@ -4,3 +4,4 @@ export * from './useUneeqEvents';
 export * from './useUserInspect';
 export * from './useWebSocket';
 export * from './useTranslation';
+export * from './useVAD';

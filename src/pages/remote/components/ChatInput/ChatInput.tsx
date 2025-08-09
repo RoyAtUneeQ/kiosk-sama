@@ -1,4 +1,5 @@
 import './ChatInput.scss';
+import { FeedbackLine } from '@/components';
 import React, { type RefObject } from 'react';
 import { FiSend, FiMic, FiMicOff } from 'react-icons/fi';
 
@@ -10,9 +11,10 @@ interface ChatInputProps {
   disabled?: boolean;
   micActive?: boolean;
   onToggleMic?: () => void;
+  speaking?: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ inputRef, value, onChange, onEnter, disabled, micActive = false, onToggleMic }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ inputRef, value, onChange, onEnter, disabled, micActive = false, onToggleMic, speaking = false }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -21,7 +23,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputRef, value, onChange, onEnte
   };
 
   return (
+    <>
+    <FeedbackLine listening={!!micActive} speaking={!!speaking} thickness={4} />
     <div className="input-container">
+      
       <input
         ref={inputRef}
         type="text"
@@ -51,6 +56,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputRef, value, onChange, onEnte
         <FiSend />
       </button>
     </div>
+    </>
   );
 };
 

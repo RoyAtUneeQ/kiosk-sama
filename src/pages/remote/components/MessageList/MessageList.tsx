@@ -28,7 +28,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isTyping, messagesE
             <div className="typing-dot"></div>
             <div className="typing-dot"></div>
             <div className="typing-dot"></div>
-            <span className="typing-text">Searching</span>
+            <span className="typing-text"></span>
           </div>
         </div>
       )}

@@ -4,4 +4,5 @@ export { default as Panel } from './panel/Panel';
 export { default as Particles } from './particles/Particles';
 export { default as QRCode } from './qrCode/QRCode';
 export { default as GlowBackground } from './glow/GlowBackground';
+export { default as FeedbackLine } from './feedbackLine/FeedbackLine';
 

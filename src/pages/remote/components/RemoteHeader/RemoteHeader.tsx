@@ -12,7 +12,7 @@ interface RemoteHeaderProps {
 const RemoteHeader: React.FC<RemoteHeaderProps> = ({ title, webSocketState, kioskConnectionId, connectionId }) => {
   return (
     <div className="chat-header">
-      <h1 className="header-title">{title}</h1>
+      <h1 className="header-title" data-text={title}>{title}</h1>
       <div className="icon-button status-button" role="button" aria-label="Connection" title="Connection">
         <FiLink />
         <div className="tooltip" role="tooltip">

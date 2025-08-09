@@ -8,6 +8,14 @@
   backdrop-filter: blur(6px);
   align-items: center;
 
+  /* Rainbow line anchored to the top edge */
+  .rainbow-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
   input {
     flex: 1;
     border: none;
