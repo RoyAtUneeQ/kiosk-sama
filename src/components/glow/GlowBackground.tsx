@@ -1,5 +1,5 @@
 import './GlowBackground.scss';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
 import type { CSSProperties } from 'react';
 
 export interface GlowBallConfig {
@@ -14,7 +14,10 @@ export interface GlowBackgroundProps {
   ariaHidden?: boolean;
   balls?: GlowBallConfig[];
   reactiveActive?: boolean; // when true, use mic amplitude to modulate size
-  reactiveIntensity?: number; // multiplier for the amplitude effect (default 0.6)
+  /** @deprecated Pulse removed; this prop is ignored. */
+  reactiveIntensity?: number;
+  /** Controls how much the background is dimmed when not listening (0..1). Default 0.28 */
+  dimOpacity?: number;
 }
 
 const defaultBalls: GlowBallConfig[] = [
@@ -28,88 +31,19 @@ const GlowBackground: React.FC<GlowBackgroundProps> = ({
   ariaHidden = true,
   balls = defaultBalls,
   reactiveActive = false,
-  reactiveIntensity = 0.6,
+  dimOpacity = 0.28,
 }) => {
-  const [level, setLevel] = useState(0);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+  // Overlay opacity: when reactiveActive (listening) is true, show vibrant colors (no overlay)
+  // When false, slightly darken the glow to indicate idle state
+  const overlayOpacity = useMemo(() => {
+    const clamped = Math.max(0, Math.min(1, dimOpacity));
+    return reactiveActive ? 0 : clamped;
+  }, [reactiveActive, dimOpacity]);
 
-  useEffect(() => {
-    if (!reactiveActive) {
-      setLevel(0);
-      return () => {};
-    }
-
-    let isCancelled = false;
-
-    const setup = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        if (isCancelled) return;
-        streamRef.current = stream;
-        // Support older WebKit by probing for webkitAudioContext without using 'any'
-        const webkitCtx = (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-        const AudioCtor = (window.AudioContext || webkitCtx) as typeof AudioContext;
-        const audioCtx = new AudioCtor();
-        audioCtxRef.current = audioCtx;
-        const analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 1024; // balanced responsiveness
-        analyserRef.current = analyser;
-        const source = audioCtx.createMediaStreamSource(stream);
-        sourceRef.current = source;
-        source.connect(analyser);
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-        const tick = () => {
-          analyser.getByteTimeDomainData(dataArray);
-          // Compute root mean square (RMS) around 128 bias
-          let sumSquares = 0;
-          for (let i = 0; i < dataArray.length; i++) {
-            const v = (dataArray[i] - 128) / 128; // -1..1
-            sumSquares += v * v;
-          }
-          const rms = Math.sqrt(sumSquares / dataArray.length); // 0..1
-          // Enhanced sensitivity for pulsing effect
-          const target = Math.min(1, rms * 4.0); // increased boost for more dramatic pulsing
-          setLevel(prev => prev * 0.5 + target * 0.5); // faster response for pulsing
-          rafRef.current = requestAnimationFrame(tick);
-        };
-        tick();
-      } catch (err) {
-        // If user denies mic or no device, keep level at 0
-        console.warn('GlowBackground: mic access failed', err);
-        setLevel(0);
-      }
-    };
-
-    setup();
-
-    return () => {
-      isCancelled = true;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      try { sourceRef.current?.disconnect(); } catch (_error) { void _error; }
-      try { analyserRef.current?.disconnect(); } catch (_error) { void _error; }
-      if (audioCtxRef.current?.state !== 'closed') audioCtxRef.current?.close().catch(() => {});
-      streamRef.current?.getTracks().forEach(t => t.stop());
-      sourceRef.current = null;
-      analyserRef.current = null;
-      audioCtxRef.current = null;
-      streamRef.current = null;
-    };
-  }, [reactiveActive]);
-
-  const reactiveScale = useMemo(() => {
-    // Map base 1.0 to 1.0..(1+intensity) for pulsing effect
-    return 1 + level * (reactiveIntensity ?? 0.6);
-  }, [level, reactiveIntensity]);
-
-  type ContainerStyle = CSSProperties & { ['--reactive']?: number };
+  type ContainerStyle = CSSProperties & { ['--overlay']?: number };
   type BallStyle = CSSProperties & { ['--delay']?: string; ['--size']?: number; ['--speed']?: string };
 
-  const containerStyle: ContainerStyle = { ['--reactive']: reactiveScale };
+  const containerStyle: ContainerStyle = { ['--overlay']: overlayOpacity };
 
   return (
     <div className={`glow-container ${className}`} aria-hidden={ariaHidden} style={containerStyle}>
@@ -122,6 +56,7 @@ const GlowBackground: React.FC<GlowBackgroundProps> = ({
         };
         return <div key={index} className="ball" style={cssVars} />;
       })}
+      <div className="overlay" />
     </div>
   );
 };
