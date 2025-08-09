@@ -3,7 +3,6 @@ import useScript from "react-script-hook";
 import { useConfig } from "@/hooks/useConfig";
 import type { Uneeq, UneeqOptions, Event } from "@/types";
 import { useSession } from "@/contexts/SessionContext";
-import { EventType } from "@/types/uneeq/EventType";
 
 declare const Uneeq: any;
 
@@ -29,7 +28,7 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
 
   // Create stable event handler using useCallback
   const handleUneeqMessage = useCallback((e: CustomEvent) => {
-    console.log("=== Uneeq Event:  ", e.detail as Event);
+    console.log(`[AddedUneeq Event] %c ${e.detail.uneeqMessageType}`, 'color:rgb(255, 62, 142);');
     actions.setUneeqEvents([...state.uneeqEvents, e.detail as Event]);
   }, []);
 

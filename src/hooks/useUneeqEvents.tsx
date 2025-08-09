@@ -1,11 +1,17 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { EventType, SessionStatus, type Event } from '@/types';
+import { EventType, SessionStatus } from '@/types';
+import type { Event as UneeqEvent } from '@/types';
 import { useSession } from '@/contexts/SessionContext';
-import { instructions } from '@/instructions/incoming';
+import * as IncomingInstructions from '@/instructions/incoming';
+import { createAction } from '@/utils';
+import { useWebSocket } from './useWebSocket';
+import { useConfig } from './useConfig';    
 
 export const useUneeqEvents = (): void => {
   const { actions, state } = useSession();
   const processingRef = useRef(false);
+  const { config } = useConfig();
+  const { sendAction } = useWebSocket({webSocketUrl: config.websocket.url});
 
   // Process the queue of events
   const processQueue = useCallback(async () => {
@@ -13,7 +19,7 @@ export const useUneeqEvents = (): void => {
     if (processingRef.current || !state.uneeqEvents?.length) return;
     
     // Get current event and mark as processing
-    const currentEvent = state.uneeqEvents[0];
+    const currentEvent = state.uneeqEvents[0] as UneeqEvent;
     processingRef.current = true;
     
     try {
@@ -36,23 +42,41 @@ export const useUneeqEvents = (): void => {
             
           case EventType.PromptResult:
             actions.setAwaitingPromptResponse(false);
+            if (state.remoteInfo && currentEvent.promptResult)
+              sendAction(
+                createAction.sendMessage(
+                  state.remoteInfo.connectionId,
+                  currentEvent.promptResult.response.text
+                )
+              );
             break;
-            
           case EventType.SpeechEvent:
+            console.log("%c====", 'color:rgb(255, 62, 142);');
+            console.log("Speech Event", currentEvent.speechEvent?.param_value);
+            
             if (currentEvent.speechEvent) {
               const [type, value] = currentEvent.speechEvent.param_value.split(/_(.+)/).filter(Boolean);
-              const instruction = instructions[type as keyof typeof instructions];
               
-              if (instruction) {
+              // Dynamically select the instruction based on type
+              const InstructionClass = Object.values(IncomingInstructions).find(
+                (InstructionClass) => {
+                  const instance = new InstructionClass();
+                  return instance.type === type;
+                }
+              );
+
+              if (InstructionClass) {
+                const instruction = new InstructionClass();
                 await instruction.execute(value, actions);
               } else {
-                console.warn(`No instruction found for type: ${type}`);
+                console.warn(` No instruction found for type: ${type} `);
               }
             }
             break;
             
           case EventType.AvatarStoppedSpeaking:
             actions.setOutgoingInstruction(null);
+            actions.setAwaitingPromptResponse(false);
             break;
             
           case EventType.SessionEnded:

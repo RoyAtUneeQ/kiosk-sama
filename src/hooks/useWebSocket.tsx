@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { WebsocketStatus } from "@/types/transport/WebsocketStatus";
-import { SessionMessageGenerator } from "@/utils/SessionMessageGenerator";
 import { useSession } from "@/contexts/SessionContext";
+import { createAction } from "@/utils";
 
 interface UseWebSocketProps {
     webSocketUrl: string;
@@ -11,10 +11,9 @@ export const useWebSocket = (props: UseWebSocketProps) => {
     const { webSocketUrl } = props;
     const { actions, state } = useSession();
     const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
-    const [message, setMessage] = useState<any>(null);
+    const [ message ] = useState<any>(null);
     
-    const sendMessage = useCallback((message: any) => {
-        console.log('Sending message', message);
+    const sendAction = useCallback((message: any) => {
         if (webSocket && webSocket.readyState === WebSocket.OPEN) {
             webSocket.send(JSON.stringify(message));
         } else {
@@ -40,31 +39,35 @@ export const useWebSocket = (props: UseWebSocketProps) => {
 
             ws.onopen = () => {
                 actions.setWebSocketState(WebsocketStatus.CONNECTED);
-                ws.send(JSON.stringify(SessionMessageGenerator.getConnectionId()));
+                ws.send(JSON.stringify(createAction.getConnectionId()));
             };
 
             ws.onmessage = (event) => {
-                const messageData = JSON.parse(event.data);
-                console.groupCollapsed('[WebSocket] %c%s', 'color: #a6e22e;', messageData.type);                
-                console.table(messageData);
+                const payload = JSON.parse(event.data);
+                console.groupCollapsed('[WebSocket] %c%s', 'color: #a6e22e;', payload.type);                
+                console.table(payload);
                 console.groupEnd();
-                switch (messageData.type) {
+                switch (payload.type) {
                     case 'connectionId':
-                        actions.setConnectionId(messageData.connectionId);
+                        console.log('connectionId', payload);
+                        actions.setConnectionId(payload.connectionId);
                         break;
                     case 'RegisterRemote':
-                        console.log('RegisterRemote', messageData);
-                        actions.setRemoteInfo(messageData.remoteInfo);
+                        console.log('RegisterRemote', payload);
+                        actions.setRemoteInfo(payload.remoteInfo);
                         break;
+                    case 'peerMessage':
+                         actions.setPeerMessage(payload)
+                    break;  
                     case 'PeerChecked':
-                        console.log('PeerChecked %c%s %c%s', 'color: #a6e22e;', messageData.data.Origin, 'color:rgb(221, 67, 255);', messageData.data.Destination);
+                        console.log('PeerChecked %c%s %c%s', 'color: #a6e22e;', payload.Origin, 'color:rgb(221, 67, 255);', payload.Destination);
                         break;
                     case 'PeerDisconnected':
-                        console.log('PeerDisconnected ', messageData);
+                        console.log('PeerDisconnected ', payload);
                         actions.setRemoteInfo(null);                            
                         break;      
                     default:
-                        console.log('Default', messageData);
+                        console.log('Default', payload);
                         break;
                 }
             };
@@ -81,7 +84,7 @@ export const useWebSocket = (props: UseWebSocketProps) => {
 
             return () => {
                 if (ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify(SessionMessageGenerator.closeSession()));
+                    ws.send(JSON.stringify(createAction.closeSession()));
                 }
                 ws.close();
                 setWebSocket(null);
@@ -94,7 +97,7 @@ export const useWebSocket = (props: UseWebSocketProps) => {
     }, [webSocketUrl]);
 
     return {
-        sendMessage,
+        sendAction,
         message,
     };
 };

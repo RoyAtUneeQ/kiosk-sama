@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { Config } from '@/types/Config';
+import type { Config } from '@/types';
 import configYaml from '@/assets/config.yaml?raw';
 import yaml from 'js-yaml';
 
