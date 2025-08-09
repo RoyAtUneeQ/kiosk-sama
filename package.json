@@ -12,13 +12,17 @@
     "generate-docs": "docsify init public && cp -r src/docs/* public/"
   },
   "dependencies": {
+    "@ricky0123/vad-react": "^0.0.30",
+    "@ricky0123/vad-web": "^0.0.24",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
     "@types/qrcode": "^1.5.5",
     "@uidotdev/usehooks": "^2.4.1",
+    "gsap": "^3.13.0",
     "i18next": "^25.2.1",
     "i18next-browser-languagedetector": "^8.1.0",
     "js-yaml": "^4.1.0",
+    "onnxruntime-web": "^1.22.0",
     "qr-code-styling": "^1.9.2",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
