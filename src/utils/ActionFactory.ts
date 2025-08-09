@@ -28,6 +28,21 @@ export const createAction = {
         payload
     }),
     
+    peerAudioTranscribe: (
+      peerId: string,
+      audioBase64: string,
+      mimetype: string,
+      language?: string,
+      model?: string,
+    ): WebsocketAction => ({
+      type: 'peerAudioTranscribe',
+      peerId,
+      audio: audioBase64,
+      mimetype,
+      language,
+      model,
+    }),
+    
     closeSession: (): WebsocketAction => ({
         type: 'closeSession'
     })
