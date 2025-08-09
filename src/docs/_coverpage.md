@@ -1,5 +1,5 @@
 <img 
-  src="assets/images/logo.png" 
+  src="assets/images/logo-qr-code.png" 
   alt="logo" 
   class="coverpage-logo"
 />
