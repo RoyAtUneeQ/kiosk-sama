@@ -33,7 +33,3 @@ apis:
   pixabay:
     api_key: "USE_YOUR_PIXABAY_API_KEY"
     api_url: "https://pixabay.com/api/"
-    
-  deepgram:
-    api_key: "USE_YOUR_DEEPGRAM_API_KEY"
-    api_url: "https://api.deepgram.com/v1/listen"
