@@ -1,45 +1,49 @@
 import './RemotePage.scss';
 import { useEffect, useState, useRef } from 'react';
-import { useWebSocket, useUserInspect } from '@/hooks'; 
+import { useWebSocket, useUserInspect } from '@/hooks';
 import { WebsocketStatus } from '@/types/transport/WebsocketStatus';
-import { SessionMessageGenerator } from '@/utils';
 import { useParams } from 'react-router-dom';
-import { Loading } from '@/components';
 import { type Message } from '@/types';
 import { useConfig } from '@/hooks/useConfig';
-import { useSession } from '@/contexts/SessionContext';
+import { useSession } from '@/contexts';
+import { createAction } from '@/utils';
+import { FiFeather, FiImage, FiHelpCircle, FiPower } from 'react-icons/fi';
+import { RemoteHeader, MessageList, Suggestions, ChatInput } from './components';
 
 function RemotePage() {
-  // Config is now guaranteed to be available
   const { config } = useConfig();
   const { kioskConnectionId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { state } = useSession();
+  const { sendAction } = useWebSocket({ webSocketUrl: config.websocket.url });
 
-  const { sendMessage } = useWebSocket({
-    webSocketUrl: config.websocket.url
-  });
+  if (!kioskConnectionId) {
+    return <div>No kiosk connection ID</div>;
+  }
 
+  // Connect to kiosk session
   useEffect(() => {
-    console.log('useEffect', state.webSocketState, kioskConnectionId, state.connectionId);
     if (state.webSocketState === WebsocketStatus.CONNECTED && kioskConnectionId && state.connectionId) {
-      console.log('joinSession', kioskConnectionId, " with connectionId ", state.connectionId);
-      sendMessage(SessionMessageGenerator.joinSession(kioskConnectionId, useUserInspect(state.connectionId)));
+      console.log(`connecting from ${state.connectionId} to ${kioskConnectionId}`);
+      sendAction(createAction.peerConnect(kioskConnectionId, useUserInspect(state.connectionId)));
     }
   }, [state.webSocketState, kioskConnectionId, state.connectionId]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // Auto-scroll to most recent message
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Focus input field on component mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const addMessage = (text: string, sender: 'user' | 'assistant') => {
     const newMessage: Message = {
@@ -48,100 +52,71 @@ function RemotePage() {
       sender,
       timestamp: new Date(),
     };
+    if (sender === 'user') 
+      sendAction(createAction.sendMessage(kioskConnectionId, newMessage));
     setMessages(prev => [...prev, newMessage]);
   };
 
-  const handleSendMessage = async () => {
-    if (inputText.trim() && !isTyping) {
-      const messageContent = inputText.trim();
-      setInputText('');
-      
-      // Add user message
-      addMessage(messageContent, 'user');
-      
-      // Show typing indicator
-      setIsTyping(true);
-      
-      // Send message via WebSocket
-      sendMessage({
-        type: "ChatMessage",
-        content: messageContent,
-        timestamp: new Date().toISOString()
-      });
-      
-             // For demo purposes, simulate AI response
-       setTimeout(() => {
-         addMessage("I received your message: " + messageContent, 'assistant');
-         setIsTyping(false);
-       }, 1500);
-    }
+  const sendText = (text: string) => {
+    if (!text || isTyping) return;
+    const messageContent = text.trim();
+    if (!messageContent) return;
+    setInputText('');
+    addMessage(messageContent, 'user');
+    setIsTyping(true);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+  const handleSendMessage = () => {
+    sendText(inputText);
   };
 
   useEffect(() => {
-    // Focus input on mount
-    inputRef.current?.focus();
-  }, []);
+    if (state.peerMessage) {
+      addMessage(state.peerMessage.data, 'assistant');
+      setIsTyping(false);
+    }
+  }, [state.peerMessage]);
+
+  const handleEnter = () => handleSendMessage();
+
+  const suggestions: Array<{ label: string; text: string; Icon: React.ComponentType<{ size?: number }> }>
+    = [
+      { label: 'Unique and Fun Birthday Surprise Ideas', text: 'Unique and Fun Birthday Surprise Ideas', Icon: FiFeather },
+      { label: 'Create an image', text: 'Please create an image of a sunny beach at golden hour', Icon: FiImage },
+      { label: 'How can you help me?', text: 'How can you help me?', Icon: FiHelpCircle },
+      { label: 'End session', text: 'End session', Icon: FiPower },
+    ];
 
   return (
-    <div className="remote-page">
-      <div className="remote-header">
-        <h1>Remote Control</h1>
-        <div className="connection-status">
-          <span className={`status ${state.webSocketState.toLowerCase()}`}>
-            {state.webSocketState}
-          </span>
-          {state.connectionId && <span className="connection-id">ID: {state.connectionId}</span>}
-        </div>
-      </div>
+    <div className="chat-container">
+      <RemoteHeader 
+        title="Remote Control" 
+        webSocketState={state.webSocketState}
+        kioskConnectionId={kioskConnectionId}
+        connectionId={state.connectionId}
+      />
 
-      <div className="messages-container">
-        <div className="messages">
-                   {messages.map((message) => (
-           <div key={message.id} className={`message ${message.sender}`}>
-             <div className="message-content">{message.text}</div>
-             <div className="message-time">
-               {message.timestamp.toLocaleTimeString()}
-             </div>
-           </div>
-         ))}
-          {isTyping && (
-            <div className="message ai typing">
-              <div className="message-content">
-                <Loading />
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
+      <MessageList messages={messages} isTyping={isTyping} messagesEndRef={messagesEndRef} />
 
-      <div className="input-container">
-        <div className="input-wrapper">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            disabled={state.webSocketState !== WebsocketStatus.CONNECTED || isTyping}
-          />
-          <button 
-            onClick={handleSendMessage}
-            disabled={!inputText.trim() || state.webSocketState !== WebsocketStatus.CONNECTED || isTyping}
-            className="send-button"
-          >
-            Send
-          </button>
-        </div>
-      </div>
+      {state.webSocketState === WebsocketStatus.CONNECTED && showSuggestions && (
+        <Suggestions 
+          items={suggestions} 
+          onSelect={(text) => {
+            // Only send; let the component fade and remove the clicked card.
+            sendText(text);
+          }} 
+          disabled={isTyping}
+          onClose={() => setShowSuggestions(false)}
+        />
+      )}
+
+      <ChatInput
+        inputRef={inputRef}
+        value={inputText}
+        onChange={setInputText}
+        onEnter={handleEnter}
+        disabled={state.webSocketState !== WebsocketStatus.CONNECTED || isTyping}
+      />
     </div>
   );
 }
