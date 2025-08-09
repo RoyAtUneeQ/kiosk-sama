@@ -5,7 +5,7 @@ import { type SessionAction, type State, type RemoteSessionInfo, ActionType, Ses
 const initialState: State = {
   status: SessionStatus.IDLE,
   webSocketState: WebsocketStatus.DISCONNECTED,
-  connectionId: "-",
+  connectionId: null,
   uneeq: null,
   uneeqEvents: [],
   imageUrl: '',
@@ -14,12 +14,13 @@ const initialState: State = {
   awaitingPromptResponse: false,
   language: 'en',
   renderMode: 'cloud',
-  outgoingInstruction: null
+  outgoingInstruction: null,
+  peerMessage: null
 };
 
 // Reducer function
 function sessionReducer(state: State, action: SessionAction): State {
-  console.groupCollapsed('[Session Reducer] %c%s', 'color: #6cb4f7;', action.type);
+  console.groupCollapsed('[Session Reducer] %c%s', 'color:rgb(0, 166, 255);', action.type);
   console.log(action.payload);
   const newState = { ...state, ...action };
   switch (action.type) {
@@ -66,6 +67,9 @@ function sessionReducer(state: State, action: SessionAction): State {
     case ActionType.SET_OUTGOING_INSTRUCTION: 
       newState.outgoingInstruction = action.payload as OutgoingInstruction | null;
       break;
+    case ActionType.SET_PEER_MESSAGE:
+      newState.peerMessage = action.payload;
+      break;
     default:
       return state;
   }     
@@ -109,7 +113,7 @@ const useSessionReducer = () => {
       dispatch({ type: ActionType.SET_VIDEO_URL, payload: url });
     }, []),
     
-    setRemoteInfo: useCallback((info: RemoteSessionInfo) => {
+    setRemoteInfo: useCallback((info: RemoteSessionInfo | null) => {
       dispatch({ type: ActionType.SET_REMOTE_INFO, payload: info });
     }, []),
     
@@ -141,6 +145,10 @@ const useSessionReducer = () => {
       dispatch({ type: ActionType.SET_OUTGOING_INSTRUCTION, payload: instruction });
     }, []),
 
+    setPeerMessage: useCallback((message: any) => {
+      dispatch({ type: ActionType.SET_PEER_MESSAGE, payload: message });
+    }, []),
+
     };
   
   return {
@@ -149,26 +157,13 @@ const useSessionReducer = () => {
   };
 };
 
+export type SessionActions = ReturnType<typeof useSessionReducer>['actions'];
+
 // Define the context type
 interface SessionContextType {
   state: State;
-  actions: {
-    setSessionStatus: (status: SessionStatus,  callback?: () => void) => void;
-    setAwaitingPromptResponse: (isAwaitingResponse: boolean) => void;
-    setImageUrl: (url: string) => void;
-    setVideoUrl: (url: string) => void;
-    setRemoteInfo: (info: RemoteSessionInfo) => void;
-    setLanguage: (language: string) => void;
-    setRenderMode: (renderMode: "cloud" | "miniprem") => void;
-    setWebSocketState: (state: WebsocketStatus) => void;
-    setConnectionId: (id: string) => void;
-    setUneeq: (uneeq: Uneeq) => void;
-    setUneeqEvents: (events: Event[]) => void;
-    setOutgoingInstruction: (instruction: OutgoingInstruction | null) => void;
-  };
+  actions: SessionActions;
 }
-
-export type SessionActions = ReturnType<typeof useSessionReducer>['actions'];
 
 // Create the context
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
