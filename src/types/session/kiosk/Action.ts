@@ -13,7 +13,6 @@ export interface GenericSessionAction<T extends ActionType, P = undefined> {
 
 // Specific action types inheriting from the generic action
 export type SessionAction =
-  | GenericSessionAction<ActionType.SET_REMOTE_ID, string>
   | GenericSessionAction<ActionType.SET_STATUS, { status: SessionStatus }>
   | GenericSessionAction<ActionType.SET_AWAITING_PROMPT_RESPONSE, boolean>
   | GenericSessionAction<ActionType.SET_IMAGE_URL, string>
@@ -25,4 +24,5 @@ export type SessionAction =
   | GenericSessionAction<ActionType.SET_CONNECTION_ID, { id: string; callback?: (id: string) => void }>
   | GenericSessionAction<ActionType.SET_UNEEQ, Uneeq>
   | GenericSessionAction<ActionType.SET_UNEEQ_EVENTS, Event[]>
-  | GenericSessionAction<ActionType.SET_OUTGOING_INSTRUCTION, OutgoingInstruction | null>;
+  | GenericSessionAction<ActionType.SET_OUTGOING_INSTRUCTION, OutgoingInstruction | null>
+  | GenericSessionAction<ActionType.SET_PEER_MESSAGE, any>
