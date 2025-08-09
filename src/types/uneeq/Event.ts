@@ -11,4 +11,12 @@ export interface Event {
     param_name: string;
     param_value: string;
   };
+  promptResult?: {
+    type: string;
+    success: boolean;
+    response: {
+      text: string;
+      metadata: any;
+    };
+  };    
 }
