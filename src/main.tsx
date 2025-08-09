@@ -14,6 +14,7 @@ if (typeof crypto !== 'undefined' && !crypto.randomUUID) {
 import { createRoot } from 'react-dom/client'
 import KioskPage from './pages/kiosk/KioskPage'
 import RemotePage from './pages/remote/RemotePage'
+import ParticlesTest from './pages/ParticlesTest'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './styles/reset.scss'
 import './styles/base.scss'
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')!).render(
           <Routes> 
             <Route path="/" element={<KioskPage />} />
             <Route path="/remote/:kioskConnectionId" element={<RemotePage />} />
+            <Route path="/particles-test" element={<ParticlesTest />} />
           </Routes>
         </BrowserRouter>
       </SessionProvider>
