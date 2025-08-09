@@ -1,6 +1,6 @@
 import './ChatInput.scss';
 import React, { type RefObject } from 'react';
-import { FiSend } from 'react-icons/fi';
+import { FiSend, FiMic, FiMicOff } from 'react-icons/fi';
 
 interface ChatInputProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -8,9 +8,11 @@ interface ChatInputProps {
   onChange: (value: string) => void;
   onEnter: () => void;
   disabled?: boolean;
+  micActive?: boolean;
+  onToggleMic?: () => void;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ inputRef, value, onChange, onEnter, disabled }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ inputRef, value, onChange, onEnter, disabled, micActive = false, onToggleMic }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -29,6 +31,16 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputRef, value, onChange, onEnte
         placeholder="Message..."
         disabled={disabled}
       />
+      <button
+        type="button"
+        onClick={onToggleMic}
+        className={`mic-button${micActive ? ' active' : ''}`}
+        aria-label={micActive ? 'Stop microphone' : 'Start microphone'}
+        title={micActive ? 'Stop microphone' : 'Start microphone'}
+        disabled={disabled}
+      >
+        {micActive ? <FiMicOff /> : <FiMic />}
+      </button>
       <button
         onClick={onEnter}
         disabled={!value.trim() || disabled}

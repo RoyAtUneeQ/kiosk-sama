@@ -26,8 +26,13 @@ export function useUserInspect(connectionId: string): RemoteSessionInfo {
   }
 
   function getConnectionType(): string {
-    // @ts-ignore - navigator.connection is not in all TypeScript definitions
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    // Some browsers expose the NetworkInformation API under different vendor prefixes
+    const navigatorAny = navigator as unknown as {
+      connection?: { effectiveType?: string };
+      mozConnection?: { effectiveType?: string };
+      webkitConnection?: { effectiveType?: string };
+    };
+    const connection = navigatorAny.connection || navigatorAny.mozConnection || navigatorAny.webkitConnection;
     return connection?.effectiveType || "";
   }
 
