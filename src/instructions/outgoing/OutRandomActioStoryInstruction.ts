@@ -1,13 +1,12 @@
-import { actionDescriptions, type OutgoingInstruction } from "@/types";
+import { actionDescriptions } from "@/types";
+import { BaseOutgoingInstruction } from "./BaseOutgoingInstruction";
 
-/**
- * This instruction generates a story about a random action
- */
-export class OutRandomActionStoryInstruction implements OutgoingInstruction {
-    icon: string = "BsStoplightsFill";
+export class OutRandomActionStoryInstruction extends BaseOutgoingInstruction {
+    icon: string = "MdHistoryEdu";
+
     generate(): string {
         const actions = Object.keys(actionDescriptions);
-        const randomAction = actions[Math.floor(Math.random() * actions.length)];
+        const randomAction = actions[Math.floor(Math.random() * actions.length)];   
         const description = actionDescriptions[randomAction as keyof typeof actionDescriptions];
 
         const prompt = `Using the tags related to "${description}" you need to generate story naturally with 1 sentence, includes the tag <uneeq:action_${randomAction} /> 
@@ -16,4 +15,4 @@ export class OutRandomActionStoryInstruction implements OutgoingInstruction {
 
         return prompt;
     }
-} 
+}   

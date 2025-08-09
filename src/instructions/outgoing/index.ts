@@ -1,6 +1,3 @@
-import { OutRandomActionStoryInstruction } from "./OutRandomActioStoryInstruction";
-
-export const instructions = {
-    generateImage: new OutRandomActionStoryInstruction()
-  };
-  
+export { OutRandomActionStoryInstruction } from "./OutRandomActioStoryInstruction";
+export { UserInstruction } from "./UserInstruction";
+export { BaseOutgoingInstruction as BaseInstruction } from "./BaseOutgoingInstruction";
