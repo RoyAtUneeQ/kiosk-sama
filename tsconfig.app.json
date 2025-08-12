@@ -16,6 +16,8 @@
       "@/assets/*": ["src/assets/*"],
       "@/utils/*": ["src/utils/*"],
       "@/utils": ["src/utils"],
+      "@/services/*": ["src/services/*"],
+      "@/services": ["src/services"],
       "@/instructions/*": ["src/instructions/*"],
       "@/instructions": ["src/instructions"],
       "@/i18n/*": ["src/i18n/*"],
