@@ -12,6 +12,7 @@
     "generate-docs": "docsify init public && cp -r src/docs/* public/"
   },
   "dependencies": {
+    "@deepgram/sdk": "^4.11.2",
     "@ricky0123/vad-react": "^0.0.30",
     "@ricky0123/vad-web": "^0.0.24",
     "@tsparticles/react": "^3.0.0",
