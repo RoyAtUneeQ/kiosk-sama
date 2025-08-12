@@ -1,7 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { WebsocketStatus } from "@/types/transport/WebsocketStatus";
 import { useSession } from "@/contexts/SessionContext";
 import { createAction } from "@/utils";
+import WSClient from '@/services/WebSocketClient';
+import ServiceEphemeralToken from '@/services/ServiceEphemeralToken';
 
 interface UseWebSocketProps {
     webSocketUrl: string;
@@ -9,21 +11,12 @@ interface UseWebSocketProps {
 
 export const useWebSocket = (props: UseWebSocketProps) => {
     const { webSocketUrl } = props;
-    const { actions, state } = useSession();
-    const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
-    const [ message ] = useState<any>(null);
+    const { actions } = useSession();
     
     const sendAction = useCallback((message: any) => {
-        if (webSocket && webSocket.readyState === WebSocket.OPEN) {
-            webSocket.send(JSON.stringify(message));
-        } else {
-            console.warn('useWebSocket: WebSocket not open or undefined. Message not sent.', {
-                message,
-                connectionId: state.connectionId,
-                currentSocketReadyState: webSocket?.readyState,
-            });
-        }
-    }, [webSocket]);
+        // WSClient.send already guards for OPEN state
+        WSClient.send(message);
+    }, []);
 
     useEffect(() => {
         if (!webSocketUrl || webSocketUrl.trim() === '') {
@@ -33,72 +26,90 @@ export const useWebSocket = (props: UseWebSocketProps) => {
 
         console.info("webSocketUrl: ", webSocketUrl);
         
-        try {
-            const ws = new WebSocket(webSocketUrl);
-            setWebSocket(ws);
+        let offOpen: (() => void) | null = null;
+        let offStar: (() => void) | null = null;
+        let offErr: (() => void) | null = null;
+        let offClose: (() => void) | null = null;
 
-            ws.onopen = () => {
-                actions.setWebSocketState(WebsocketStatus.CONNECTED);
-                ws.send(JSON.stringify(createAction.getConnectionId()));
-            };
+        const init = async () => {
+            try {
+                // Register handlers before connecting so early events are not missed
+                offOpen = WSClient.on('open', () => {
+                    console.info('WebSocket open event');
+                    actions.setWebSocketState(WebsocketStatus.CONNECTED);
+                    WSClient.send(createAction.getConnectionId());
+                    console.log('WebSocket open event', createAction.getConnectionId());
+                });
 
-            ws.onmessage = (event) => {
-                const payload = JSON.parse(event.data);
-                console.groupCollapsed('[WebSocket] %c%s', 'color: #a6e22e;', payload.type);                
-                console.table(payload);
-                console.groupEnd();
-                switch (payload.type) {
-                    case 'connectionId':
-                        console.log('connectionId', payload);
-                        actions.setConnectionId(payload.connectionId);
-                        break;
-                    case 'RegisterRemote':
-                        console.log('RegisterRemote', payload);
-                        actions.setRemoteInfo(payload.remoteInfo);
-                        break;
-                    case 'peerMessage':
-                         actions.setPeerMessage(payload)
-                    break;  
-                    case 'PeerChecked':
-                        console.log('PeerChecked %c%s %c%s', 'color: #a6e22e;', payload.Origin, 'color:rgb(221, 67, 255);', payload.Destination);
-                        break;
-                    case 'PeerDisconnected':
-                        console.log('PeerDisconnected ', payload);
-                        actions.setRemoteInfo(null);                            
-                        break;      
-                    default:
-                        console.log('Default', payload);
-                        break;
-                }
-            };
+                offStar = WSClient.on('*', ({ payload }: any) => {
+                    console.groupCollapsed('[WebSocket] %c%s', 'color: #a6e22e;', payload.type);                
+                    console.table(payload);
+                    console.groupEnd();
+                    switch (payload.type) {
+                        case 'connectionId':
+                            console.log('connectionId', payload);
+                            actions.setConnectionId(payload.connectionId);
+                            break;
+                        case 'RegisterRemote':
+                            console.log('RegisterRemote', payload);
+                            actions.setRemoteInfo(payload.remoteInfo);
+                            break;
+                        case 'peerMessage':
+                            actions.setPeerMessage(payload)
+                            break;  
+                        case 'serviceToken': {
+                            const issued = payload.data;
+                            console.log('serviceToken', issued);
+                            ServiceEphemeralToken.set(issued.provider, issued.service, issued.token, issued.expiresAt);
+                            break;
+                        }
+                        case 'PeerChecked':
+                            console.log('PeerChecked %c%s %c%s', 'color: #a6e22e;', payload.Origin, 'color:rgb(221, 67, 255);', payload.Destination);
+                            break;
+                        case 'PeerDisconnected':
+                            console.log('PeerDisconnected ', payload);
+                            actions.setRemoteInfo(null);                            
+                            break;      
+                        default:
+                            console.log('Default', payload);
+                            break;
+                    }
+                });
 
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
+                offErr = WSClient.on('error', (error: unknown) => {
+                    console.error('WebSocket error event:', error);
+                    actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
+                });
+
+                offClose = WSClient.on('close', (event: unknown) => {
+                    console.info('WebSocket closed event:', (event as any).code, (event as any).reason);
+                    actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
+                });
+
+                // Ensure ws://localhost:3001 has route; if serverless-offline, URL must include stage or no-prepend config.
+                await WSClient.connect(webSocketUrl);
+            } catch (error) {
+                console.error('Failed to create WebSocket:', error);
                 actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
-            };
+            }
+        };
 
-            ws.onclose = (event) => {
-                console.info('WebSocket closed:', event.code, event.reason);
-                actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
-            };
+        init();
 
-            return () => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify(createAction.closeSession()));
-                }
-                ws.close();
-                setWebSocket(null);
-                actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
-            };
-        } catch (error) {
-            console.error('Failed to create WebSocket:', error);
+        return () => {
+            WSClient.send(createAction.closeSession());
+            WSClient.close();
             actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
-        }
+            offOpen?.();
+            offStar?.();
+            offErr?.();
+            offClose?.();
+        };
+        
     }, [webSocketUrl]);
 
     return {
         sendAction,
-        message,
     };
 };
 
