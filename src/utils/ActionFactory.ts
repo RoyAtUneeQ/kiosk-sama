@@ -28,6 +28,20 @@ export const createAction = {
         payload
     }),
     
+    requestServiceToken: (
+      provider: string,
+      service: 'stt' | 'tts',
+      ttlSeconds: number = 60,
+      params: Record<string, any> = {}
+    ): WebsocketAction => ({
+      // Uses DefaultHandler which routes by action/type
+      type: 'serviceToken',
+      provider,
+      service,
+      ttlSeconds,
+      params,
+    } as any),
+    
     peerAudioTranscribe: (
       peerId: string,
       audioBase64: string,
