@@ -3,3 +3,4 @@ export { useDynamicIcons, getIconPrefix, loadIconComponent } from './DynamicIcon
 export { createAction, SessionMessage } from './ActionFactory';
 export { createOutgoingInstruction } from './InstructionOutgoingFactory';
 export { floatTo16BitPCM, pcmToWavBlob, blobToBase64 } from './audio';
+export { createStreamClient } from './StreamClientFactory';
