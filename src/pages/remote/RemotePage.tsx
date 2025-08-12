@@ -1,6 +1,6 @@
 import './RemotePage.scss';
-import { useEffect, useState, useRef, useMemo } from 'react';
-import { useWebSocket, useUserInspect, useVAD } from '@/hooks';
+import { useEffect, useState, useRef } from 'react';
+import { useWebSocket, useUserInspect, useMicStream } from '@/hooks';
 import { WebsocketStatus } from '@/types/transport/WebsocketStatus';
 import { useParams } from 'react-router-dom';
 import { type Message } from '@/types';
@@ -10,7 +10,9 @@ import { createAction } from '@/utils';
 import { FiFeather, FiImage, FiHelpCircle, FiPower } from 'react-icons/fi';
 import { RemoteHeader, MessageList, Suggestions, ChatInput } from './components';
 import { GlowBackground } from '@/components';
-import { pcmToWavBlob, blobToBase64 } from '@/utils';
+import { type StreamClient } from '@/types/transport/StreamClient';
+import { createStreamClient } from '@/utils';
+import { SpeechToTextProviders } from '@/types/providers/SpeechToTextProviders';
 
 function RemotePage() {
   const { config } = useConfig();
@@ -20,6 +22,7 @@ function RemotePage() {
   const [isTyping, setIsTyping] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [micActive, setMicActive] = useState(false);
+  const [sttReady, setSttReady] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,36 +31,11 @@ function RemotePage() {
   const userInspect = useUserInspect(state.connectionId ?? '');
   const hasKioskId = Boolean(kioskConnectionId);
 
-  const { start: startVAD, stop: stopVAD, loading: vadLoading, errored: vadErrored, speaking } = useVAD({
-    silenceDurationMs: 450,
-    minSpeechDurationMs: 180,
-    onSpeechStart: () => {
-      console.log('onSpeechStart');
-      setMicActive(true);
-      setShowSuggestions(false);
-    },
-    onSpeechEnd: async (audio) => {
-      try {
-        const wav = pcmToWavBlob(audio, 16000);
-        const base64 = await blobToBase64(wav);
-        console.log('base64', base64);
-        if (kioskConnectionId) {
-          sendAction(
-            createAction.peerAudioTranscribe(
-              kioskConnectionId,
-              base64,
-              'audio/wav',
-              'en-US',
-              'nova-2'
-            )
-          );
-          setIsTyping(true);
-        }
-      } catch (err) {
-        console.error('Failed to process VAD audio', err);
-      }
-      // do not stop VAD here; keep listening for continuous utterances
-    },
+  // STT client holder and mic capture that streams 16k PCM to Deepgram
+  const sttRef = useRef<StreamClient | null>(null);
+  const mic = useMicStream({
+    targetSampleRate: 16000,
+    onAudio: (audio) => sttRef.current?.send(audio),
   });
 
   // Track viewport to tailor animation load for large screens
@@ -69,29 +47,49 @@ function RemotePage() {
   }, []);
   const isLargeScreen = viewportWidth >= 1280; // big screens: reduce background complexity
 
-  // Configure glow balls based on screen size to reduce GPU work on large displays
-  const glowBalls = useMemo(() => {
-    if (isLargeScreen) {
-      return [
-        { delay: '0s', size: 0.6, speed: '30s' },
-        { delay: '-6s', size: 0.5, speed: '34s' },
-        { delay: '-12s', size: 0.7, speed: '38s' },
-      ];
-    }
-    return [
-      { delay: '0s', size: 0.55, speed: '26s' },
-      { delay: '-4s', size: 0.75, speed: '32s' },
-      { delay: '-8s', size: 0.45, speed: '24s' },
-      { delay: '-12s', size: 0.65, speed: '30s' },
-      { delay: '-16s', size: 0.35, speed: '18s' },
-      { delay: '-20s', size: 0.85, speed: '36s' },
-    ];
-  }, [isLargeScreen]);
+  useEffect(() => {
+    // no-op for now; could surface mic.error here
+    if (mic.error) console.error('[Mic] error:', mic.error);
+  }, [mic.error]);
 
   useEffect(() => {
-    if (vadLoading) console.log('[VAD] loading model...');
-    if (vadErrored) console.error('[VAD] error:', vadErrored);
-  }, [vadLoading, vadErrored]);
+    if (mic.listening) console.info('[Mic] listening, streaming to deepgram');
+  }, [mic.listening]);
+
+  // Create and connect STT client once when WebSocket is connected; reuse across mic toggles
+  useEffect(() => {
+    if (state.webSocketState !== WebsocketStatus.CONNECTED) return;
+    if (sttRef.current) return;
+
+    const streamClient = createStreamClient(SpeechToTextProviders.DEEPGRAM, {
+      model: 'nova-3',
+      language: 'en-US',
+      encoding: 'linear16',
+      sampleRate: 16000,
+      channels: 1,
+      smartFormat: true,
+      onOpen: () => setSttReady(true),
+      onPartial: () => setIsTyping(true),
+      onFinal: (text: string) => {
+        setIsTyping(false);
+        addMessage(text, 'user');
+      },
+      onError: (err: any) => console.error('[STT] error:', err),
+      onClose: () => console.info('[STT] closed'),
+    });
+
+    if (!streamClient) {
+      console.error('[RemotePage] Failed to create STT client');
+      return;
+    }
+
+    sttRef.current = streamClient;
+    streamClient.connect().catch((e: unknown) => {
+      console.error('[RemotePage] Failed to connect STT:', e);
+      sttRef.current = null;
+      setSttReady(false);
+    });
+  }, [state.webSocketState]);
 
   // Connect to kiosk session
   useEffect(() => {
@@ -101,7 +99,7 @@ function RemotePage() {
     }
   }, [state.webSocketState, kioskConnectionId, state.connectionId, sendAction, userInspect]);
 
-  // Auto-scroll to most recent message
+  // Auto-scroll to most recent message 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -118,6 +116,7 @@ function RemotePage() {
       sender,
       timestamp: new Date(),
     };
+    console.log('addMessage', newMessage);
     if (sender === 'user' && kioskConnectionId)
       sendAction(createAction.sendMessage(kioskConnectionId, newMessage));
     setMessages(prev => [...prev, newMessage]);
@@ -132,23 +131,42 @@ function RemotePage() {
     setIsTyping(true);
   };
 
-  const handleSendMessage = () => {
-    sendText(inputText);
-  };
-
-  const toggleMic = () => {
+  const toggleMic = async () => {
     const next = !micActive;
     console.log('[RemotePage] toggleMic ->', next);
     setMicActive(next);
     if (next) {
+      if (state.webSocketState !== WebsocketStatus.CONNECTED) {
+        console.warn('[RemotePage] Cannot start STT, WebSocket not connected');
+        setMicActive(false);
+        return;
+      }
+      if (!sttReady) {
+        console.warn('[RemotePage] STT not ready yet');
+        setMicActive(false);
+        return;
+      }
       setShowSuggestions(false);
-      console.log('[RemotePage] startVAD');
-      startVAD();
+      console.log('[RemotePage] start mic stream');
+      try {
+        await mic.start();
+      } catch (e) {
+        console.error('[RemotePage] Failed to start mic:', e);
+        setMicActive(false);
+        setShowSuggestions(true);
+      }
     } else {
-      console.log('[RemotePage] stopVAD');
-      stopVAD();
+      console.log('[RemotePage] stop mic stream');
+      try { await mic.stop(); } catch {}
+      setIsTyping(false);
     }
   };
+
+  // Cleanup on unmount
+  useEffect(() => () => {
+    try { sttRef.current?.close(); } catch {}
+    sttRef.current = null;
+  }, []);
 
   useEffect(() => {
     if (!state.peerMessage) return;
@@ -171,7 +189,7 @@ function RemotePage() {
     setIsTyping(false);
   }, [state.peerMessage]);
 
-  const handleEnter = () => handleSendMessage();
+  const handleEnter = () => sendText(inputText);
 
   const suggestions: Array<{ label: string; text: string; Icon: React.ComponentType<{ size?: number }> }>
     = [
@@ -189,9 +207,10 @@ function RemotePage() {
         </div>
       ) : (
         <>
-          <GlowBackground balls={glowBalls} 
+          <GlowBackground 
             className="glow-background"
             ariaHidden={false}
+            isLargeScreen={isLargeScreen}
             reactiveActive={micActive}
             dimOpacity={0.65}
           />
@@ -226,7 +245,7 @@ function RemotePage() {
               disabled={state.webSocketState !== WebsocketStatus.CONNECTED}
               micActive={micActive}
               onToggleMic={toggleMic}
-              speaking={speaking}
+              speaking={false}
             />
           </div>
         </>
