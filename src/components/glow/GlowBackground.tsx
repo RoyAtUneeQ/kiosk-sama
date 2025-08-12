@@ -12,7 +12,8 @@ export interface GlowBallConfig {
 export interface GlowBackgroundProps {
   className?: string;
   ariaHidden?: boolean;
-  balls?: GlowBallConfig[];
+  /** When true, render a lighter set of balls for performance on large displays. */
+  isLargeScreen?: boolean;
   reactiveActive?: boolean; // when true, use mic amplitude to modulate size
   /** @deprecated Pulse removed; this prop is ignored. */
   reactiveIntensity?: number;
@@ -20,19 +21,33 @@ export interface GlowBackgroundProps {
   dimOpacity?: number;
 }
 
-const defaultBalls: GlowBallConfig[] = [
-  { delay: '0s', size: 0.55, speed: '26s' },
-  { delay: '-4s', size: 0.75, speed: '32s' },
-  { delay: '-8s', size: 0.45, speed: '24s' },
-];
+// no-op
 
 const GlowBackground: React.FC<GlowBackgroundProps> = ({
   className = '',
   ariaHidden = true,
-  balls = defaultBalls,
+  isLargeScreen = false,
   reactiveActive = false,
   dimOpacity = 0.28,
 }) => {
+  // Compute glow balls based on screen size to reduce GPU work on large displays
+  const balls = useMemo<GlowBallConfig[]>(() => {
+    if (isLargeScreen) {
+      return [
+        { delay: '0s', size: 0.6, speed: '30s' },
+        { delay: '-6s', size: 0.5, speed: '34s' },
+        { delay: '-12s', size: 0.7, speed: '38s' },
+      ];
+    }
+    return [
+      { delay: '0s', size: 0.55, speed: '26s' },
+      { delay: '-4s', size: 0.75, speed: '32s' },
+      { delay: '-8s', size: 0.45, speed: '24s' },
+      { delay: '-12s', size: 0.65, speed: '30s' },
+      { delay: '-16s', size: 0.35, speed: '18s' },
+      { delay: '-20s', size: 0.85, speed: '36s' },
+    ];
+  }, [isLargeScreen]);
   // Overlay opacity: when reactiveActive (listening) is true, show vibrant colors (no overlay)
   // When false, slightly darken the glow to indicate idle state
   const overlayOpacity = useMemo(() => {
