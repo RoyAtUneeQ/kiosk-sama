@@ -5,3 +5,4 @@ export * from './useUserInspect';
 export * from './useWebSocket';
 export * from './useTranslation';
 export * from './useVAD';
+export * from './useMicStream';
