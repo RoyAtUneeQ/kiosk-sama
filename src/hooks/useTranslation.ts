@@ -1,5 +1,8 @@
 import { useTranslation as useI18nTranslation } from 'react-i18next';
 
+/**
+ * Thin wrapper over react-i18next to expose translation helpers consistently.
+ */
 export const useTranslation = () => {
   const { t, i18n } = useI18nTranslation();
 
@@ -23,5 +26,3 @@ export const useTranslation = () => {
     i18n
   };
 };
-
-export default useTranslation; 

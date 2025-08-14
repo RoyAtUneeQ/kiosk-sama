@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+/**
+ * Options for microphone streaming and resampling.
+ */
 export type UseMicStreamOptions = {
   onAudio: (audio: Float32Array) => void;
   targetSampleRate?: number; // default 16000
   processorBufferSize?: 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16384; // default 4096
 };
 
+/**
+ * Result interface returned by `useMicStream`.
+ */
 export type UseMicStreamResult = {
   start: () => Promise<void>;
   stop: () => Promise<void>;
@@ -13,6 +19,9 @@ export type UseMicStreamResult = {
   error: string | null;
 };
 
+/**
+ * Naive downsampler from the current audio context rate to a target rate.
+ */
 function downsampleToTarget(input: Float32Array, inputSampleRate: number, targetSampleRate: number): Float32Array {
   if (targetSampleRate === inputSampleRate) return input;
   if (targetSampleRate > inputSampleRate) {
@@ -39,6 +48,9 @@ function downsampleToTarget(input: Float32Array, inputSampleRate: number, target
   return result;
 }
 
+/**
+ * Capture microphone PCM frames, optionally downsample, and push them via callback.
+ */
 export function useMicStream(options: UseMicStreamOptions): UseMicStreamResult {
   const { onAudio, targetSampleRate = 16000, processorBufferSize = 4096 } = options;
 
@@ -119,6 +131,5 @@ export function useMicStream(options: UseMicStreamOptions): UseMicStreamResult {
   return useMemo(() => ({ start, stop, listening, error }), [start, stop, listening, error]);
 }
 
-export default useMicStream;
 
 
