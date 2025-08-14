@@ -1,33 +1,39 @@
 import './RemotePage.scss';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useWebSocket, useUserInspect, useMicStream } from '@/hooks';
 import { WebsocketStatus } from '@/types/transport/WebsocketStatus';
 import { useParams } from 'react-router-dom';
-import { type Message } from '@/types';
+import { MessageSender, type Message } from '@/types';
 import { useConfig } from '@/hooks/useConfig';
 import { useSession } from '@/contexts';
-import { createAction } from '@/utils';
+import { createActionFactory } from '@/factories';
 import { FiFeather, FiImage, FiHelpCircle, FiPower } from 'react-icons/fi';
 import { RemoteHeader, MessageList, Suggestions, ChatInput } from './components';
 import { GlowBackground } from '@/components';
 import { type StreamClient } from '@/types/transport/StreamClient';
-import { createStreamClient } from '@/utils';
+import { createStreamClient } from '@/factories';
 import { SpeechToTextProviders } from '@/types/providers/SpeechToTextProviders';
+import { EphemeralTokenService } from '@/services';
+import { BackendHostUrlFactory } from '@/factories';
 
 function RemotePage() {
   const { config } = useConfig();
   const { kioskConnectionId } = useParams();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputText, setInputText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(true);
-  const [micActive, setMicActive] = useState(false);
-  const [sttReady, setSttReady] = useState(false);
+  const [inputText, setInputText] = useState(''); // Keep local - UI specific input
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);  
 
-  const { state } = useSession();
-  const { sendAction } = useWebSocket({ webSocketUrl: config.websocket.url });
+  const { state, actions } = useSession();
+  const { websocket } = useWebSocket({ webSocketUrl: BackendHostUrlFactory.getWebSocketUrl(config) });
+  
+  // Memoize the token service to prevent re-instantiation on every render
+  // This preserves the static cache across component updates
+  const ephemeralTokenService = useMemo(() => new EphemeralTokenService({
+    apiBaseUrl: BackendHostUrlFactory.getHttpBaseUrl(config),
+    apiKey: BackendHostUrlFactory.getApiKey(config)
+  }), [config]);
+
+  
   const userInspect = useUserInspect(state.connectionId ?? '');
   const hasKioskId = Boolean(kioskConnectionId);
 
@@ -37,6 +43,7 @@ function RemotePage() {
     targetSampleRate: 16000,
     onAudio: (audio) => sttRef.current?.send(audio),
   });
+
 
   // Track viewport to tailor animation load for large screens
   const [viewportWidth, setViewportWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
@@ -61,104 +68,117 @@ function RemotePage() {
     if (state.webSocketState !== WebsocketStatus.CONNECTED) return;
     if (sttRef.current) return;
 
-    const streamClient = createStreamClient(SpeechToTextProviders.DEEPGRAM, {
-      model: 'nova-3',
-      language: 'en-US',
-      encoding: 'linear16',
-      sampleRate: 16000,
-      channels: 1,
-      smartFormat: true,
-      onOpen: () => setSttReady(true),
-      onPartial: () => setIsTyping(true),
-      onFinal: (text: string) => {
-        setIsTyping(false);
-        addMessage(text, 'user');
-      },
-      onError: (err: any) => console.error('[STT] error:', err),
-      onClose: () => console.info('[STT] closed'),
-    });
+    let cancelled = false;
+    (async () => {
+      try {
+        // Resolve token before constructing the client
+        const token = await ephemeralTokenService.ensure('deepgram', 'stt');
+        if (cancelled) return;
+        const streamClient = createStreamClient(SpeechToTextProviders.DEEPGRAM, {
+          token,
+          model: 'nova-3',
+          language: 'en-US',
+          encoding: 'linear16',
+          sampleRate: 16000,
+          channels: 1,
+          smartFormat: true,
+          onOpen: () => actions.setSttReady(true),
+          onPartial: () => actions.setIsTyping(true),
+          onFinal: (text: string) => {
+            actions.setIsTyping(false);
+            addMessage(text, MessageSender.User);
+          },
+          onError: (err: any) => console.error('[STT] error:', err),
+          onClose: () => console.info('[STT] closed')    });
 
-    if (!streamClient) {
-      console.error('[RemotePage] Failed to create STT client');
-      return;
-    }
+        if (!streamClient) {
+          console.error('[RemotePage] Failed to create STT client');
+          return;
+        }
 
-    sttRef.current = streamClient;
-    streamClient.connect().catch((e: unknown) => {
-      console.error('[RemotePage] Failed to connect STT:', e);
-      sttRef.current = null;
-      setSttReady(false);
-    });
+        sttRef.current = streamClient;
+
+        streamClient.connect().catch((e: unknown) => {
+          console.error('[RemotePage] Failed to connect STT:', e);
+          sttRef.current = null;
+          actions.setSttReady(false);
+        });
+      } catch (e) {
+        console.error('[RemotePage] Failed to prepare STT:', e);
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, [state.webSocketState]);
 
   // Connect to kiosk session
   useEffect(() => {
     if (state.webSocketState === WebsocketStatus.CONNECTED && kioskConnectionId && state.connectionId) {
       console.log(`connecting from ${state.connectionId} to ${kioskConnectionId}`);
-      sendAction(createAction.peerConnect(kioskConnectionId, userInspect));
+      websocket?.send(createActionFactory().peerConnect(kioskConnectionId, userInspect));
     }
-  }, [state.webSocketState, kioskConnectionId, state.connectionId, sendAction, userInspect]);
+  }, [state.webSocketState, kioskConnectionId, state.connectionId, websocket, userInspect]);
 
   // Auto-scroll to most recent message 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [state.history]);
 
   // Focus input field on component mount
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  const addMessage = (text: string, sender: 'user' | 'assistant') => {
+  const addMessage = (content : string, sender: MessageSender) => {
     const newMessage: Message = {
-      id: Date.now().toString(),
-      text,
+      id: crypto.randomUUID(),
+      content,
       sender,
       timestamp: new Date(),
     };
     console.log('addMessage', newMessage);
-    if (sender === 'user' && kioskConnectionId)
-      sendAction(createAction.sendMessage(kioskConnectionId, newMessage));
-    setMessages(prev => [...prev, newMessage]);
+    if (sender === MessageSender.User && kioskConnectionId)
+      websocket?.send(createActionFactory().sendMessage(kioskConnectionId, newMessage));
+    actions.addMessageToHistory(newMessage);
   };
 
   const sendText = (text: string) => {
-    if (!text || isTyping) return;
+    if (!text || state.isTyping) return;
     const messageContent = text.trim();
     if (!messageContent) return;
     setInputText('');
-    addMessage(messageContent, 'user');
-    setIsTyping(true);
+    addMessage(messageContent, MessageSender.User);
+    actions.setIsTyping(true);
   };
 
   const toggleMic = async () => {
-    const next = !micActive;
+    const next = !state.micActive;
     console.log('[RemotePage] toggleMic ->', next);
-    setMicActive(next);
+    actions.setMicActive(next);
     if (next) {
       if (state.webSocketState !== WebsocketStatus.CONNECTED) {
         console.warn('[RemotePage] Cannot start STT, WebSocket not connected');
-        setMicActive(false);
+        actions.setMicActive(false);
         return;
       }
-      if (!sttReady) {
+      if (!state.sttReady) {
         console.warn('[RemotePage] STT not ready yet');
-        setMicActive(false);
+        actions.setMicActive(false);
         return;
       }
-      setShowSuggestions(false);
+      actions.setShowSuggestions(false);
       console.log('[RemotePage] start mic stream');
       try {
         await mic.start();
       } catch (e) {
         console.error('[RemotePage] Failed to start mic:', e);
-        setMicActive(false);
-        setShowSuggestions(true);
+        actions.setMicActive(false);
+        actions.setShowSuggestions(true);
       }
     } else {
       console.log('[RemotePage] stop mic stream');
       try { await mic.stop(); } catch {}
-      setIsTyping(false);
+      actions.setIsTyping(false);
     }
   };
 
@@ -169,25 +189,11 @@ function RemotePage() {
   }, []);
 
   useEffect(() => {
-    if (!state.peerMessage) return;
-    const type = state.peerMessage.type as string | undefined;
-    if (type !== 'peerMessage') return;
-
-    const data = state.peerMessage.data;
-    const text = typeof data === 'string' ? data : data?.text ?? '';
-    const sender = typeof data === 'string' ? 'assistant' : (data?.sender as 'user' | 'assistant' | undefined) ?? 'assistant';
-
-    if (!text) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      sender,
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, newMessage]);
-    setIsTyping(false);
-  }, [state.peerMessage]);
+    const lastMessage = state.history[state.history.length - 1];      
+    if (lastMessage && lastMessage.sender === MessageSender.Assistant) {
+      actions.setIsTyping(false);
+    }
+  }, [state.history, actions]);
 
   const handleEnter = () => sendText(inputText);
 
@@ -211,28 +217,28 @@ function RemotePage() {
             className="glow-background"
             ariaHidden={false}
             isLargeScreen={isLargeScreen}
-            reactiveActive={micActive}
+            reactiveActive={state.micActive}
             dimOpacity={0.65}
           />
 
           <div className="chat-content">
             <RemoteHeader 
-              title="Thoughts BRIDGE" 
+              title="Thoughts Bridge" 
               webSocketState={state.webSocketState}
               kioskConnectionId={kioskConnectionId}
               connectionId={state.connectionId}
             />
 
             <>
-              <MessageList messages={messages} isTyping={isTyping} messagesEndRef={messagesEndRef} />
-              {state.webSocketState === WebsocketStatus.CONNECTED && showSuggestions && (
+              <MessageList messages={state.history} isTyping={state.isTyping} messagesEndRef={messagesEndRef} />
+              {state.webSocketState === WebsocketStatus.CONNECTED && state.showSuggestions && (
                 <Suggestions 
                   items={suggestions} 
                   onSelect={(text) => {
                     sendText(text);
                   }} 
-                  disabled={isTyping}
-                  onClose={() => setShowSuggestions(false)}
+                  disabled={state.isTyping}
+                  onClose={() => actions.setShowSuggestions(false)}
                 />
               )}
             </>
@@ -243,7 +249,7 @@ function RemotePage() {
               onChange={setInputText}
               onEnter={handleEnter}
               disabled={state.webSocketState !== WebsocketStatus.CONNECTED}
-              micActive={micActive}
+              micActive={state.micActive}
               onToggleMic={toggleMic}
               speaking={false}
             />

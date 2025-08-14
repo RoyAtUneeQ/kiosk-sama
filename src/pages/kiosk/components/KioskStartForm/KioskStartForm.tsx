@@ -5,7 +5,8 @@ import Panel from "@/components/panel/Panel";
 import splashImage from "@/assets/splash.png";
 import { useConfig, useTranslation } from "@/hooks";  
 import { useSession } from "@/contexts/SessionContext";
-import { SessionStatus, WebsocketStatus } from "@/types";
+import { WebsocketStatus } from "@/types";
+import { SessionStatus } from '@/contexts/types';
 
 const KioskStartForm: React.FC = () => { 
   const { actions, state } = useSession();

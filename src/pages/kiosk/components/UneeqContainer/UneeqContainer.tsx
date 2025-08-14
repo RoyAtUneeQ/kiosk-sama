@@ -1,7 +1,7 @@
 import './UneeqContainer.scss';
 import React from 'react';
 import { Loading } from '@/components';
-import { SessionStatus } from '@/types';
+import { SessionStatus } from '@/contexts/types';
 import { useSession } from '@/contexts/SessionContext';
 
 interface UneeqContainerProps {

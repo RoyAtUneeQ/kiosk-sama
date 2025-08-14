@@ -3,6 +3,9 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@/hooks/useConfig';
 
+/**
+ * Metadata and UI flags for a supported language.
+ */
 export interface LanguageOption {
   code: string;
   label: string;
@@ -39,13 +42,16 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Provide language switching utilities and metadata for the app.
+ */
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const { i18n, t } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language || 'en');
   const [isRTL, setIsRTL] = useState(false);
 
   const { config } = useConfig();
-  const availableLanguages = Object.keys(config.personas);
+  const availableLanguages = Object.keys(config?.personas || {});
 
   // Helper function to check if language is RTL
   const isLanguageRTL = (language: string): boolean => {
@@ -135,6 +141,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   );
 };
 
+/**
+ * Access the language context. Must be used within `LanguageProvider`.
+ */
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (context === undefined) {

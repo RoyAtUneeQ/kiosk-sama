@@ -1,36 +1,44 @@
 import './LeftSideBar.scss';
-import { useSession } from '@/contexts/SessionContext';
-import { CircleButton } from '@/components/button/Button';
+import { useSession } from '@/contexts';
+import { CircleButton } from '@/components';
 import { BsHourglassSplit } from "react-icons/bs";
-import type { OutgoingInstruction } from '@/types';
-import { useDynamicIcons, createOutgoingInstruction } from '@/utils';
-
-// Define interface for instruction items with their icon property
-interface InstructionItem {
-  key: string;
-  instance: OutgoingInstruction & { icon?: string };
-  factory: (payload: any) => OutgoingInstruction;
-}
+import { getAllTriggers, useIconFactory, type TriggerItem } from '@/factories';
+import { MessageSender } from '@/types';
+import { useMemo } from 'react';
 
 const LeftSideBar: React.FC = () => {
   const { state, actions } = useSession();
   
-  // Dynamically discover all available instruction factories
-  const instructionInstances: InstructionItem[] = Object.entries(createOutgoingInstruction)
-    .map(([key, factory]) => {
-      // Create an instance to check if it has an icon
-      const instance = factory({}) as OutgoingInstruction & { icon?: string };
-      return { key, instance, factory };
-    })
-    .filter(item => item.instance.icon); // Only keep instructions with icons
+  // Get all registered triggers from the factory
+  const triggerInstances = useMemo(() => getAllTriggers(), []);
   
-  // Extract all icon names from instruction instances
-  const instructionIcons = instructionInstances
-    .map(item => item.instance.icon)
-    .filter(Boolean);
-  
-  // Use our dynamic icon loading hook
-  const { getIconComponent } = useDynamicIcons(instructionIcons);
+  // Load icons for all triggers dynamically
+  const iconNames = triggerInstances.map(trigger => trigger.instance.icon).filter(Boolean);
+  const { getIconComponent } = useIconFactory(iconNames);
+
+  /**
+   * Execute a trigger when its button is clicked
+   * Generates the prompt and potentially sends it to the digital human
+   */
+  const handleTriggerClick = async (trigger: TriggerItem) => {
+    try {
+      // Generate the trigger prompt
+      const prompt = trigger.instance.generate({});
+      
+      // This should probably send the prompt to the digital human or update session state
+      console.log(`Executing trigger "${trigger.key}":`, prompt);
+      
+      actions.addMessageToHistory({
+        id: crypto.randomUUID(),
+        content: prompt,
+        timestamp: new Date(),
+        sender: MessageSender.System,
+      });
+      
+    } catch (error) {
+      console.error(`Failed to execute trigger "${trigger.key}":`, error);
+    }
+  };
 
   return (
     <div className="left-side-bar-buttons-container">
@@ -41,18 +49,18 @@ const LeftSideBar: React.FC = () => {
         icon={<BsHourglassSplit />}  
         draggable={false}
       />
-      {/* Generate buttons from instruction instances */}
-      {instructionInstances
-        .map(item => {
-          if (!item.instance.icon) return null;
+      {/* Generate buttons from auto-discovered trigger instances */}
+      {triggerInstances
+        .map(trigger => {
+          const iconComponent = trigger.instance.icon ? getIconComponent(trigger.instance.icon) : null;
           
           return (
             <CircleButton 
-              key={item.key}
-              className={state.outgoingInstruction && state.outgoingInstruction.icon === item.instance.icon ? "highlight" : ""} 
-              icon={getIconComponent(item.instance.icon)}
+              key={trigger.key}
+              icon={iconComponent}
               draggable={false}   
-              onClick={() => actions.setOutgoingInstruction(item.factory({}))}
+              onClick={() => handleTriggerClick(trigger)}
+              title={`Execute ${trigger.key} trigger`}
             />
           );
         })

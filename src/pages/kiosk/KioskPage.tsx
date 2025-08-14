@@ -1,5 +1,5 @@
 import { UneeqContainer, RemoteConnectionInfo, KioskStartForm, LeftSideBar, MediaContainer } from './components';
-import { SessionStatus } from '@/types';
+import { SessionStatus } from '@/contexts/types';
 import { QRCode } from '@/components';  
 import { useSession } from '@/contexts/SessionContext';
 import { defaultUneeqOptions } from '@/types';
@@ -8,33 +8,35 @@ import { useUneeq } from '@/hooks/useUneeq';
 import type { UneeqOptions } from '@/types/uneeq';
 import { useConfig } from '@/hooks/useConfig';
 import { useEffect } from 'react';
-import { createAction, createOutgoingInstruction } from '@/utils';
+import { createActionFactory, BackendHostUrlFactory } from '@/factories';
 
 function KioskPage() {
-  const { state, actions } = useSession();
-
+  const { state } = useSession();
+  const actionFactory = createActionFactory();
+  
   useUneeq({...defaultUneeqOptions} as UneeqOptions);
   useUneeqEvents();
+  
 
   const { config } = useConfig();
 
-  const { sendAction } = useWebSocket({webSocketUrl: config.websocket.url});
+  const webSocketUrl = BackendHostUrlFactory.getWebSocketUrl(config);
+  const { websocket } = useWebSocket({
+    webSocketUrl
+  });
 
-  useEffect(() => {
-    if (state.peerMessage)
-      actions.setOutgoingInstruction(createOutgoingInstruction.userInstruction(state.peerMessage.data));
-  }, [state.peerMessage]);
-  
   // Check remote connection every 1 second
   useEffect(() => {
     const interval = setInterval(() => {
       if (state.remoteInfo && state.remoteInfo.connectionId) {
-        sendAction(createAction.CheckPeerConnection(state.remoteInfo.connectionId));
+        websocket?.send(actionFactory.checkPeerConnection(state.remoteInfo.connectionId));
       }
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [state.remoteInfo?.connectionId, sendAction])
+  }, [state.remoteInfo?.connectionId, websocket])
+  
+  // No token state logging; tokens are fetched on-demand over HTTP
 
   if (state.status === SessionStatus.IDLE || state.status === SessionStatus.READY)
       return (<KioskStartForm />);

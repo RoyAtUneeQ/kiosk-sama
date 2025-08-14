@@ -15,9 +15,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isTyping, messagesE
       {messages.map((message) => (
         <div key={message.id} className={`message ${message.sender}-message`}>
           <div className="message-bubble">
-            <p>{message.text}</p>
+            <p>{message.content}</p>
             <span className="message-time">
-              {message.timestamp.toLocaleTimeString()}
+              {(typeof message.timestamp === 'string' 
+                ? new Date(message.timestamp) 
+                : message.timestamp
+              ).toLocaleTimeString()}
             </span>
           </div>
         </div>

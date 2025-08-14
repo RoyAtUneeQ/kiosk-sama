@@ -25,7 +25,7 @@ export const CircleButton: React.FC<CircleButtonProps> = ({ icon, className, onC
   return (
     <button onClick={onClick} className={`circleButton ${className || ''}`} {...props}>
       <span className="pulse"></span>
-      <span className="circleIcon">{icon}</span>
+      <span className="circleIcon">{icon}</span>  
     </button>
   );
 };
