@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
-import type { ReactNode } from 'react';
-import { type SessionAction, type State, type RemoteSessionInfo, ActionType, SessionStatus, WebsocketStatus, type Uneeq, type Event, type OutgoingInstruction } from '@/types';
+
+import { create } from 'zustand';
+import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message } from '@/types';
+import { type State, SessionStatus } from './types';
 
 const initialState: State = {
   status: SessionStatus.IDLE,
@@ -14,180 +15,116 @@ const initialState: State = {
   awaitingPromptResponse: false,
   language: 'en',
   renderMode: 'cloud',
-  outgoingInstruction: null,
-  peerMessage: null
+  history: [],
+  // Speech and interaction states
+  isTyping: false,
+  micActive: false,
+  sttReady: false,
+  showSuggestions: true,
 };
 
-// Reducer function
-function sessionReducer(state: State, action: SessionAction): State {
-  console.groupCollapsed('[Session Reducer] %c%s', 'color:rgb(0, 166, 255);', action.type);
-  console.log(action.payload);
-  const newState = { ...state, ...action };
-  switch (action.type) {
-    case ActionType.SET_STATUS:
-      newState.status = action.payload.status;
-      break;
-    case ActionType.SET_AWAITING_PROMPT_RESPONSE:
-      newState.awaitingPromptResponse = action.payload;
-      break;
-    //ToDo: IMAGE AND VIDEO CAN BE COMBINED IN MEDIA OBJECT`
-    case ActionType.SET_IMAGE_URL:
-      newState.imageUrl = action.payload;
-      break;
-    case ActionType.SET_VIDEO_URL:
-      newState.videoUrl = action.payload;
-      break;
-    case ActionType.SET_REMOTE_INFO:
-      newState.remoteInfo = action.payload;
-      break;
-    case ActionType.SET_LANGUAGE:
-      newState.language = action.payload;
-      break;
-    case ActionType.SET_RENDER_MODE:
-      newState.renderMode = action.payload;
-      break;
-    case ActionType.SET_WEBSOCKET_STATE:
-      newState.webSocketState = action.payload;
-      break;
-    case ActionType.SET_CONNECTION_ID:
-      newState.connectionId = action.payload.id;
-      break;
-    case ActionType.SET_UNEEQ:
-      newState.uneeq = action.payload;
-      break;
-    case ActionType.SET_UNEEQ_EVENTS:
-      // Append new events to the existing queue instead of replacing
-      if (action.payload && action.payload.length > 0) {
-        newState.uneeqEvents = [...state.uneeqEvents, ...action.payload];
-        console.info("Events queue after update:", newState.uneeqEvents);
-      } else {
-        newState.uneeqEvents = action.payload;
-      }
-      break;
-    case ActionType.SET_OUTGOING_INSTRUCTION: 
-      newState.outgoingInstruction = action.payload as OutgoingInstruction | null;
-      break;
-    case ActionType.SET_PEER_MESSAGE:
-      newState.peerMessage = action.payload;
-      break;
-    default:
-      return state;
-  }     
-  //Add value to restrict the output to the value of the object
-  console.table(newState, ['value']);
-  console.groupEnd();
-  return newState;
-}
+/**
+ * All actions that can mutate the session store. Implemented via Zustand.
+ */
+export type SessionActions = {
+  setSessionStatus: (status: SessionStatus, callback?: () => void) => void;
+  setAwaitingPromptResponse: (isAwaitingResponse: boolean) => void;
+  setImageUrl: (url: string) => void;
+  setVideoUrl: (url: string) => void;
+  setRemoteInfo: (info: RemoteSessionInfo | null) => void;
+  setLanguage: (language: string) => void;
+  setRenderMode: (renderMode: 'cloud' | 'miniprem') => void;
+  setWebSocketState: (state: WebsocketStatus) => void;
+  setConnectionId: (id: string) => void;
+  setUneeq: (uneeq: Uneeq) => void;
+  setUneeqEvents: (events: Event[]) => void;
+  addMessageToHistory: (message: Message) => void;
+  // Speech and interaction actions
+  setIsTyping: (isTyping: boolean) => void;
+  setMicActive: (micActive: boolean) => void;
+  setSttReady: (sttReady: boolean) => void;
+  setShowSuggestions: (showSuggestions: boolean) => void;
+};      
 
-// Internal hook that provides the reducer and action creators
-const useSessionReducer = () => {
-  const [state, dispatch] = useReducer(sessionReducer, initialState);
-  const loadingCallbackRef = useRef<(() => void) | undefined>(undefined);
-  
-  // Execute callback after state changes to LOADING
-  useEffect(() => {
-    // Execute the callback if it exists
-    if (state.status === SessionStatus.LOADING && loadingCallbackRef.current)
-      loadingCallbackRef.current();
-
-    // Clear the callback
-    loadingCallbackRef.current = undefined;
-  }, [state.status]);
-  
-  // Action creators
-  const actions = {
-    setSessionStatus: useCallback((status: SessionStatus, callback?: () => void) => {
-      if (status === SessionStatus.LOADING) loadingCallbackRef.current = callback;
-      dispatch({ type: ActionType.SET_STATUS, payload: { status } });
-    }, []),
-    
-    setAwaitingPromptResponse: useCallback((isAwaitingResponse: boolean) => {
-      dispatch({ type: ActionType.SET_AWAITING_PROMPT_RESPONSE, payload: isAwaitingResponse });
-    }, []),
-    
-    setImageUrl: useCallback((url: string) => {
-      dispatch({ type: ActionType.SET_IMAGE_URL, payload: url });
-    }, []),
-    
-    setVideoUrl: useCallback((url: string) => {
-      dispatch({ type: ActionType.SET_VIDEO_URL, payload: url });
-    }, []),
-    
-    setRemoteInfo: useCallback((info: RemoteSessionInfo | null) => {
-      dispatch({ type: ActionType.SET_REMOTE_INFO, payload: info });
-    }, []),
-    
-    setLanguage: useCallback((language: string) => {
-      dispatch({ type: ActionType.SET_LANGUAGE, payload: language });
-    }, []),
-
-    setRenderMode: useCallback((renderMode: "cloud" | "miniprem") => {
-      dispatch({ type: ActionType.SET_RENDER_MODE, payload: renderMode });
-    }, []),
-
-    setWebSocketState: useCallback((state: WebsocketStatus) => {
-      dispatch({ type: ActionType.SET_WEBSOCKET_STATE, payload: state });
-    }, []),
-
-    setConnectionId: useCallback((id: string, callback?: (id: string) => void) => {
-      dispatch({ type: ActionType.SET_CONNECTION_ID, payload: { id, callback } });
-    }, []),
-
-    setUneeq: useCallback((uneeq: Uneeq) => {
-      dispatch({ type: ActionType.SET_UNEEQ, payload: uneeq });
-    }, []),
-
-    setUneeqEvents: useCallback((events: Event[]) => {
-      dispatch({ type: ActionType.SET_UNEEQ_EVENTS, payload: events });
-    }, []),
-
-    setOutgoingInstruction: useCallback((instruction: OutgoingInstruction | null  ) => {
-      dispatch({ type: ActionType.SET_OUTGOING_INSTRUCTION, payload: instruction });
-    }, []),
-
-    setPeerMessage: useCallback((message: any) => {
-      dispatch({ type: ActionType.SET_PEER_MESSAGE, payload: message });
-    }, []),
-
-    };
-  
-  return {
-    state,
-    actions
-  };
-};
-
-export type SessionActions = ReturnType<typeof useSessionReducer>['actions'];
-
-// Define the context type
-interface SessionContextType {
+/**
+ * Public store shape returned by `useSession()`.
+ */
+export interface SessionContextType {
   state: State;
   actions: SessionActions;
 }
 
-// Create the context
-const SessionContext = createContext<SessionContextType | undefined>(undefined);
+type SessionStore = SessionContextType;
 
-// Provider component
-interface SessionProviderProps {
-  children: ReactNode;
-}
+/**
+ * Zustand store holding session state and actions.
+ */
+export const useSessionStore = create<SessionStore>((set, get) => ({
+  state: initialState,
+  actions: {
+    setSessionStatus: (status, callback) => {
+      set((prev) => ({ state: { ...prev.state, status } }));
+      if (status === SessionStatus.LOADING && callback) {
+        Promise.resolve().then(() => callback());
+      }
+    },
+    setAwaitingPromptResponse: (isAwaitingResponse) => {
+      set((prev) => ({ state: { ...prev.state, awaitingPromptResponse: isAwaitingResponse } }));
+    },
+    setImageUrl: (url) => {
+      set((prev) => ({ state: { ...prev.state, imageUrl: url } }));
+    },
+    setVideoUrl: (url) => {
+      set((prev) => ({ state: { ...prev.state, videoUrl: url } }));
+    },
+    setRemoteInfo: (info) => {
+      set((prev) => ({ state: { ...prev.state, remoteInfo: info } }));
+    },
+    setLanguage: (language) => {
+      set((prev) => ({ state: { ...prev.state, language } }));
+    },
+    setRenderMode: (renderMode) => {
+      set((prev) => ({ state: { ...prev.state, renderMode } }));
+    },
+    setWebSocketState: (state) => {
+      set((prev) => ({ state: { ...prev.state, webSocketState: state } }));
+    },
+    setConnectionId: (id) => {
+      set((prev) => ({ state: { ...prev.state, connectionId: id } }));
+    },
+    setUneeq: (uneeq) => {
+      set((prev) => ({ state: { ...prev.state, uneeq } }));
+    },
+    setUneeqEvents: (events) => {
+      const prev = get().state;
+      if (events && events.length > 0) {
+        set({ state: { ...prev, uneeqEvents: [...prev.uneeqEvents, ...events] } });
+      } else {
+        set({ state: { ...prev, uneeqEvents: events } });
+      }
+    },
+    addMessageToHistory: (message: Message) => {
+        set((prev) => ({ state: { ...prev.state, history: [...prev.state.history, message] } }));
+    },
+    // Speech and interaction actions
+    setIsTyping: (isTyping) => {
+      set((prev) => ({ state: { ...prev.state, isTyping } }));
+    },
+    setMicActive: (micActive) => {
+      set((prev) => ({ state: { ...prev.state, micActive } }));
+    },
+    setSttReady: (sttReady) => {
+      set((prev) => ({ state: { ...prev.state, sttReady } }));
+    },
+    setShowSuggestions: (showSuggestions) => {
+      set((prev) => ({ state: { ...prev.state, showSuggestions } }));
+    },
+  },
+}));
 
-export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) => {
-  const { state, actions } = useSessionReducer();
-  
-  return (
-    <SessionContext.Provider value={{ state, actions }}>
-      {children}
-    </SessionContext.Provider>
-  );
-};
 
-// Custom hook to use the session context
-export const useSession = (): SessionContextType => {
-  const context = useContext(SessionContext);
-  if (context === undefined) {
-    throw new Error('useSession must be used within a SessionProvider');
-  }
-  return context;
-}; 
+
+/**
+ * Access the session store state and actions.
+ */
+export const useSession = (): SessionContextType => useSessionStore((s) => s);
