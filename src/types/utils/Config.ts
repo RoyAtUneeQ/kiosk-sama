@@ -12,8 +12,16 @@ export interface PersonaConfig {
     };
   }
 
-  export interface WebSocketConfig {
-    url: string;
+  export interface BackendConfig {
+    host: string;
+    port?: number;
+    httpPort?: number;
+    wsPort?: number;
+    ports?: {
+      http?: number;
+      ws?: number;
+    };
+    key?: string;
   }
   
   export interface ApiConfig {
@@ -31,7 +39,7 @@ export interface PersonaConfig {
   export interface Config {
     app: AppConfig;
     personas: Record<string, PersonaConfig>;
-    websocket: WebSocketConfig;
     apis: ApiConfig;
+    backend?: BackendConfig;
   }
   

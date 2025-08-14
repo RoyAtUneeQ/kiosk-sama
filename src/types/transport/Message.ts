@@ -1,6 +1,8 @@
+import { MessageSender } from './MessageSender';
+
 export interface Message {
   id: string;
-  text: string;
-  sender: 'user' | 'assistant';
-  timestamp: Date;
+  content: string;
+  timestamp: Date | string;
+  sender: MessageSender;
 }

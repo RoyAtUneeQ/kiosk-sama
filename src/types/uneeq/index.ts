@@ -9,3 +9,4 @@ export * from './options/ShowOptions';
 export * from './Uneeq';
 export * from './Constructor';
 export * from './constants';
+export * from '@/listeners/types/UneeqEventListener';

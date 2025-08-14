@@ -25,6 +25,7 @@ export enum EventType {
   SpeechTranscription = 'SpeechTranscription',
   VadInterruptionAllowed = 'VadInterruptionAllowed',
   SessionReconnecting = 'SessionReconnecting',
+  SessionReconnectingFinished = 'SessionReconnectingFinished',
   AvatarStoppedSpeaking = 'AvatarStoppedSpeaking',
   AvatarStartedSpeaking = 'AvatarStartedSpeaking',
   SessionDisconnected = 'SessionDisconnected',

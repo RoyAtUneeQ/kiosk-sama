@@ -1,4 +1,5 @@
 import type { ActionBase } from './ActionBase';
+import type { Message } from '../';
 
 /**
  * Action to send message to peer
@@ -6,5 +7,5 @@ import type { ActionBase } from './ActionBase';
 export interface ActionPeerMessage extends ActionBase {
   type: 'peerMessage';
   peerId: string;
-  payload: any;
+  payload: Message;
 }
