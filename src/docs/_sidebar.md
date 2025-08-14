@@ -1,13 +1,13 @@
-- [Introduction](pages/introduction.md)
-- [Getting Started](pages/getting-started.md)
-- [Architecture](pages/architecture.md)
-- [Main Application](pages/main-application.md)
-- [Contexts](pages/contexts.md)
-- [Hooks](pages/hooks.md)
-- [Components](pages/components.md)
-- [Pages](pages/pages.md)
-- [Internationalization](pages/i18n.md)
-- [Instructions](pages/instructions.md)
-- [Types](pages/types.md)
-- [Styles](pages/styles.md)
-- [Utilities](pages/utilities.md)
+- [Introduction](pages/main.md#initial)
+
+- Kiosk
+  - [Overview](pages/kiosk/overview.md)
+  - [State Model](pages/kiosk/states.md)
+  - [Events](pages/kiosk/events.md)
+  - [UI Composition](pages/kiosk/ui.md)
+
+- Remote
+  - [Overview](pages/remote/overview.md)
+  - [Connection Flow](pages/remote/connection.md)
+  - [Message System](pages/remote/messaging.md)
+  - [UI Architecture](pages/remote/ui.md)

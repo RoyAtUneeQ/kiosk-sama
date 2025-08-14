@@ -17,7 +17,7 @@
 <br />
 <br />
 
-[Get Started <span class="icon"><i class="fas fa-arrow-right"></i></span>](#/pages/main?id=initial)
+[Get Started <span class="icon"><i class="fas fa-arrow-right"></i></span>](#main)
 [Github <span class="icon"><i class="fab fa-github"></i></span>](https://gitlab.com/uneeq/sales_engineering/kiosk-core)
 
 <br />

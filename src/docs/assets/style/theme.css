@@ -343,6 +343,7 @@ body.sticky .sidebar-toggle {
   margin: 0 auto;
   max-width: 80%;
   padding: 30px 15px 40px 15px;
+  padding-bottom: 100px;
   position: relative;
 }
 .markdown-section > * {
@@ -1083,13 +1084,13 @@ body {
   min-width: 300px; /* Minimum readable width */
   margin: 0 auto; /* Centers horizontally */
   padding: 0 5%; /* Side padding for better readability */
+  padding-bottom: 10rem;
   box-sizing: border-box; /* Include padding in width calculation */
 }
 
 @media (min-width: 1280px) {
   .markdown-section {
     max-width: 1280px; /* Standard max-width for desktop layouts */
-    padding: 0 2rem; /* Reduced padding on wider screens */
   }
 }
 
