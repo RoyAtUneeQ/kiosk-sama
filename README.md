@@ -5,8 +5,8 @@ Digital human kiosk experience with remote mobile control capabilities. Users in
 ## 📖 Documentation
 
 **Complete documentation is available at:**
-- **[View Online Documentation](src/docs/)** - Open `src/docs/index.html` in your browser
-- **[Quick Start Guide](src/docs/#/pages/main)** - System overview and architecture
+- **[View Online Documentation](https://interface-149017.gitlab.io/#/)** - Complete online documentation
+- **[Quick Start Guide](https://interface-149017.gitlab.io/#/pages/main)** - System overview and architecture
 
 ### Key Features
 
@@ -40,14 +40,14 @@ npm run build
 
 ## 📚 Documentation Structure
 
-- **[Kiosk (Main Display)](src/docs/#/pages/kiosk/overview)** - Primary interface architecture
-  - [State Management](src/docs/#/pages/kiosk/states) - Session lifecycle and state flows
-  - [Event System](src/docs/#/pages/kiosk/events) - UneeQ and WebSocket event handling
-  - [UI Architecture](src/docs/#/pages/kiosk/ui) - Component composition and rendering
-- **[Remote (Mobile Interface)](src/docs/#/pages/remote/overview)** - Mobile control interface
-  - [Connection Flow](src/docs/#/pages/remote/connection) - Device pairing and WebSocket setup
-  - [Message System](src/docs/#/pages/remote/messaging) - Text and voice communication
-  - [UI Architecture](src/docs/#/pages/remote/ui) - Mobile-first responsive design
+- **[Kiosk (Main Display)](https://interface-149017.gitlab.io/#/pages/kiosk/overview)** - Primary interface architecture
+  - [State Management](https://interface-149017.gitlab.io/#/pages/kiosk/states) - Session lifecycle and state flows
+  - [Event System](https://interface-149017.gitlab.io/#/pages/kiosk/events) - UneeQ and WebSocket event handling
+  - [UI Architecture](https://interface-149017.gitlab.io/#/pages/kiosk/ui) - Component composition and rendering
+- **[Remote (Mobile Interface)](https://interface-149017.gitlab.io/#/pages/remote/overview)** - Mobile control interface
+  - [Connection Flow](https://interface-149017.gitlab.io/#/pages/remote/connection) - Device pairing and WebSocket setup
+  - [Message System](https://interface-149017.gitlab.io/#/pages/remote/messaging) - Text and voice communication
+  - [UI Architecture](https://interface-149017.gitlab.io/#/pages/remote/ui) - Mobile-first responsive design
 
 ## 🏗️ Development
 

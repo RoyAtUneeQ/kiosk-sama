@@ -1,6 +1,6 @@
 # Application Configuration
 app:
-  name: "Deutsche Telekom"
+  name: "Uneeq Generic Kiosk"
   environment: "development" # development, staging, production
 
 # Personas Configuration
@@ -32,10 +32,3 @@ backend:
     http: 3000
     ws: 3001
   key: "7d2eb1df09f9b54875e2e601d6192ec3333a0784d4c487ec1dc8937a2f97a04d"
-
-
-# External API Configuration
-apis:
-  pixabay:
-    api_key: "50712646-82cbedef68573681d2bf357f4"
-    api_url: "https://pixabay.com/api/"
