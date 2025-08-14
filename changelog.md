@@ -5,6 +5,16 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-01-15
+
+### 🐛 Bug Fixes
+- **Message Deduplication**: Fixed duplicate assistant messages appearing in remote interface
+  - Added deduplication logic to `addMessageToHistory` to prevent duplicate messages with same ID
+  - Resolved issue where both `PromptResultListener` and `PeerMessageListener` could add the same assistant message
+  - Improved debugging with console logging for prevented duplicates
+
+---
+
 ## [1.0.0] - 2025-01-15
 
 ### 🚨 BREAKING CHANGES

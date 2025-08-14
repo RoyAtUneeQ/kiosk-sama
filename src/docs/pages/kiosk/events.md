@@ -66,7 +66,7 @@ sequenceDiagram
 |------------|---------------|---------|
 | `DigitalHumanUnmuted` | `DigitalHumanUnmutedListener` | Transitions to LIVE state when avatar is ready |
 | `PromptRequest` | `PromptRequestListener` | Sets `awaitingPromptResponse = true` |
-| `PromptResult` | `PromptResultListener` | Clears prompt waiting state |
+| `PromptResult` | `PromptResultListener` | Adds assistant messages and clears prompt waiting state |
 | `AvatarStoppedSpeaking` | `AvatarStoppedSpeakingListener` | Clears outgoing instructions |
 | `SpeechEvent` | `SpeechEventListener` | Auto-discovers and executes custom speech events (media, weego, etc.) |
 | `SessionLive` | `SessionLiveListener` | Logs session activation |
@@ -96,7 +96,7 @@ sequenceDiagram
 |------------|---------------|---------|
 | `CONNECTION_ID` | `ConnectionIdListener` | Stores WebSocket session ID |
 | `REGISTER_REMOTE` | `RegisterRemoteListener` | Connects remote device |
-| `PEER_MESSAGE` | `PeerMessageListener` | Receives messages from remote |
+| `PEER_MESSAGE` | `PeerMessageListener` | Adds messages from remote devices to message history |
 | `PEER_CHECKED` | `PeerCheckedListener` | Logs connection health checks |
 | `PEER_DISCONNECTED` | `PeerDisconnectedListener` | Clears remote connection |
 
@@ -203,12 +203,34 @@ export class InMediaInstruction implements CustomEvent {
 }
 ```
 
+### Message Deduplication
+
+Since both `PromptResultListener` and `PeerMessageListener` can add assistant messages to the message history, the system includes automatic deduplication to prevent duplicate messages:
+
+```typescript
+// In SessionContext.tsx - addMessageToHistory action
+addMessageToHistory: (message: Message) => {
+    set((prev) => {
+      // Check if message with same ID already exists to prevent duplicates
+      const existingMessage = prev.state.history.find(m => m.id === message.id);
+      if (existingMessage) {
+        console.log('Duplicate message prevented:', message.id);
+        return prev;
+      }
+      return { state: { ...prev.state, history: [...prev.state.history, message] } };
+    });
+},
+```
+
+This ensures that assistant responses are only displayed once in the message history, regardless of which pathway they arrive through.
+
 ### Error Handling and Debugging
 
 - **Sequential Processing**: Uneeq events use PQueue to prevent race conditions
 - **Error Isolation**: Failed listeners don't break the entire event chain
 - **Logging**: All events are logged with color-coded console output
 - **Missing Handlers**: Warnings logged for unregistered event types
+- **Message Deduplication**: Duplicate messages are prevented and logged for debugging
 
 ### Event Flow Examples
 

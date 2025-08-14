@@ -83,6 +83,7 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
 
   //Send last history message to Uneeq  
   useEffect(() => {
+    console.log("[useUneeq] send last message to Uneeq", state.history);
     const lastMessage = state.history[state.history.length - 1];    
     if(lastMessage && state.uneeq && lastMessage.sender === MessageSender.User)
       state.uneeq?.chatPrompt(lastMessage.content as string);

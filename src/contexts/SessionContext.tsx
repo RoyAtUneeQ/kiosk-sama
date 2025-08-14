@@ -104,7 +104,15 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       }
     },
     addMessageToHistory: (message: Message) => {
-        set((prev) => ({ state: { ...prev.state, history: [...prev.state.history, message] } }));
+        set((prev) => {
+          // Check if message with same ID already exists to prevent duplicates
+          const existingMessage = prev.state.history.find(m => m.id === message.id);
+          if (existingMessage) {
+            console.log('Duplicate message prevented:', message.id);
+            return prev;
+          }
+          return { state: { ...prev.state, history: [...prev.state.history, message] } };
+        });
     },
     // Speech and interaction actions
     setIsTyping: (isTyping) => {

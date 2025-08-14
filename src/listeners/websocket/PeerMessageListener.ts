@@ -8,7 +8,8 @@ export class PeerMessageListener implements WebSocketEventListener {
    * Persist the latest peer message in session state.
    */
   execute(payload: any, session: SessionContextType): void {
-    console.log('PeerMessageListener', payload);
+    console.log(`[PeerMessageListener] received message from WebSocket event:`);
+    console.table(payload.data)
     session.actions.addMessageToHistory(payload.data);
   }
 }

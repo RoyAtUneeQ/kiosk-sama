@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { WebsocketStatus } from '@/types/transport';
+import { MessageSender, WebsocketStatus } from '@/types/transport';
 import { useSession, type SessionContextType } from '@/contexts';
 import { createActionFactory, WebSocketEventFactory } from '@/factories';
 import { WebSocketService } from '@/services';
@@ -66,8 +66,11 @@ export const useWebSocket = (props: UseWebSocketProps) => {
   //Send last history message to peer
   useEffect(() => {
     const lastMessage = session.state.history[session.state.history.length - 1];
-    if(lastMessage && session.state.remoteInfo?.connectionId && lastMessage.sender === 'assistant')
+    if(lastMessage && session.state.remoteInfo?.connectionId && lastMessage.sender === MessageSender.Assistant){
+      console.log('[useWebSocket] send last message to peer');
+      console.table(lastMessage); 
       websocketRef.current!.send(actionFactory.sendMessage(session.state.remoteInfo.connectionId, lastMessage));
+    }
   }, [session.state.history]);
 
   return {
