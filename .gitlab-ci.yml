@@ -1,0 +1,27 @@
+# GitLab CI configuration for deploying docsify documentation to GitLab Pages
+stages:
+  - deploy
+
+pages:
+  stage: deploy
+  image: node:latest
+  script:
+    # Create public directory (required for GitLab Pages)
+    - mkdir -p public
+    
+    # Install dependencies 
+    - npm install
+    - npm install -g docsify-cli
+    
+    # Generate documentation using our npm script
+    # This will initialize docsify in the public folder and copy our docs content there
+    - npm run generate-docs
+    
+    # If needed, you can also do this manually:
+    # - docsify init public
+    # - cp -r src/docs/* public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main  # or another branch you want to deploy from, like 'master'
