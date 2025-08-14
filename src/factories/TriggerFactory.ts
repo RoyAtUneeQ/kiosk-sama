@@ -1,0 +1,77 @@
+import type { Trigger } from '@/triggers';
+import * as triggers from '@/triggers';
+
+export interface TriggerItem {
+  key: string;
+  instance: Trigger;
+}
+
+// Trigger registry using reflection - maps keys to trigger instances
+const triggerRegistry = new Map<string, Trigger>();
+
+/**
+ * Register a trigger class by instantiating and indexing by its generated key.
+ */
+export function registerTrigger<T extends Trigger>(TriggerClass: new () => T, className: string) {
+  try {
+    const instance = new TriggerClass();
+    
+    // Verify it implements the Trigger interface
+    if (instance && typeof instance.generate === 'function') {
+      // Generate key from class name (convert PascalCase to camelCase, remove "Trigger" suffix)
+      const key = className
+        .replace('Trigger', '')
+        .charAt(0).toLowerCase() + className.replace('Trigger', '').slice(1);
+      
+      triggerRegistry.set(key, instance);
+      console.log(`TriggerFactory: Registered trigger "${key}" from ${className}`);
+    }
+  } catch (error) {
+    console.warn(`TriggerFactory: Failed to instantiate trigger class ${className}:`, error);
+  }
+}
+
+// Auto-register all available trigger classes
+Object.entries(triggers).forEach(([className, TriggerClass]: [string, any]) => {
+  // Skip non-constructor exports (like types, interfaces, etc.)
+  if (typeof TriggerClass === 'function' && className.endsWith('Trigger')) {
+    registerTrigger(TriggerClass as any, className);
+  }
+});
+
+/**
+ * Get all registered triggers as TriggerItem array.
+ * This is the main factory function that components should use.
+ */
+export const getAllTriggers = (): TriggerItem[] => {
+  const triggerItems: TriggerItem[] = [];
+  
+  triggerRegistry.forEach((instance, key) => {
+    triggerItems.push({
+      key,
+      instance
+    });
+  });
+  
+  console.log(`TriggerFactory: Returning ${triggerItems.length} registered triggers`);
+  return triggerItems;
+};
+
+/**
+ * Get a specific trigger by key, or null if not registered.
+ */
+export const getTrigger = (key: string): Trigger | null => {
+  const trigger = triggerRegistry.get(key);
+  if (!trigger) {
+    console.warn(`TriggerFactory: No trigger found for key: ${key}`);
+    return null;
+  }
+  return trigger;
+};
+
+/**
+ * Get all registered trigger keys.
+ */
+export const getTriggerKeys = (): string[] => {
+  return Array.from(triggerRegistry.keys());
+};
