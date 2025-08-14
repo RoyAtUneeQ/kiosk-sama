@@ -18,11 +18,13 @@ export default defineConfig({
       '@/assets': path.resolve(__dirname, './src/assets'),
       '@/types': path.resolve(__dirname, './src/types'),
       '@/utils': path.resolve(__dirname, './src/utils'),
+      '@/factories': path.resolve(__dirname, './src/factories'),
       '@/hooks': path.resolve(__dirname, './src/hooks'),
       '@/contexts': path.resolve(__dirname, './src/contexts'),
-      '@/instructions': path.resolve(__dirname, './src/instructions'),
+      '@/triggers': path.resolve(__dirname, './src/triggers'),
       '@/i18n': path.resolve(__dirname, './src/i18n'),
-      '@/config': path.resolve(__dirname, './src/config')
-    },
+      '@/config': path.resolve(__dirname, './src/config'),
+      '@/listeners': path.resolve(__dirname, './src/listeners'),
+    },  
   },
 })

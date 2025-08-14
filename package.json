@@ -15,6 +15,7 @@
     "@deepgram/sdk": "^4.11.2",
     "@ricky0123/vad-react": "^0.0.30",
     "@ricky0123/vad-web": "^0.0.24",
+    "@tanstack/react-query": "^5.85.0",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
     "@types/qrcode": "^1.5.5",
@@ -24,6 +25,7 @@
     "i18next-browser-languagedetector": "^8.1.0",
     "js-yaml": "^4.1.0",
     "onnxruntime-web": "^1.22.0",
+    "p-queue": "^8.1.0",
     "qr-code-styling": "^1.9.2",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
@@ -36,12 +38,14 @@
     "react-router-dom": "^7.6.1",
     "react-script-hook": "^1.7.2",
     "react-singleton-hook": "^4.0.1",
+    "reconnecting-websocket": "^4.4.0",
     "rxjs": "^7.8.2",
     "three": "^0.164.1",
     "tsparticles-engine": "^2.12.0",
     "usehooks-ts": "^3.1.1",
     "uuid": "^11.1.0",
-    "zod": "^3.25.48"
+    "zod": "^3.25.48",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
