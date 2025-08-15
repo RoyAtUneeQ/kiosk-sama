@@ -1,4 +1,4 @@
-<a name="initial"></a>
+<a id="initial"></a>
 ## Generic Kiosk — Frontend Documentation
 
 This application provides a digital human kiosk experience with remote mobile control capabilities. Users interact with an AI-powered avatar (Uneeq) on the main kiosk display, while remote users can connect via mobile devices to send messages and control the conversation.
@@ -40,10 +40,10 @@ The system consists of:
 - **[UI Architecture](pages/kiosk/ui.md)** - Component composition and rendering logic
 
 #### Remote (Mobile Interface)
-- **Overview**: `#/pages/remote/overview`
-- **Connection Flow**: `#/pages/remote/connection`
-- **Message System**: `#/pages/remote/messaging`
-- **UI Architecture**: `#/pages/remote/ui`
+- **[Overview](pages/remote/overview.md)** - Mobile interface architecture and design
+- **[Connection Flow](pages/remote/connection.md)** - Device pairing and WebSocket setup
+- **[Message System](pages/remote/messaging.md)** - Text and voice communication handling
+- **[UI Architecture](pages/remote/ui.md)** - Mobile-first responsive design patterns
 
 ### Key Technologies
 - **React + TypeScript** - UI framework and type safety
