@@ -11,3 +11,6 @@
   - [Connection Flow](pages/remote/connection.md)
   - [Message System](pages/remote/messaging.md)
   - [UI Architecture](pages/remote/ui.md)
+
+- Performance
+  - [Performance Monitoring](pages/performance-monitoring.md)
