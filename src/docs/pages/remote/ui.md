@@ -24,6 +24,8 @@ graph TB
     subgraph "Shared Components"
         FeedbackLine[📊 FeedbackLine<br/>Audio visualization]
         Button[🔘 Button<br/>Interactive elements]
+        ErrorBoundary[🛡️ ErrorBoundary<br/>Error containment & fallback UI]
+        LoadingFallback[⏳ LoadingFallback<br/>Consistent loading states]
     end
     
     RemotePage --> GlowBackground
@@ -349,6 +351,7 @@ const isLargeScreen = viewportWidth >= 1280; // Reduce complexity for large scre
 ### Performance Optimizations
 
 #### Efficient Re-rendering
+- **Lazy Loading**: Pages load on-demand reducing initial bundle size
 - **Memoized Services**: Token service and stream clients cached to prevent recreation
 - **Conditional Rendering**: Components only render when needed based on state
 - **Event Cleanup**: Proper cleanup of WebSocket, STT, and microphone resources
@@ -362,6 +365,11 @@ const isLargeScreen = viewportWidth >= 1280; // Reduce complexity for large scre
 - **Reduced Animations**: Simplified effects on smaller screens
 - **Touch Optimization**: Large touch targets for mobile interaction
 - **Battery Efficiency**: Microphone and STT services only active when needed
+
+#### Error Resilience
+- **Error Boundaries**: Prevent component crashes from breaking the entire interface
+- **Graceful Loading**: Consistent loading states with `LoadingFallback` component
+- **Performance Monitoring**: Development-time metrics for optimization insights
 
 ### Accessibility Features
 

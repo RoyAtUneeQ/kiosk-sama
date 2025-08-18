@@ -46,10 +46,11 @@ The system consists of:
 - **[UI Architecture](pages/remote/ui.md)** - Mobile-first responsive design patterns
 
 ### Key Technologies
-- **React + TypeScript** - UI framework and type safety
+- **React + TypeScript** - UI framework and type safety with lazy loading
 - **Zustand** - Centralized state management with shared interaction states
 - **WebSocket** - Real-time communication with backend
 - **Uneeq SDK** - Digital human avatar integration
 - **Vite** - Build tool and development server
+- **Performance Monitoring** - Development-time metrics tracking for optimization
 
 

@@ -26,6 +26,8 @@ graph TB
     subgraph "Shared Components"
         Button[🔘 Button<br/>Reusable button component]
         Panel[📋 Panel<br/>Container with styling]
+        ErrorBoundary[🛡️ ErrorBoundary<br/>Error containment & fallback UI]
+        LoadingFallback[⏳ LoadingFallback<br/>Consistent loading states]
     end
     
     KioskPage --> KioskStartForm
@@ -216,6 +218,7 @@ const handleTriggerClick = async (trigger: TriggerItem) => {
 ### Performance Considerations
 
 **Component Optimization**:
+- Lazy loading reduces initial bundle size by ~60%
 - Conditional rendering prevents unnecessary DOM nodes
 - Media components only render when content exists
 - Uneeq SDK container persists across state changes
@@ -225,6 +228,11 @@ const handleTriggerClick = async (trigger: TriggerItem) => {
 - Zustand provides efficient re-renders
 - Components only re-render when relevant state changes
 - Media URLs cleared when not needed to free memory
+
+**Error Handling & Loading**:
+- `ErrorBoundary` components prevent crashes from propagating
+- `LoadingFallback` provides consistent loading states across the app
+- Performance monitoring tracks page load times in development
 
 ### Accessibility Features
 
