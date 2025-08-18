@@ -8,4 +8,5 @@ export { WebSocketService, default as WebSocketServiceDefault } from './WebSocke
 
 // Service types
 export * from './types';
+export { default as PerformanceMonitor } from './PerformanceMonitor';
 
