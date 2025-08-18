@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import { useConfig } from '@/hooks/useConfig';
+import { LoadingFallback } from '../loadingFallback/LoadingFallback';
 
 interface ConfigLoaderProps {
   children: ReactNode;
@@ -9,25 +10,13 @@ interface ConfigLoaderProps {
 
 export const ConfigLoader: React.FC<ConfigLoaderProps> = ({ 
   children, 
-  fallback = <div>Loading application...</div> 
+  fallback = <LoadingFallback message="Loading configuration..." size="large" className="loading-fallback--fullscreen" />
 }) => {
   const { config, loading, error, reload } = useConfig();
 
   // Show loading state
   if (loading) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontSize: '18px',
-        flexDirection: 'column',
-        gap: '1rem'
-      }}>
-        {fallback}
-      </div>
-    );
+    return <>{fallback}</>;
   }
 
   // Show error state with retry option

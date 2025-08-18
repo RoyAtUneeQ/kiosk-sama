@@ -12,9 +12,12 @@ if (typeof crypto !== 'undefined' && !crypto.randomUUID) {
 }
 
 import { createRoot } from 'react-dom/client'
-import KioskPage from './pages/kiosk/KioskPage'
-import RemotePage from './pages/remote/RemotePage'
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+// Lazy load pages to reduce initial bundle size
+const KioskPage = lazy(() => import('./pages/kiosk/KioskPage'))
+const RemotePage = lazy(() => import('./pages/remote/RemotePage'))
 import './styles/reset.scss'
 import './styles/base.scss'
 import './i18n'
@@ -22,6 +25,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { LanguageProvider } from './i18n/LanguageProvider'
 
 import { ConfigLoader } from './components/configLoader/ConfigLoader'
+import { ErrorBoundary } from './components/errorBoundary/ErrorBoundary'
+import { LoadingFallback } from './components/loadingFallback/LoadingFallback'
+import { PerformanceMonitor } from './services'
+
+// Initialize performance monitoring
+PerformanceMonitor.startTiming('app-initialization');
+PerformanceMonitor.trackWebVitals();
 
 // Create a client
 const queryClient = new QueryClient({
@@ -34,22 +44,22 @@ const queryClient = new QueryClient({
 })
 
 createRoot(document.getElementById('root')!).render(
-  <QueryClientProvider client={queryClient}>
-    <ConfigLoader fallback={<div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      fontSize: '18px' 
-    }}>Loading application...</div>}>
-      <LanguageProvider>
-          <BrowserRouter>
-            <Routes> 
-              <Route path="/" element={<KioskPage />} />
-              <Route path="/remote/:kioskConnectionId" element={<RemotePage />} />
-            </Routes>
-          </BrowserRouter>
-      </LanguageProvider>
-    </ConfigLoader>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+          <ConfigLoader fallback={<LoadingFallback message="Loading application..." size="large" className="loading-fallback--fullscreen" />}>
+        <LanguageProvider>
+            <BrowserRouter>
+              <Suspense fallback={<LoadingFallback message="Loading page..." size="large" className="loading-fallback--fullscreen" />}>
+                <ErrorBoundary>
+                  <Routes> 
+                    <Route path="/" element={<KioskPage />} />
+                    <Route path="/remote/:kioskConnectionId" element={<RemotePage />} />
+                  </Routes>
+                </ErrorBoundary>
+              </Suspense>
+            </BrowserRouter>
+        </LanguageProvider>
+      </ConfigLoader>
+    </QueryClientProvider>
+  </ErrorBoundary>
 )
