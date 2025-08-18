@@ -3,7 +3,7 @@ import { SessionStatus } from '@/contexts/types';
 import { QRCode } from '@/components';  
 import { useSession } from '@/contexts/SessionContext';
 import { defaultUneeqOptions } from '@/types';
-import { useUneeqEvents, useWebSocket } from '@/hooks';
+import { useUneeqEvents, useWebSocket, usePageLoadMonitor } from '@/hooks';
 import { useUneeq } from '@/hooks/useUneeq';
 import type { UneeqOptions } from '@/types/uneeq';
 import { useConfig } from '@/hooks/useConfig';
@@ -11,6 +11,9 @@ import { useEffect } from 'react';
 import { createActionFactory, BackendHostUrlFactory } from '@/factories';
 
 function KioskPage() {
+  // Track page load performance to measure lazy loading impact
+  usePageLoadMonitor('KioskPage');
+  
   const { state } = useSession();
   const actionFactory = createActionFactory();
   

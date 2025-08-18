@@ -1,5 +1,5 @@
 import "./KioskStartForm.scss";
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Button from "@/components/button/Button";
 import Panel from "@/components/panel/Panel";
 import splashImage from "@/assets/splash.png";
@@ -7,19 +7,31 @@ import { useConfig, useTranslation } from "@/hooks";
 import { useSession } from "@/contexts/SessionContext";
 import { WebsocketStatus } from "@/types";
 import { SessionStatus } from '@/contexts/types';
+import { usePerformanceMonitor } from "@/hooks/usePerformanceMonitor";
 
 const KioskStartForm: React.FC = () => { 
   const { actions, state } = useSession();
   const { getSupportedLanguages, getRenderByLanguage } = useConfig();
   const { t, changeLanguage } = useTranslation();
+  
+  // Performance monitoring for experience startup
+  const { startTiming, endTiming } = usePerformanceMonitor('KioskStartForm');
 
   // Start the experience when the user clicks the start button
   const startExperience = useCallback(() => {
+    startTiming('experience-startup');
     actions.setSessionStatus(SessionStatus.LOADING, () => {
       state.uneeq?.init();
       state.uneeq?.startSession();
     });
-  }, [state.uneeq]);
+  }, [state.uneeq, startTiming]);
+
+  // Track when experience startup completes (LOADING -> LIVE)
+  useEffect(() => {
+    if (state.status === SessionStatus.LIVE) {
+      endTiming('experience-startup');
+    }
+  }, [state.status, endTiming]);
 
   return (
     <div className="kiosk-component">

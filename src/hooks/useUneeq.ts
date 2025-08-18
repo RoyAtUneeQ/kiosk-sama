@@ -4,6 +4,7 @@ import { useConfig } from "@/hooks/useConfig";
 import type { Uneeq, UneeqOptions, Event } from "@/types";
 import { useSession } from "@/contexts/SessionContext";
 import { MessageSender } from "@/types";
+import { usePerformanceMonitor } from "@/hooks/usePerformanceMonitor";
 
 declare const Uneeq: any;
 
@@ -21,6 +22,9 @@ declare global {
 export const useUneeq = (options: UneeqOptions, language: string = 'en', type: 'cloud' | 'miniprem' = 'cloud') => {
   const { config, loading } = useConfig();
   const { actions, state } = useSession();
+  
+  // Performance monitoring for UneeQ operations
+  const { startTiming, endTiming } = usePerformanceMonitor('useUneeq');
 
   // Get config values
   const scriptUrl = config?.personas?.[language]?.[type]?.CDN || '';
@@ -30,6 +34,15 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
 
   // Load script using external library
   const [scriptLoading, scriptError] = useScript({ src: scriptUrl });
+
+  // Track script loading performance
+  useEffect(() => {
+    if (scriptUrl && scriptLoading) {
+      startTiming('script-load');
+    } else if (scriptUrl && !scriptLoading && !scriptError) {
+      endTiming('script-load');
+    }
+  }, [scriptLoading, scriptError, scriptUrl, startTiming, endTiming]);
 
   // Create stable event handler using useCallback
   const handleUneeqMessage = useCallback((e: CustomEvent) => {
@@ -48,6 +61,8 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
     }
     
     try {
+      startTiming('sdk-init');
+      
       // Clean up previous session
       window.uneeq?.endSession?.();
       
@@ -71,8 +86,11 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
       // Add event listener with stable callback reference
       window.addEventListener('UneeqMessage', handleUneeqMessage as EventListener);
       
+      endTiming('sdk-init');
+      
     } catch (err) {
       console.error('Uneeq initialization failed:', err);
+      endTiming('sdk-init'); // End timing even on error
     }
 
     // Cleanup function to remove event listener

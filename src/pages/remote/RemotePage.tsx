@@ -1,6 +1,6 @@
 import './RemotePage.scss';
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { useWebSocket, useUserInspect, useMicStream } from '@/hooks';
+import { useWebSocket, useUserInspect, useMicStream, usePageLoadMonitor, usePerformanceMonitor } from '@/hooks';
 import { WebsocketStatus } from '@/types/transport/WebsocketStatus';
 import { useParams } from 'react-router-dom';
 import { MessageSender, type Message } from '@/types';
@@ -17,6 +17,12 @@ import { EphemeralTokenService } from '@/services';
 import { BackendHostUrlFactory } from '@/factories';
 
 function RemotePage() {
+  // Track page load performance to measure lazy loading impact
+  usePageLoadMonitor('RemotePage');
+  
+  // Performance monitoring for STT service initialization
+  const { startTiming, endTiming } = usePerformanceMonitor('RemotePage-STT');
+  
   const { config } = useConfig();
   const { kioskConnectionId } = useParams();
   const [inputText, setInputText] = useState(''); // Keep local - UI specific input
@@ -69,6 +75,8 @@ function RemotePage() {
     if (sttRef.current) return;
 
     let cancelled = false;
+    startTiming('service-init');
+    
     (async () => {
       try {
         // Resolve token before constructing the client
@@ -82,7 +90,10 @@ function RemotePage() {
           sampleRate: 16000,
           channels: 1,
           smartFormat: true,
-          onOpen: () => actions.setSttReady(true),
+          onOpen: () => {
+            actions.setSttReady(true);
+            endTiming('service-init');
+          },
           onPartial: () => actions.setIsTyping(true),
           onFinal: (text: string) => {
             actions.setIsTyping(false);
@@ -93,6 +104,7 @@ function RemotePage() {
 
         if (!streamClient) {
           console.error('[RemotePage] Failed to create STT client');
+          endTiming('service-init'); // End timing on error
           return;
         }
 
@@ -102,14 +114,16 @@ function RemotePage() {
           console.error('[RemotePage] Failed to connect STT:', e);
           sttRef.current = null;
           actions.setSttReady(false);
+          endTiming('service-init'); // End timing on connection error
         });
       } catch (e) {
         console.error('[RemotePage] Failed to prepare STT:', e);
+        endTiming('service-init'); // End timing on error
       }
     })();
 
     return () => { cancelled = true; };
-  }, [state.webSocketState]);
+  }, [state.webSocketState, startTiming, endTiming]);
 
   // Connect to kiosk session
   useEffect(() => {
