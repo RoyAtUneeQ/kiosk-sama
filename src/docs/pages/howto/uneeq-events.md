@@ -17,10 +17,10 @@ UneeQ Event Listeners respond to standard events fired by the UneeQ SDK during d
 - **Trigger**: Automatic SDK lifecycle events
 - **Examples**: `SessionLive`, `PromptRequest`, `AvatarStoppedSpeaking`
 
-### **🗣️ Custom Speech Event Listeners** ([See Other Guide](howto/custom-events.md))
+### **🗣️ Custom Speech Event Listeners** ([See Other Guide](pages/howto/custom-events.md))
 - **Purpose**: Handle custom tags embedded in avatar speech
 - **Interface**: `CustomEventListener` with custom `type` string  
-- **Trigger**: `<uneeq custom event />` tags in speech
+- **Trigger**: `<uneeq:custom_event name="custom_event_name" data="custom_event_data" />` tags in speech
 - **Examples**: Media display, image showing, interactive actions
 
 ## 📁 File Structure
@@ -63,36 +63,99 @@ interface UneeqEventListener {
 
 ### Step 2: Choose Your Event Type
 
-Available events from `EventType` enum:
+## Essential Events (Start Here)
 
+| Event | Purpose | When to Use |
+|-------|---------|-------------|
+| `SessionLive` | Session ready | Initialize UI, show welcome |
+| `SessionEnded` | Session finished | Cleanup, show goodbye |
+| `AvatarStartedSpeaking` | Avatar talking | Disable user input |
+| `AvatarStoppedSpeaking` | Avatar finished | Enable user input |
+| `UserStartedSpeaking` | User talking | Show speaking indicator |
+| `UserStoppedSpeaking` | User finished | Process input |
+| `DeviceError` | Hardware issue | Show troubleshooting |
+| `MicPermissionDenied` | No mic access | Guide permission setup |
+
+## Additional Events
+
+<details>
+<summary style="cursor: pointer; font-weight: bold; color:rgb(95, 95, 95); padding: 10px;border-radius: 5px;border: 1px solid rgba(210, 25, 127, 0.25); width: 50%;">🗂️ Full UneeQ Event List  <span style="margin-left: 15px;color:rgb(43, 38, 30);">(click to expand)</span></summary>
+
+### Session Events
+- `SessionDisconnected` - Connection lost
+- `SessionReconnecting` - Reconnecting
+- `SessionReconnectingFinished` - Reconnected
+- `SessionError` - Session error
+
+### Speech Events  
+- `SpeechTranscription` - Live transcription
+- `PromptRequest` - System requesting input
+- `PromptResult` - Input processed
+- `RecordingStarted` - Recording began
+- `RecordingStopped` - Recording ended
+
+### System Events
+- `ServiceUnavailable` - Service down
+- `DigitalHumanUnmuted` - Audio enabled
+- `CustomMetadataUpdated` - Metadata changed
+- `WebRtcStats` - Connection stats
+- `WaitingInQueue` - In queue
+
+### UI Events
+- `Notification` - System message
+- `Instructions` - Help text
+- `FrameReady` - Video ready
+- `CallToActionDismissed` - CTA dismissed
+
+</details>
+
+## Quick Examples
+
+### Basic Session Management
 ```typescript
-// Session & Connection Events
-SessionLive, SessionEnded, SessionDisconnected
-SessionReconnecting, SessionReconnectingFinished
+export class SessionLiveListener implements UneeqEventListener {
+  eventType = EventType.SessionLive;
+  
+  execute(data: any, session: SessionContextType): void {
+    session.actions.setSessionStatus(SessionStatus.LIVE);
+    // Initialize UI
+  }
+}
+```
 
-// Avatar Events  
-AvatarStoppedSpeaking, AvatarStartedSpeaking
-AvatarUnavailable, AvatarAnswerContent
+### Avatar Speaking Control
+```typescript
+export class AvatarStoppedSpeakingListener implements UneeqEventListener {
+  eventType = EventType.AvatarStoppedSpeaking;
+  
+  execute(data: any, session: SessionContextType): void {
+    session.actions.setAwaitingPromptResponse(false);
+    // Enable user input
+  }
+}
+```
 
-// User Interaction Events
-UserStartedSpeaking, UserStoppedSpeaking
-PromptRequest, PromptResult
-
-// System Events
-DeviceError, ServiceUnavailable, SessionError
-MicPermissionDenied, DigitalHumanUnmuted
-RecordingStarted, RecordingStopped
-
-// Advanced Events
-SpeechTranscription, CustomMetadataUpdated
-WebRtcStats, WaitingInQueue
+### Error Handling
+```typescript
+export class DeviceErrorListener implements UneeqEventListener {
+  eventType = EventType.DeviceError;
+  
+  execute(data: any, session: SessionContextType): void {
+    const error = data?.error?.message || 'Device error occurred';
+    session.actions.addMessageToHistory({
+      id: crypto.randomUUID(),
+      content: `Error: ${error}. Please check your device.`,
+      sender: MessageSender.System,
+      timestamp: new Date()
+    });
+  }
+}
 ```
 
 ### Step 3: Create Your Event Listener
 
-**File: `src/listeners/uneeq/UserStartedSpeakingListener.ts`**
-
 ```typescript
+// src/listeners/uneeq/UserStartedSpeakingListener.ts
 import { EventType } from '@/types';
 import type { UneeqEventListener } from '../types/UneeqEventListener';
 import type { SessionContextType } from '@/contexts/SessionContext';
@@ -101,248 +164,36 @@ export class UserStartedSpeakingListener implements UneeqEventListener {
   eventType = EventType.UserStartedSpeaking;
   
   execute(data: any, session: SessionContextType): void {
-    console.log('[UserStartedSpeaking] User began speaking', data);
-    
-    // Update session state to show user is speaking
     session.actions.setUserSpeaking(true);
-    
-    // Optional: Add visual feedback
-    session.actions.setAwaitingPromptResponse(false);
   }
 }
 ```
 
-### Step 4: Export Your Listener (Auto-Discovery)
+### Step 4: Export Your Listener
 
-Add your listener to `src/listeners/uneeq/index.ts`:
-
-```typescript
-export * from './SessionLiveListener';
-export * from './DigitalHumanUnmutedListener';
-export * from './PromptRequestListener';
-export * from './UserStartedSpeakingListener';  // ← Add this line
-
-// ... other exports
-```
-
-### Step 5: Test Your Listener
-
-That's it! Your listener will automatically be registered and will respond to the specified UneeQ events during digital human sessions.
-
-## 🎨 Key Examples
-
-### Example 1: Session Status Management
+Add to `src/listeners/uneeq/index.ts`:
 
 ```typescript
-export class SessionEndedListener implements UneeqEventListener {
-  eventType = EventType.SessionEnded;
-  
-  execute(data: any, session: SessionContextType): void {
-    console.log('Session ended:', data);
-    
-    // Clean up session state
-    session.actions.setSessionStatus(SessionStatus.ENDED);
-    session.actions.setAwaitingPromptResponse(false);
-    session.actions.setUserSpeaking(false);
-    
-    // Optional: Show end session message
-    session.actions.addMessageToHistory({
-      id: crypto.randomUUID(),
-      content: 'Session has ended. Thank you for using our service!',
-      sender: MessageSender.System,
-      timestamp: new Date()
-    });
-  }
-}
+export * from './UserStartedSpeakingListener';
 ```
 
-### Example 2: Error Handling
+Done! Your listener auto-registers and responds to events.
 
-```typescript
-export class DeviceErrorListener implements UneeqEventListener {
-  eventType = EventType.DeviceError;
-  
-  execute(data: any, session: SessionContextType): void {
-    console.error('Device error occurred:', data);
-    
-    const errorMessage = data.error?.message || 'A device error occurred';
-    const errorType = data.error?.type || 'unknown';
-    
-    // Add error message to chat
-    session.actions.addMessageToHistory({
-      id: crypto.randomUUID(),
-      content: `Device Error (${errorType}): ${errorMessage}. Please check your device settings.`,
-      sender: MessageSender.System,
-      timestamp: new Date()
-    });
-    
-    // Update session state
-    session.actions.setAwaitingPromptResponse(false);
-  }
-}
-```
+## Troubleshooting
 
-## 🎯 Common Use Cases
+**Listener not working?**
+1. Check export in `uneeq/index.ts`
+2. Verify `eventType` matches `EventType` enum
+3. Restart dev server
 
-### **Session Management**
-- **SessionLive**: Initialize UI components and welcome messages
-- **SessionEnded**: Cleanup, show goodbye messages, reset state
-- **SessionReconnecting**: Show reconnection indicators
+**Need event data?**
+Add `console.log(data)` in your `execute` method to inspect.
 
-### **Avatar Interaction**
-- **AvatarStartedSpeaking**: Hide user input, show listening state
-- **AvatarStoppedSpeaking**: Enable user input, show ready state  
-- **PromptRequest**: Show loading indicators, prepare for response
+## Summary
 
-### **User Interaction**
-- **UserStartedSpeaking**: Visual feedback, pause background processes
-- **UserStoppedSpeaking**: Process speech, update UI state
-- **SpeechTranscription**: Show real-time speech-to-text
+1. Create class implementing `UneeqEventListener`
+2. Set `eventType` from `EventType` enum  
+3. Export from `uneeq/index.ts`
+4. Handle events in `execute` method
 
-### **System Status**
-- **DeviceError**: Handle microphone/camera issues
-- **ServiceUnavailable**: Show fallback options
-- **MicPermissionDenied**: Guide user through permission setup
-
-## 🔍 How Auto-Discovery Works
-
-The system automatically finds and registers your UneeQ event listeners:
-
-```mermaid
-graph LR
-    A[📂 Export Listener] --> B[🔍 Auto-Discovery]
-    B --> C[📝 Register by EventType]
-    C --> D[⚡ Ready for Events]
-    
-    style A fill:#e8f5e8
-    style D fill:#fff3e0
-```
-
-**Behind the Scenes:**
-```typescript
-// System automatically discovers all UneeqEventListener implementations
-Object.values(uneeqListeners).forEach(ListenerClass => {
-  const listener = new ListenerClass();
-  if (listener.eventType && typeof listener.execute === 'function') {
-    eventRegistry.set(listener.eventType, listener);
-  }
-});
-
-// When UneeQ events fire, system routes to appropriate listener
-uneeqSDK.on('event', (eventType, data, session) => {
-  const listener = eventRegistry.get(eventType);
-  if (listener) {
-    listener.execute(data, session);
-  }
-});
-```
-
-## 🔧 Debugging Event Listeners
-
-### Common Issues & Solutions
-
-**Issue: "My listener doesn't execute"**
-
-✅ **Solutions:**
-1. Check that your class is exported in `uneeq/index.ts`
-2. Verify `eventType` matches an `EventType` enum value exactly
-3. Ensure `execute` method signature matches interface
-4. Check browser console for registration/error logs
-
-**Issue: "Event data is undefined or unexpected"**
-
-✅ **Solutions:**
-1. Add console.log in your `execute` method to inspect data structure
-2. Check UneeQ SDK documentation for event payload format  
-3. Handle undefined/null data gracefully with optional chaining
-4. Use TypeScript interfaces for better data structure validation
-
-### Debugging Checklist
-
-- [ ] Listener class exported in `uneeq/index.ts`
-- [ ] `eventType` property matches `EventType` enum value
-- [ ] `execute` method has correct signature
-- [ ] Development server restarted after changes
-- [ ] Browser console shows no registration errors
-- [ ] Event actually fires (check UneeQ SDK documentation)
-
-## 🚀 Advanced Patterns
-
-### Conditional Event Handling
-
-```typescript
-export class PromptResultListener implements UneeqEventListener {
-  eventType = EventType.PromptResult;
-  
-  execute(data: any, session: SessionContextType): void {
-    const response = data?.promptResult?.response?.text;
-    
-    if (!response) {
-      console.warn('PromptResult missing response text');
-      return;
-    }
-    
-    // Only add to history if response is meaningful
-    if (response.trim() && response !== 'undefined') {
-      session.actions.addMessageToHistory({
-        id: crypto.randomUUID(),
-        content: response,
-        sender: MessageSender.Assistant,
-        timestamp: new Date()
-      });
-    }
-    
-    session.actions.setAwaitingPromptResponse(false);
-  }
-}
-```
-
-### State-Aware Event Handling
-
-```typescript
-export class AvatarStartedSpeakingListener implements UneeqEventListener {
-  eventType = EventType.AvatarStartedSpeaking;
-  
-  execute(data: any, session: SessionContextType): void {
-    // Only update UI if session is actually live
-    if (session.state.sessionStatus === SessionStatus.LIVE) {
-      session.actions.setAwaitingPromptResponse(true);
-      
-      // Pause any background activities
-      session.actions.pauseBackgroundProcesses?.(true);
-    }
-  }
-}
-```
-
-## 📈 Performance Considerations
-
-### **Efficient Event Processing**
-- Keep `execute` methods lightweight and fast
-- Use async operations sparingly to avoid blocking
-- Avoid heavy computations in event handlers
-- Delegate complex processing to separate services
-
-### **Memory Management**
-- Event listeners are singleton instances
-- No persistent state should be stored in listeners
-- Use session context for state management
-- Clean up any resources in appropriate lifecycle events
-
-## 🚀 Summary
-
-Creating UneeQ event listeners is straightforward:
-
-1. **Create** a class implementing `UneeqEventListener`
-2. **Choose** an `EventType` from the enum
-3. **Export** it from `uneeq/index.ts`
-4. **Handle** events with session state updates
-
-### Key Benefits:
-- 🔄 **Automatic Registration** - Zero configuration event handling
-- 🎯 **Type Safety** - Full TypeScript support with EventType enum
-- 🛡️ **Error Isolation** - Failed listeners don't break other events
-- 📈 **Scalable** - Easy to add new event handling capabilities
-- 🧩 **Modular** - Each event type handled by dedicated class
-
-The UneeQ event system provides a clean, modular way to respond to digital human SDK events and keep your application state synchronized with the avatar's lifecycle!
+Auto-registered, type-safe event handling for UneeQ SDK events.
