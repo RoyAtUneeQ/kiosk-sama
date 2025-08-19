@@ -33,17 +33,24 @@ The system consists of:
 
 ### Documentation Sections
 
-#### Kiosk (Main Display Interface)
-- **[Overview](pages/kiosk/overview.md)** - System context and relationships
+#### Core
+- **[Overview](pages/core/overview.md)** - System context and relationships
+- **[Performance & Monitoring](pages/core/performance-monitoring.md)** - Development-time metrics tracking for optimization
+- **[Configuration System](pages/core/configuration.md)** - Application configuration management
+- **[Error Boundary](pages/core/error-boundary.md)** - Error handling and recovery
+
+
+#### Kiosk (Digital Human)
+- **[Overview](pages/kiosk/overview.md)** - Digital human avatar and UI controls
 - **[State Management](pages/kiosk/states.md)** - Session lifecycle and state transitions  
 - **[Event System](pages/kiosk/events.md)** - How Uneeq and WebSocket events are processed
-- **[UI Architecture](pages/kiosk/ui.md)** - Component composition and rendering logic
+- **[UI Architecture](pages/kiosk/ui.md)** - Component composition and rendering logic for the digital human avatar
 
-#### Remote (Mobile Interface)
+#### Remote (Mobile Controller)
 - **[Overview](pages/remote/overview.md)** - Mobile interface architecture and design
 - **[Connection Flow](pages/remote/connection.md)** - Device pairing and WebSocket setup
-- **[Message System](pages/remote/messaging.md)** - Text and voice communication handling
-- **[UI Architecture](pages/remote/ui.md)** - Mobile-first responsive design patterns
+- **[Message System](pages/remote/messaging.md)** - Text and voice communication handling for the mobile controller
+- **[UI Architecture](pages/remote/ui.md)** - Mobile-first responsive design patterns for the mobile controller
 
 ### Key Technologies
 - **React + TypeScript** - UI framework and type safety with lazy loading

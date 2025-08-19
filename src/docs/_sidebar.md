@@ -1,4 +1,9 @@
-- [Introduction](pages/main.md#initial)
+- Core
+  - [Overview](pages/main.md)
+  - [Performance & Monitoring](pages/core/performance-monitoring.md)
+  - [Configuration System](pages/core/configuration.md)
+  - [Error Boundary](pages/core/error-boundary.md)
+  - [Language Support](pages/core/language-support.md)
 
 - Kiosk
   - [Overview](pages/kiosk/overview.md)
@@ -11,10 +16,6 @@
   - [Connection Flow](pages/remote/connection.md)
   - [Message System](pages/remote/messaging.md)
   - [UI Architecture](pages/remote/ui.md)
-
-- Performance & Monitoring
-  - [Performance Monitoring](pages/performance-monitoring.md)
-  - [Error Boundary](pages/error-boundary.md)
 
 - How-to Guides
   - [UneeQ Event Listeners](pages/howto/uneeq-events.md)
