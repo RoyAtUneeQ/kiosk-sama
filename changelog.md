@@ -5,6 +5,30 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2025-01-15
+
+### 📖 Documentation
+- **Interactive Triggers Guide**: Created comprehensive how-to documentation for interactive trigger system
+  - Complete implementation guide from creation to auto-discovery
+  - Explanation of automatic LeftSideBar integration
+  - Real-world examples: product demos, quizzes, conversation starters
+  - Advanced patterns: state-aware triggers, media integration, error handling
+  - Best practices and debugging guide for trigger development
+
+### ✨ Features
+- **Enhanced Cache-Busting**: Implemented comprehensive cache-busting for Docsify documentation
+  - Browser-level: HTTP meta tags + dynamic CSS loading + service worker blocking
+  - Docsify-level: Request headers + disabled internal caching
+  - Server-level: GitLab Pages headers + build timestamps
+  - CI/CD-level: Cache clearing + fresh builds + short expiration
+  - Developer tools: force refresh utility + troubleshooting README
+
+### 🎯 Benefits
+- **Zero-Configuration UI Integration**: Triggers automatically appear as sidebar buttons
+- **Dynamic Prompt Generation**: Context-aware content creation for digital human interactions
+- **Immediate Documentation Updates**: Cache-busting ensures changes are visible instantly
+- **Comprehensive Developer Support**: Full guides for both triggers and custom events
+
 ## [1.0.2] - 2025-01-15
 
 ### 📖 Documentation

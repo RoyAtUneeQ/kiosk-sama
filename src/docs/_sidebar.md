@@ -17,3 +17,4 @@
 
 - How-to Guides
   - [Creating Custom Uneeq Events](pages/howto/custom-events.md)
+  - [Creating Interactive Triggers](pages/howto/triggers.md)
