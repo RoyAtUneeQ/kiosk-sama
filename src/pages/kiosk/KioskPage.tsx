@@ -9,6 +9,7 @@ import type { UneeqOptions } from '@/types/uneeq';
 import { useConfig } from '@/hooks/useConfig';
 import { useEffect } from 'react';
 import { createActionFactory, BackendHostUrlFactory } from '@/factories';
+import { ErrorTester } from '@/components/errorBoundary/ErrorTester';
 
 function KioskPage() {
   // Track page load performance to measure lazy loading impact
@@ -42,7 +43,13 @@ function KioskPage() {
   // No token state logging; tokens are fetched on-demand over HTTP
 
   if (state.status === SessionStatus.IDLE || state.status === SessionStatus.READY)
-      return (<KioskStartForm />);
+      return (
+        <>
+          <KioskStartForm />
+          {/* Development ErrorTester - shows based on config.app.environment */}
+          <ErrorTester show={config?.app?.environment === 'development' } />
+        </>
+      );
 
   return (
     <div>

@@ -46,18 +46,16 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-          <ConfigLoader fallback={<LoadingFallback message="Loading application..." size="large" className="loading-fallback--fullscreen" />}>
+      <ConfigLoader fallback={<LoadingFallback message="Loading application..." size="large" className="loading-fallback--fullscreen" />}>
         <LanguageProvider>
-            <BrowserRouter>
-              <Suspense fallback={<LoadingFallback message="Loading page..." size="large" className="loading-fallback--fullscreen" />}>
-                <ErrorBoundary>
-                  <Routes> 
-                    <Route path="/" element={<KioskPage />} />
-                    <Route path="/remote/:kioskConnectionId" element={<RemotePage />} />
-                  </Routes>
-                </ErrorBoundary>
-              </Suspense>
-            </BrowserRouter>
+          <BrowserRouter>
+            <Suspense fallback={<LoadingFallback message="Loading page..." size="large" className="loading-fallback--fullscreen" />}>
+              <Routes> 
+                <Route path="/" element={<KioskPage />} />
+                <Route path="/remote/:kioskConnectionId" element={<RemotePage />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
         </LanguageProvider>
       </ConfigLoader>
     </QueryClientProvider>
