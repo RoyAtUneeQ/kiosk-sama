@@ -12,8 +12,9 @@
   - [Message System](pages/remote/messaging.md)
   - [UI Architecture](pages/remote/ui.md)
 
-- Performance
+- Performance & Monitoring
   - [Performance Monitoring](pages/performance-monitoring.md)
+  - [Error Boundary](pages/error-boundary.md)
 
 - How-to Guides
   - [UneeQ Event Listeners](pages/howto/uneeq-events.md)
