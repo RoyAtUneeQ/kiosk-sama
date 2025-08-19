@@ -5,6 +5,30 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-01-15
+
+### 📖 Documentation
+- **UneeQ Speech Events Guide**: Created comprehensive how-to documentation for custom UneeQ speech event handlers
+  - Step-by-step implementation guide with practical examples
+  - Auto-discovery system explanation and usage patterns
+  - Real-world use cases for interactive presentations and product demonstrations
+  - Proper UneeQ speech event format: `<uneeq custom event name="..." data="..." />`
+
+### 🔄 Refactoring
+- **Interface Naming**: Renamed `CustomEvent` to `CustomEventListener` for clarity and to avoid confusion with browser's native CustomEvent API
+- **Folder Structure**: Restructured `custom_events/` to `speech_events/` to align with UneeQ terminology and conventions
+  - Updated MediaCustomListener to use new interface and folder structure
+  - Removed legacy InMediaInstruction and InWeegoInstruction files
+  - Updated all import paths and documentation references
+
+### 🎯 Benefits
+- **Aligned with UneeQ conventions** for better developer understanding
+- **Clearer naming** that immediately shows purpose and functionality
+- **Comprehensive documentation** for easier implementation of custom speech events
+- **Standardized approach** to handling UneeQ speech events
+
+---
+
 ## [1.0.1] - 2025-01-15
 
 ### 🐛 Bug Fixes
