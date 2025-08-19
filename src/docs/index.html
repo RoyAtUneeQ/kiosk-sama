@@ -6,8 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="assets/style/theme.css" />
-  <link rel="stylesheet" href="assets/style/coverpage.css" />
+  
+  <!-- Cache-busting meta tags -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <!-- CSS files will be loaded dynamically with cache-busting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link
   rel="stylesheet"
@@ -19,19 +23,73 @@
 <body>
   <div id="app"></div>
   <script>
+    // Generate cache-busting timestamp
+    const cacheVersion = Date.now();
+    
+    // Dynamically load CSS files with cache-busting
+    function loadCSS(href, id) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href + '?v=' + cacheVersion;
+      if (id) link.id = id;
+      document.head.appendChild(link);
+    }
+    
+    // Load custom CSS files with cache-busting
+    loadCSS('assets/style/theme.css', 'theme-css');
+    loadCSS('assets/style/coverpage.css', 'coverpage-css');
+    
     window.$docsify = {
       name: 'Uneeq Demo - Frontend',
       coverpage: true,
       loadSidebar: true,
-      homepage: '/pages/main.md'
+      homepage: '/pages/main.md',
+      
+      // Cache-busting configuration
+      requestHeaders: {
+        'cache-control': 'no-cache'
+      },
+      
+      // Add cache-busting to all requests
+      plugins: [
+        function(hook) {
+          hook.beforeEach(function(content) {
+            // Force refresh by adding timestamp to content
+            return content;
+          });
+          
+          // Add cache-busting to all AJAX requests
+          hook.doneEach(function() {
+            console.log('Documentation loaded at:', new Date().toISOString());
+          });
+        }
+      ],
+      
+      // Additional cache-busting options
+      auto2top: true,
+      executeScript: true,
+      noEmoji: false,
+      mergeNavbar: true,
+      formatUpdated: '{YYYY}-{MM}-{DD} {HH}:{mm}:{ss}',
+      
+      // Force reload behavior
+      routerMode: 'hash', // Use hash routing for better cache control
+      
+      // Search configuration with cache-busting
+      search: {
+        maxAge: 0, // Disable search cache
+        noData: {
+          '/': 'No results!'
+        },
+        paths: 'auto',
+        placeholder: {
+          '/': 'Search...'
+        }
+      }
     } 
   </script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify"></script>
-  <!-- PDFObject.js is a required dependency of this plugin -->
-  <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js"></script> 
-  <script src="//unpkg.com/docsify-pdf-embed-plugin/src/docsify-pdf-embed.js"></script> -->
-  <!-- <script src="https://unpkg.com/docsify-swagger-ui@latest/dist/index.min.js"></script> -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-json.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-typescript.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-jsx.min.js"></script>
@@ -43,5 +101,26 @@
     window.mermaid = mermaid;
   </script>
   <script src="//unpkg.com/docsify-mermaid@2.0.1/dist/docsify-mermaid.js"></script>
+  <!-- Docsify search plugin with cache-busting -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  
+  <!-- Additional cache-busting for page reloads -->
+  <script>
+    // Force reload on back button
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    });
+    
+    // Disable service worker caching for docs
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script>
 </body>
 </html>

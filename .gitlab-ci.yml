@@ -1,10 +1,14 @@
-# GitLab CI configuration for deploying docsify documentation to GitLab Pages
+# GitLab CI configuration for deploying docsify documentation to GitLab Pages with cache-busting
 stages:
   - deploy
 
 pages:
   stage: deploy
   image: node:latest
+  before_script:
+    # Force clean cache and update npm
+    - npm cache clean --force
+    - npm update
   script:
     # Create public directory (required for GitLab Pages)
     - mkdir -p public
@@ -17,11 +21,45 @@ pages:
     # This will initialize docsify in the public folder and copy our docs content there
     - npm run generate-docs
     
-    # If needed, you can also do this manually:
-    # - docsify init public
-    # - cp -r src/docs/* public/
+    # Create _headers file for GitLab Pages cache control
+    - |
+      cat > public/_headers << EOF
+      /*
+        Cache-Control: no-cache, no-store, must-revalidate
+        Pragma: no-cache
+        Expires: 0
+      /*.html
+        Cache-Control: no-cache, no-store, must-revalidate
+        Pragma: no-cache  
+        Expires: 0
+      /*.js
+        Cache-Control: no-cache, no-store, must-revalidate
+        Pragma: no-cache
+        Expires: 0
+      /*.css
+        Cache-Control: no-cache, no-store, must-revalidate
+        Pragma: no-cache
+        Expires: 0
+      /*.md
+        Cache-Control: no-cache, no-store, must-revalidate
+        Pragma: no-cache
+        Expires: 0
+      EOF
+    
+    # Add build timestamp to force cache invalidation
+    - echo "Build timestamp:" $(date) > public/build-info.txt
+    
+    # Ensure .nojekyll exists for proper SPA routing
+    - touch public/.nojekyll
+    
   artifacts:
     paths:
       - public
+    expire_in: 1 hour  # Short expiration to force fresh builds
+  cache:
+    paths: []  # Disable CI cache to always get fresh builds
+  environment:
+    name: documentation
+    url: https://$CI_PROJECT_NAMESPACE.gitlab.io/$CI_PROJECT_NAME
   only:
-    - main  # or another branch you want to deploy from, like 'master'
+    - main  # Deploy only from main branch
