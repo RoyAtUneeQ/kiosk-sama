@@ -5,6 +5,27 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2025-01-15
+
+### 📖 Documentation
+- **Documentation Architecture Restructure**: Reorganized documentation into hierarchical Core/Kiosk/Remote sections
+  - **Core Section**: Created new core/ directory with system fundamentals
+  - **File Organization**: Moved error-boundary.md and performance-monitoring.md to core/
+  - **New Core Documentation**: Added comprehensive guides for configuration system and language support
+  - **Updated Navigation**: Restructured sidebar to reflect logical grouping and improved discoverability
+  - **Enhanced Code Highlighting**: Added YAML syntax highlighting support for configuration examples
+
+### ✨ Features  
+- **Improved Documentation Structure**: Developers can now easily locate system core concepts, kiosk functionality, and remote features
+- **Better Developer Experience**: Clear separation between foundational concepts and feature-specific implementation details
+
+### 🎯 Benefits
+- **Enhanced Maintainability**: Logical organization makes documentation easier to update and expand
+- **Improved Onboarding**: New developers can follow a clear path from core concepts to specific features
+- **Better Code Highlighting**: YAML configuration examples now display with proper syntax highlighting
+
+---
+
 ## [1.0.3] - 2025-01-15
 
 ### 📖 Documentation

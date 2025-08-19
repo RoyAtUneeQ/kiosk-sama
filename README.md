@@ -40,6 +40,11 @@ npm run build
 
 ## 📚 Documentation Structure
 
+- **[Core System](https://interface-149017.gitlab.io/#/pages/main)** - Foundation and configuration
+  - [Performance & Monitoring](https://interface-149017.gitlab.io/#/pages/core/performance-monitoring) - Development metrics and optimization
+  - [Configuration System](https://interface-149017.gitlab.io/#/pages/core/configuration) - Application and persona configuration
+  - [Error Boundary](https://interface-149017.gitlab.io/#/pages/core/error-boundary) - Error handling and recovery
+  - [Language Support](https://interface-149017.gitlab.io/#/pages/core/language-support) - Multi-language and internationalization
 - **[Kiosk (Main Display)](https://interface-149017.gitlab.io/#/pages/kiosk/overview)** - Primary interface architecture
   - [State Management](https://interface-149017.gitlab.io/#/pages/kiosk/states) - Session lifecycle and state flows
   - [Event System](https://interface-149017.gitlab.io/#/pages/kiosk/events) - UneeQ and WebSocket event handling
