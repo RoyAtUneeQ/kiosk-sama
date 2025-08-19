@@ -1,7 +1,7 @@
 import { type SessionActions } from "@/contexts/SessionContext";
-import { type CustomEvent } from "@/listeners/types/CustomEvent";
+import { type CustomEventListener } from "@/listeners/types/CustomEventListener";
 
-export class InMediaInstruction implements CustomEvent {
+export class MediaCustomListener implements CustomEventListener {
     type = "media";
     async execute(data: any, actions: SessionActions): Promise<void> {
         console.log("In Media Instruction", data);
