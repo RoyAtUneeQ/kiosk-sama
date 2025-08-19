@@ -16,5 +16,6 @@
   - [Performance Monitoring](pages/performance-monitoring.md)
 
 - How-to Guides
-  - [Creating Custom Uneeq Events](pages/howto/custom-events.md)
-  - [Creating Interactive Triggers](pages/howto/triggers.md)
+  - [UneeQ Event Listeners](pages/howto/uneeq-events.md)
+  - [Custom Uneeq Event Listeners](pages/howto/custom-events.md)
+  - [Interactive Triggers](pages/howto/triggers.md)

@@ -8,12 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.3] - 2025-01-15
 
 ### 📖 Documentation
+- **UneeQ Event Listeners Guide**: Created comprehensive how-to documentation for standard UneeQ SDK event handling
+  - Complete implementation guide for `UneeqEventListener` interface with `EventType` enum
+  - Clear distinction between standard UneeQ events vs custom speech events
+  - Session management, avatar interaction, user interaction, and system status examples
+  - Auto-discovery system explanation and debugging guidance
+  - Performance considerations and advanced patterns for event handling
+
 - **Interactive Triggers Guide**: Created comprehensive how-to documentation for interactive trigger system
   - Complete implementation guide from creation to auto-discovery
   - Explanation of automatic LeftSideBar integration
-  - Real-world examples: product demos, quizzes, conversation starters
+  - Dual-type system: UI triggers (with icons) vs programmatic triggers (code-only)
   - Advanced patterns: state-aware triggers, media integration, error handling
-  - Best practices and debugging guide for trigger development
+  - Streamlined examples to reduce cognitive load while maintaining technical depth
 
 ### ✨ Features
 - **Enhanced Cache-Busting**: Implemented comprehensive cache-busting for Docsify documentation
