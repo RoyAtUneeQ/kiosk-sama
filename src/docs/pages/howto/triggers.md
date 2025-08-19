@@ -283,82 +283,9 @@ const LeftSideBar: React.FC = () => {
 - Context-aware help responses
 - Automated workflow prompts
 
-## 🎨 Advanced Trigger Examples
+## 🎨 Key Examples
 
-### Example 1: UI Trigger - Contextual Conversation Starter
-
-```typescript
-export class ConversationStarterTrigger implements Trigger {
-    icon: string = "MdChat";
-    
-    generate(args: any): string {
-        const topics = [
-            'the latest technology trends',
-            'sustainable living practices', 
-            'creative problem-solving techniques',
-            'future of work and automation'
-        ];
-        
-        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-        const timeOfDay = new Date().getHours() < 12 ? 'morning' : 
-                         new Date().getHours() < 18 ? 'afternoon' : 'evening';
-        
-        return `Good ${timeOfDay}! Let's have an engaging conversation about ${randomTopic}. 
-                Start with an interesting question or fun fact that will spark curiosity 
-                and encourage the user to share their thoughts.`;
-    }
-}
-```
-
-### Example 2: Interactive Quiz Generator
-
-```typescript
-export class QuizTrigger implements Trigger {
-    icon: string = "MdQuiz";
-    
-    generate(args: any): string {
-        const subjects = ['science', 'history', 'technology', 'geography'];
-        const difficulties = ['easy', 'medium', 'challenging'];
-        
-        const subject = subjects[Math.floor(Math.random() * subjects.length)];
-        const difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-        
-        return `Create a ${difficulty} ${subject} quiz question with 4 multiple choice answers. 
-                Present the question in an engaging way, then wait for the user's answer. 
-                After they respond, provide the correct answer with a brief, interesting explanation.`;
-    }
-}
-```
-
-### Example 3: Media Showcase Trigger
-
-```typescript
-export class MediaShowcaseTrigger implements Trigger {
-    icon: string = "MdPlayCircle";
-    
-    generate(args: any): string {
-        const mediaTypes = ['video', 'image', 'presentation'];
-        const mediaType = mediaTypes[Math.floor(Math.random() * mediaTypes.length)];
-        
-        const mediaUrls = {
-            video: ['demo.mp4', 'tutorial.mp4', 'showcase.mp4'],
-            image: ['product1.jpg', 'infographic.png', 'chart.svg'],
-            presentation: ['slides1.pdf', 'overview.pptx', 'demo.slides']
-        };
-        
-        const randomMedia = mediaUrls[mediaType][
-            Math.floor(Math.random() * mediaUrls[mediaType].length)
-        ];
-        
-        return `I'm going to show you something interesting! 
-                <uneeq custom event name="${mediaType}" data="${randomMedia}" />
-                This ${mediaType} demonstrates key concepts we've been discussing. 
-                What questions do you have about what you're seeing?`;
-    }
-}
-```
-
-### Example 4: Programmatic Trigger - Error Handler
+### Example 1: Programmatic Trigger - Error Handler
 
 ```typescript
 export class ErrorHandlerTrigger implements Trigger {
@@ -366,18 +293,13 @@ export class ErrorHandlerTrigger implements Trigger {
     
     generate(args: any): string {
         const errorType = args.errorType || 'unknown';
-        const errorMessage = args.message || 'Something went wrong';
         const userAction = args.userAction || 'an action';
         
         const errorPrompts = {
-            connection: `I'm experiencing a connection issue while trying to ${userAction}. 
-                        Let me try to reconnect and assist you in a different way.`,
-            validation: `There seems to be an issue with the information provided for ${userAction}. 
-                        Let me help you correct this and try again.`,
-            timeout: `The request for ${userAction} is taking longer than expected. 
-                     Let me try a different approach to help you.`,
-            unknown: `I encountered an unexpected issue with ${userAction}. 
-                     Let me help you resolve this problem step by step.`
+            connection: `I'm experiencing a connection issue while trying to ${userAction}. Let me try a different approach.`,
+            validation: `There seems to be an issue with the information provided. Let me help you correct this.`,
+            timeout: `The request is taking longer than expected. Let me try another way.`,
+            unknown: `I encountered an unexpected issue. Let me help you resolve this step by step.`
         };
         
         return errorPrompts[errorType] || errorPrompts.unknown;
@@ -385,61 +307,14 @@ export class ErrorHandlerTrigger implements Trigger {
 }
 ```
 
-### Example 5: Programmatic Trigger - Workflow Generator
+### Example 2: Hybrid Usage - UI + Programmatic Integration
 
 ```typescript
-export class WorkflowGeneratorTrigger implements Trigger {
-    // No icon = Code-only usage for complex workflows
-    
-    generate(args: any): string {
-        const workflowType = args.workflow || 'general';
-        const steps = args.steps || [];
-        const context = args.context || {};
-        
-        switch (workflowType) {
-            case 'onboarding':
-                return this.generateOnboardingPrompt(steps, context);
-            case 'troubleshooting':
-                return this.generateTroubleshootingPrompt(steps, context);
-            case 'documentation':
-                return this.generateDocumentationPrompt(steps, context);
-            default:
-                return `Let me walk you through this process step by step...`;
-        }
-    }
-    
-    private generateOnboardingPrompt(steps: string[], context: any): string {
-        return `Welcome! I'll guide you through ${steps.length} key steps to get started. 
-                Let's begin with step 1: ${steps[0] || 'Getting oriented'}.`;
-    }
-    
-    private generateTroubleshootingPrompt(steps: string[], context: any): string {
-        const issue = context.issue || 'the problem';
-        return `Let's diagnose ${issue} systematically. 
-                I'll help you through ${steps.length} troubleshooting steps.`;
-    }
-    
-    private generateDocumentationPrompt(steps: string[], context: any): string {
-        const topic = context.topic || 'this topic';
-        return `I'll create comprehensive documentation for ${topic}. 
-                This will cover ${steps.length} main sections.`;
-    }
-}
-```
-
-### Example 6: Hybrid Usage - Background + UI Trigger
-
-```typescript
-// Programmatic trigger for background processing
+// Programmatic trigger for background processing  
 export class DataProcessorTrigger implements Trigger {
-    // No icon = Background processing only
-    
     generate(args: any): string {
         const dataType = args.dataType;
-        const processingType = args.processingType;
-        
-        return `Processing ${dataType} data using ${processingType} analysis. 
-                Please wait while I prepare the results for you.`;
+        return `Processing ${dataType} data. Please wait while I prepare the results.`;
     }
 }
 
@@ -449,18 +324,11 @@ import { getTrigger } from '@/factories/TriggerFactory';
 export class AnalyticsButtonTrigger implements Trigger {
     icon: string = "MdAnalytics";  // Shows in sidebar
     
-    async generate(args: any): string {
-        // Use the programmatic trigger for processing
+    generate(args: any): string {
         const processor = getTrigger('dataProcessor');
         if (processor) {
-            const processingPrompt = processor.generate({
-                dataType: 'user analytics',
-                processingType: 'behavioral'
-            });
-            
-            // Add UI-specific context
-            return `${processingPrompt} 
-                    I'll display the analytics dashboard once processing is complete.
+            const processingPrompt = processor.generate({ dataType: 'user analytics' });
+            return `${processingPrompt} I'll display the dashboard once complete.
                     <uneeq custom event name="analytics" data="dashboard.html" />`;
         }
         
@@ -605,59 +473,19 @@ generate(args: any): string {
 - [ ] Key follows camelCase naming (className without "Trigger" suffix)
 - [ ] Trigger works when called programmatically
 
-## 🎉 Real-World Use Cases
+## 🎉 Common Use Cases
 
-### **Customer Service Kiosk**
-```typescript
-export class CustomerServiceTrigger implements Trigger {
-    icon: string = "MdSupportAgent";
-    
-    generate(): string {
-        return `I'm here to help! I can assist with:
-                • Product information and recommendations
-                • Order status and tracking
-                • Technical support questions
-                • Store policies and procedures
-                
-                What can I help you with today?`;
-    }
-}
-```
+### **UI Triggers** (Sidebar Buttons)
+- **Customer Service**: "Help" button for support prompts
+- **Entertainment**: "Story" button for interactive narratives  
+- **Education**: "Quiz" button for learning content
+- **Demos**: "Showcase" button for product presentations
 
-### **Educational Content**
-```typescript
-export class LearningPathTrigger implements Trigger {
-    icon: string = "MdSchool";
-    
-    generate(): string {
-        const subjects = ['programming', 'design', 'business', 'science'];
-        const subject = subjects[Math.floor(Math.random() * subjects.length)];
-        
-        return `Let's explore ${subject}! I can create a personalized learning path
-                based on your current knowledge and goals. 
-                What specific areas of ${subject} interest you most?`;
-    }
-}
-```
-
-### **Entertainment & Engagement**
-```typescript
-export class StorytellingTrigger implements Trigger {
-    icon: string = "MdAutoStories";
-    
-    generate(): string {
-        const genres = ['sci-fi', 'mystery', 'adventure', 'comedy'];
-        const settings = ['futuristic city', 'ancient castle', 'space station', 'magical forest'];
-        
-        const genre = genres[Math.floor(Math.random() * genres.length)];
-        const setting = settings[Math.floor(Math.random() * settings.length)];
-        
-        return `Let me tell you a ${genre} story set in a ${setting}! 
-                This will be interactive - you can influence the plot by making
-                choices as we go along. Ready to begin the adventure?`;
-    }
-}
-```
+### **Programmatic Triggers** (Code-Only)
+- **Error Handling**: Contextual error response generation
+- **Workflow Automation**: Multi-step process orchestration
+- **API Integration**: Dynamic documentation and help text
+- **Background Processing**: Complex business logic triggers
 
 ## 📈 Performance Considerations
 
