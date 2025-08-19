@@ -89,13 +89,19 @@ interface Trigger {
 
 ### Step 2: Create Your Trigger Class
 
+The system supports **two types of triggers**:
+- **🎨 UI Triggers**: With icons - appear as buttons in the sidebar
+- **⚙️ Programmatic Triggers**: Without icons - available for code use only
+
+#### UI Trigger Example (Appears in Sidebar)
+
 **File: `src/triggers/ProductDemoTrigger.ts`**
 
 ```typescript
 import type { Trigger } from "./types/Trigger";
 
 export class ProductDemoTrigger implements Trigger {
-    icon: string = "MdShoppingCart";
+    icon: string = "MdShoppingCart";  // ← Has icon = Shows in sidebar
     
     /**
      * Generate a product demonstration prompt
@@ -113,6 +119,29 @@ export class ProductDemoTrigger implements Trigger {
 }
 ```
 
+#### Programmatic Trigger Example (Code-Only Use)
+
+**File: `src/triggers/ApiRequestTrigger.ts`**
+
+```typescript
+import type { Trigger } from "./types/Trigger";
+
+export class ApiRequestTrigger implements Trigger {
+    // No icon = Available via factory but not in sidebar UI
+    
+    /**
+     * Generate API documentation request prompt
+     */
+    generate(args: any): string {
+        const endpoint = args.endpoint || '/api/default';
+        const method = args.method || 'GET';
+        
+        return `Please explain the ${method} ${endpoint} API endpoint, 
+                including required parameters, response format, and example usage.`;
+    }
+}
+```
+
 ### Step 3: Export Your Trigger (Auto-Discovery)
 
 Add your trigger to `src/triggers/index.ts`:
@@ -120,20 +149,40 @@ Add your trigger to `src/triggers/index.ts`:
 ```typescript
 // Export all trigger classes for auto-discovery
 export * from './RandomStoryTrigger';
-export * from './ProductDemoTrigger';  // ← Add this line
+export * from './ProductDemoTrigger';     // ← UI trigger (has icon)
+export * from './ApiRequestTrigger';     // ← Programmatic trigger (no icon)
 
 // Export types for usage in components
 export type { Trigger } from './types/Trigger';
 ```
 
-### Step 4: Test Your Trigger
+### Step 4: Using Your Triggers
 
-That's it! Your trigger will automatically appear in the sidebar:
+#### UI Triggers (With Icons)
+Your UI triggers automatically appear in the sidebar:
 
 1. **Build/Restart** your development server
 2. **Look for your icon** in the left sidebar  
 3. **Click the button** to test prompt generation
 4. **Check console** for generated prompt output
+
+#### Programmatic Triggers (Without Icons)
+Use programmatic triggers anywhere in your code:
+
+```typescript
+import { getTrigger, getAllTriggers } from '@/factories/TriggerFactory';
+
+// Get a specific trigger by key
+const apiTrigger = getTrigger('apiRequest');
+if (apiTrigger) {
+    const prompt = apiTrigger.generate({ endpoint: '/users', method: 'POST' });
+    console.log(prompt);
+}
+
+// Or get all triggers (including both UI and programmatic)
+const allTriggers = getAllTriggers();
+const programmaticTriggers = allTriggers.filter(t => !t.instance.icon);
+```
 
 ## 🔍 How Auto-Discovery Works
 
@@ -141,7 +190,7 @@ The system automatically finds and integrates your triggers:
 
 ```mermaid
 graph LR
-    A[📂 Export Trigger] --> B[🔍 getAllTriggers()]
+    A[📂 Export Trigger] --> B[🔍 getAllTriggers#40; #41;]
     B --> C[📝 Create TriggerItem]
     C --> D[🎨 Generate Button]
     D --> E[⚡ Ready to Use]
@@ -150,49 +199,93 @@ graph LR
     style E fill:#fff3e0
 ```
 
-**Behind the Scenes (LeftSideBar.tsx):**
+**Behind the Scenes:**
 
+#### 1. TriggerFactory Auto-Discovery
+```typescript
+// TriggerFactory.ts - Registers ALL triggers (with and without icons)
+Object.entries(triggers).forEach(([className, TriggerClass]) => {
+  if (typeof TriggerClass === 'function' && className.endsWith('Trigger')) {
+    registerTrigger(TriggerClass, className);  // All triggers registered
+  }
+});
+
+export const getAllTriggers = (): TriggerItem[] => {
+  // Returns both UI and programmatic triggers
+  return Array.from(triggerRegistry.entries()).map(([key, instance]) => ({
+    key,
+    instance
+  }));
+};
+```
+
+#### 2. LeftSideBar UI Filtering
 ```typescript
 const LeftSideBar: React.FC = () => {
-  // Auto-discovery finds all exported triggers
+  // Get ALL registered triggers from factory
   const triggerInstances = useMemo(() => getAllTriggers(), []);
   
-  // Load icons dynamically
-  const iconNames = triggerInstances.map(trigger => trigger.instance.icon).filter(Boolean);
+  // Filter for UI triggers only (those with icons)
+  const iconNames = triggerInstances
+    .map(trigger => trigger.instance.icon)
+    .filter(Boolean);  // ← Filters out undefined/null icons
+  
   const { getIconComponent } = useIconFactory(iconNames);
-
-  const handleTriggerClick = async (trigger: TriggerItem) => {
-    // Execute your trigger's generate method
-    const prompt = trigger.instance.generate({});
-    
-    // Add to conversation history
-    actions.addMessageToHistory({
-      id: crypto.randomUUID(),
-      content: prompt,
-      timestamp: new Date(),
-      sender: MessageSender.System,
-    });
-  };
 
   return (
     <div className="left-side-bar-buttons-container">
-      {/* Your triggers automatically appear here as buttons */}
-      {triggerInstances.map(trigger => (
-        <CircleButton 
-          key={trigger.key}
-          icon={getIconComponent(trigger.instance.icon)}
-          onClick={() => handleTriggerClick(trigger)}
-          title={`Execute ${trigger.key} trigger`}
-        />
-      ))}
+      {triggerInstances
+        .map(trigger => {
+          const iconComponent = trigger.instance.icon ? 
+            getIconComponent(trigger.instance.icon) : null;
+          
+          return iconComponent ? (  // ← Only render if has icon
+            <CircleButton 
+              key={trigger.key}
+              icon={iconComponent}
+              onClick={() => handleTriggerClick(trigger)}
+              title={`Execute ${trigger.key} trigger`}
+            />
+          ) : null;
+        })
+        .filter(Boolean)  // ← Remove null entries
+      }
     </div>
   );
 };
 ```
 
+## 🎯 When to Use Each Type
+
+### **🎨 UI Triggers (With Icons)**
+**Use when you want users to directly interact:**
+- Quick action buttons (stories, demos, quizzes)
+- Common user-requested features
+- Visual shortcuts for complex prompts
+- Interactive elements in the sidebar
+
+**Example Use Cases:**
+- "Random Story" button for entertainment
+- "Product Demo" for showcasing features  
+- "Help" button for assistance prompts
+- "Quiz" button for educational content
+
+### **⚙️ Programmatic Triggers (Without Icons)**
+**Use for code-level automation:**
+- Background processes and workflows
+- API integration helpers
+- Conditional prompt generation
+- Complex business logic triggers
+
+**Example Use Cases:**
+- Error handling prompt generation
+- API documentation generation
+- Context-aware help responses
+- Automated workflow prompts
+
 ## 🎨 Advanced Trigger Examples
 
-### Example 1: Contextual Conversation Starter
+### Example 1: UI Trigger - Contextual Conversation Starter
 
 ```typescript
 export class ConversationStarterTrigger implements Trigger {
@@ -265,27 +358,113 @@ export class MediaShowcaseTrigger implements Trigger {
 }
 ```
 
-### Example 4: State-Aware Trigger
+### Example 4: Programmatic Trigger - Error Handler
 
 ```typescript
-export class PersonalizedGreetingTrigger implements Trigger {
-    icon: string = "MdWavingHand";
+export class ErrorHandlerTrigger implements Trigger {
+    // No icon = Available via factory only, not in UI
     
     generate(args: any): string {
-        // Access session state or user preferences
-        const userName = args.userName || 'friend';
-        const visitCount = args.visitCount || 1;
-        const lastTopic = args.lastTopic || 'general topics';
+        const errorType = args.errorType || 'unknown';
+        const errorMessage = args.message || 'Something went wrong';
+        const userAction = args.userAction || 'an action';
         
-        if (visitCount === 1) {
-            return `Welcome ${userName}! I'm excited to meet you. 
-                    What brings you here today? I'm ready to help with any questions 
-                    or just have a great conversation!`;
-        } else {
-            return `Great to see you again, ${userName}! 
-                    Last time we discussed ${lastTopic}. 
-                    Would you like to continue that conversation or explore something new?`;
+        const errorPrompts = {
+            connection: `I'm experiencing a connection issue while trying to ${userAction}. 
+                        Let me try to reconnect and assist you in a different way.`,
+            validation: `There seems to be an issue with the information provided for ${userAction}. 
+                        Let me help you correct this and try again.`,
+            timeout: `The request for ${userAction} is taking longer than expected. 
+                     Let me try a different approach to help you.`,
+            unknown: `I encountered an unexpected issue with ${userAction}. 
+                     Let me help you resolve this problem step by step.`
+        };
+        
+        return errorPrompts[errorType] || errorPrompts.unknown;
+    }
+}
+```
+
+### Example 5: Programmatic Trigger - Workflow Generator
+
+```typescript
+export class WorkflowGeneratorTrigger implements Trigger {
+    // No icon = Code-only usage for complex workflows
+    
+    generate(args: any): string {
+        const workflowType = args.workflow || 'general';
+        const steps = args.steps || [];
+        const context = args.context || {};
+        
+        switch (workflowType) {
+            case 'onboarding':
+                return this.generateOnboardingPrompt(steps, context);
+            case 'troubleshooting':
+                return this.generateTroubleshootingPrompt(steps, context);
+            case 'documentation':
+                return this.generateDocumentationPrompt(steps, context);
+            default:
+                return `Let me walk you through this process step by step...`;
         }
+    }
+    
+    private generateOnboardingPrompt(steps: string[], context: any): string {
+        return `Welcome! I'll guide you through ${steps.length} key steps to get started. 
+                Let's begin with step 1: ${steps[0] || 'Getting oriented'}.`;
+    }
+    
+    private generateTroubleshootingPrompt(steps: string[], context: any): string {
+        const issue = context.issue || 'the problem';
+        return `Let's diagnose ${issue} systematically. 
+                I'll help you through ${steps.length} troubleshooting steps.`;
+    }
+    
+    private generateDocumentationPrompt(steps: string[], context: any): string {
+        const topic = context.topic || 'this topic';
+        return `I'll create comprehensive documentation for ${topic}. 
+                This will cover ${steps.length} main sections.`;
+    }
+}
+```
+
+### Example 6: Hybrid Usage - Background + UI Trigger
+
+```typescript
+// Programmatic trigger for background processing
+export class DataProcessorTrigger implements Trigger {
+    // No icon = Background processing only
+    
+    generate(args: any): string {
+        const dataType = args.dataType;
+        const processingType = args.processingType;
+        
+        return `Processing ${dataType} data using ${processingType} analysis. 
+                Please wait while I prepare the results for you.`;
+    }
+}
+
+// UI trigger that uses the programmatic trigger
+import { getTrigger } from '@/factories/TriggerFactory';
+
+export class AnalyticsButtonTrigger implements Trigger {
+    icon: string = "MdAnalytics";  // Shows in sidebar
+    
+    async generate(args: any): string {
+        // Use the programmatic trigger for processing
+        const processor = getTrigger('dataProcessor');
+        if (processor) {
+            const processingPrompt = processor.generate({
+                dataType: 'user analytics',
+                processingType: 'behavioral'
+            });
+            
+            // Add UI-specific context
+            return `${processingPrompt} 
+                    I'll display the analytics dashboard once processing is complete.
+                    <uneeq custom event name="analytics" data="dashboard.html" />`;
+        }
+        
+        return `Let me analyze your data and show you the insights.`;
     }
 }
 ```
@@ -372,10 +551,19 @@ generate(args: any): string {
 **Issue: "My trigger doesn't appear in the sidebar"**
 
 ✅ **Solutions:**
-1. Check that your class is exported in `triggers/index.ts`
-2. Verify the class implements the `Trigger` interface
-3. Ensure you've restarted the development server
-4. Check browser console for auto-discovery errors
+1. **Verify it's a UI trigger** - Does your trigger have an `icon` property?
+2. Check that your class is exported in `triggers/index.ts`
+3. Verify the class implements the `Trigger` interface
+4. Ensure you've restarted the development server
+5. Check browser console for auto-discovery errors
+
+**Issue: "I can't find my programmatic trigger"**
+
+✅ **Solutions:**
+1. **Verify it's registered** - Check `getAllTriggers()` includes your trigger
+2. **Use correct key** - Key is className without "Trigger" suffix, camelCase
+3. **Import factory** - Use `import { getTrigger } from '@/factories/TriggerFactory'`
+4. **Check console** - Look for registration logs in browser console
 
 **Issue: "Button appears but doesn't work when clicked"**
 
@@ -395,13 +583,27 @@ generate(args: any): string {
 
 ### Debugging Checklist
 
+#### For All Triggers:
 - [ ] Trigger class exported in `triggers/index.ts`
 - [ ] Class implements `Trigger` interface properly
 - [ ] `generate` method returns a string
-- [ ] Icon name is valid React Icons name
 - [ ] Development server restarted after changes
 - [ ] Browser console shows no errors
+- [ ] Registration log appears in console: `"TriggerFactory: Registered trigger..."`
+
+#### For UI Triggers (Sidebar Buttons):
+- [ ] `icon` property is defined with valid React Icons name
+- [ ] Button appears in left sidebar
+- [ ] Button click triggers `generate` method
 - [ ] Message history updates when button clicked
+- [ ] Icon loads properly (no broken icon display)
+
+#### For Programmatic Triggers:
+- [ ] `icon` property is undefined/omitted (intentionally)
+- [ ] Trigger appears in `getAllTriggers()` result  
+- [ ] `getTrigger(key)` returns trigger instance
+- [ ] Key follows camelCase naming (className without "Trigger" suffix)
+- [ ] Trigger works when called programmatically
 
 ## 🎉 Real-World Use Cases
 
@@ -472,18 +674,30 @@ The auto-discovery system is optimized:
 
 ## 🚀 Summary
 
-Creating triggers is a powerful way to enhance your digital human interactions:
+The trigger system provides flexible prompt generation for both UI interactions and programmatic use:
 
+### **Creating Triggers:**
 1. **Create** a class implementing `Trigger` interface
-2. **Export** it from `triggers/index.ts` 
-3. **Use** auto-discovery for instant sidebar integration
-4. **Test** and iterate on your trigger logic
+2. **Add icon** for UI triggers OR **omit icon** for programmatic use
+3. **Export** it from `triggers/index.ts` 
+4. **Use** auto-discovery for instant integration
 
-### Key Benefits:
-- 🔄 **Zero Configuration** - Automatic UI integration
-- 🎯 **Dynamic Content** - Contextual prompt generation  
-- 🛡️ **Type Safety** - Full TypeScript support
-- 🎨 **Consistent UI** - Automatic icon and button styling
-- 📈 **Scalable** - Easy to add new interaction patterns
+### **Two Trigger Types:**
+- **🎨 UI Triggers** (with icons): Automatic sidebar buttons for user interactions
+- **⚙️ Programmatic Triggers** (no icons): Available via factory for code-level automation
 
-The trigger system makes it incredibly simple to add new interactive capabilities to your digital human experience. Every trigger you create automatically becomes a one-click interaction in your sidebar, creating a seamless and engaging user experience!
+### **Key Benefits:**
+- 🔄 **Flexible Integration** - UI and programmatic usage in one system
+- 🎯 **Smart Filtering** - UI shows only relevant triggers automatically
+- 🛡️ **Type Safety** - Full TypeScript support with interfaces
+- 📦 **Zero Configuration** - Auto-discovery handles registration
+- 🎨 **Consistent Design** - Uniform sidebar styling for UI triggers
+- ⚙️ **Code Reusability** - Programmatic triggers for complex workflows
+- 📈 **Scalable Architecture** - Easy to add new interaction patterns
+
+### **Best of Both Worlds:**
+- **Users** get intuitive one-click interactions via sidebar buttons
+- **Developers** get powerful programmatic tools for automation
+- **System** automatically handles discovery, registration, and UI filtering
+
+The trigger system makes it incredibly simple to create both user-facing interactive capabilities and behind-the-scenes automation tools. UI triggers automatically become sidebar buttons, while programmatic triggers remain available for code-level integration - giving you maximum flexibility with minimal configuration!
