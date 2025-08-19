@@ -1,8 +1,8 @@
 import { EventType } from "@/types";
 import type { UneeqEventListener } from '../types/UneeqEventListener';
 import type { SessionContextType } from "@/contexts/SessionContext";
-import type { CustomEvent } from '../types/CustomEvent';
-import * as customEvents from './custom_events';
+import type { CustomEventListener } from '../types/CustomEventListener';
+import * as customEvents from './speech_events';
 
 /**
  * SpeechEventListener handles speech events from the UneeQ API.
@@ -32,7 +32,7 @@ export class SpeechEventListener implements UneeqEventListener {
   /**
    * Registry of custom event handlers indexed by their type
    */
-  private customEvents: Map<string, CustomEvent>;
+  private customEvents: Map<string, CustomEventListener>;
 
   constructor() {
     // Initialize custom event registry by dynamically loading all custom events
@@ -44,7 +44,7 @@ export class SpeechEventListener implements UneeqEventListener {
       if (typeof EventClass === 'function') {
         try {
           // Instantiate the custom event
-          const eventInstance = new EventClass() as CustomEvent;
+          const eventInstance = new EventClass() as CustomEventListener;
           
           // Verify it has the required CustomEvent interface
           if (eventInstance && typeof eventInstance.type === 'string' && typeof eventInstance.execute === 'function') {

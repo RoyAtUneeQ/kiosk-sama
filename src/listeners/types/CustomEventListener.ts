@@ -1,6 +1,6 @@
 import type { SessionActions } from "@/contexts/SessionContext";
 
-export interface CustomEvent {
+export interface CustomEventListener {
     type: string;
     execute: (data: any, actions: SessionActions) => Promise<void>; 
 }
