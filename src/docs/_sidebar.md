@@ -14,3 +14,6 @@
 
 - Performance
   - [Performance Monitoring](pages/performance-monitoring.md)
+
+- How-to Guides
+  - [Creating Custom Uneeq Events](pages/howto/custom-events.md)
