@@ -101,10 +101,15 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
 
   //Send last history message to Uneeq  
   useEffect(() => {
-    console.log("[useUneeq] send last message to Uneeq", state.history);
+    console.log("[useUneeq] sending message to Uneeq, last message is");
     const lastMessage = state.history[state.history.length - 1];    
-    if(lastMessage && state.uneeq && lastMessage.sender === MessageSender.User)
-      state.uneeq?.chatPrompt(lastMessage.content as string);
+    console.table(lastMessage);
+    // Only send non-User messages to Uneeq to prevent loops
+    if (lastMessage && state.uneeq && lastMessage.sender !== MessageSender.Assistant) {
+      window.uneeq?.[lastMessage.prompt ? 'chatPrompt' : 'speak'](lastMessage.content as string);
+      console.log("[useUneeq] message sent to Uneeq");
+    }
+
   }, [state.history]);        
 
 }

@@ -149,6 +149,7 @@ function RemotePage() {
       content,
       sender,
       timestamp: new Date(),
+      prompt: true,
     };
     console.log('addMessage', newMessage);
     if (sender === MessageSender.User && kioskConnectionId)

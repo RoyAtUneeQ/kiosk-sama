@@ -9,6 +9,9 @@ export interface TriggerItem {
 // Trigger registry using reflection - maps keys to trigger instances
 const triggerRegistry = new Map<string, Trigger>();
 
+// Cache for getAllTriggers to prevent unnecessary re-renders
+let cachedTriggerItems: TriggerItem[] | null = null;
+
 /**
  * Register a trigger class by instantiating and indexing by its generated key.
  */
@@ -24,6 +27,8 @@ export function registerTrigger<T extends Trigger>(TriggerClass: new () => T, cl
         .charAt(0).toLowerCase() + className.replace('Trigger', '').slice(1);
       
       triggerRegistry.set(key, instance);
+      // Invalidate cache when registry changes
+      cachedTriggerItems = null;
       console.log(`TriggerFactory: Registered trigger "${key}" from ${className}`);
     }
   } catch (error) {
@@ -44,6 +49,11 @@ Object.entries(triggers).forEach(([className, TriggerClass]: [string, any]) => {
  * This is the main factory function that components should use.
  */
 export const getAllTriggers = (): TriggerItem[] => {
+  // Return cached version if available
+  if (cachedTriggerItems) {
+    return cachedTriggerItems;
+  }
+  
   const triggerItems: TriggerItem[] = [];
   
   triggerRegistry.forEach((instance, key) => {
@@ -53,7 +63,8 @@ export const getAllTriggers = (): TriggerItem[] => {
     });
   });
   
-  console.log(`TriggerFactory: Returning ${triggerItems.length} registered triggers`);
+  // Cache the result
+  cachedTriggerItems = triggerItems;
   return triggerItems;
 };
 

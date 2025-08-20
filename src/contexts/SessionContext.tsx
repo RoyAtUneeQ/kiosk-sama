@@ -67,7 +67,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       if (status === SessionStatus.LOADING && callback) {
         Promise.resolve().then(() => callback());
       }
-    },
+    },  
     setAwaitingPromptResponse: (isAwaitingResponse) => {
       set((prev) => ({ state: { ...prev.state, awaitingPromptResponse: isAwaitingResponse } }));
     },

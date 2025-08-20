@@ -1,4 +1,4 @@
-import { EventType, type Event as UneeqEvent } from '@/types';
+import { EventType, type SpeechEventParams, type Event as UneeqEvent } from '@/types';
 import type { UneeqEventListener } from '@/listeners/types/UneeqEventListener';
 import * as listeners from '@/listeners/uneeq';
 
@@ -32,4 +32,9 @@ export const UneeqEventFactory = (event: UneeqEvent): UneeqEventListener | null 
 
   console.warn(`Event handler not implemented for event type: ${event.uneeqMessageType}`);
   return null;
+};
+
+//Create the whole structure for   a custom event
+export const createCustomEventTag = (params: SpeechEventParams): string => {
+  return `<uneeq:custom_event name="${JSON.stringify(params)}" />`;
 };

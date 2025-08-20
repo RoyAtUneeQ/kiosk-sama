@@ -3,42 +3,20 @@ import { useSession } from '@/contexts';
 import { CircleButton } from '@/components';
 import { BsHourglassSplit } from "react-icons/bs";
 import { getAllTriggers, useIconFactory, type TriggerItem } from '@/factories';
-import { MessageSender } from '@/types';
-import { useMemo } from 'react';
+import { useMemo } from 'react';  
 
 const LeftSideBar: React.FC = () => {
   const { state, actions } = useSession();
   
-  // Get all registered triggers from the factory
+  // Get all registered triggers from the factory - memoized to prevent re-renders
   const triggerInstances = useMemo(() => getAllTriggers(), []);
   
-  // Load icons for all triggers dynamically
-  const iconNames = triggerInstances.map(trigger => trigger.instance.icon).filter(Boolean);
+  // Memoize icon names to prevent useDynamicIcons from re-running constantly
+  const iconNames = useMemo(() => 
+    triggerInstances.map(trigger => trigger.instance.icon).filter(Boolean),
+    [triggerInstances]
+  );
   const { getIconComponent } = useIconFactory(iconNames);
-
-  /**
-   * Execute a trigger when its button is clicked
-   * Generates the prompt and potentially sends it to the digital human
-   */
-  const handleTriggerClick = async (trigger: TriggerItem) => {
-    try {
-      // Generate the trigger prompt
-      const prompt = trigger.instance.generate({});
-      
-      // This should probably send the prompt to the digital human or update session state
-      console.log(`Executing trigger "${trigger.key}":`, prompt);
-      
-      actions.addMessageToHistory({
-        id: crypto.randomUUID(),
-        content: prompt,
-        timestamp: new Date(),
-        sender: MessageSender.System,
-      });
-      
-    } catch (error) {
-      console.error(`Failed to execute trigger "${trigger.key}":`, error);
-    }
-  };
 
   return (
     <div className="left-side-bar-buttons-container">
@@ -59,7 +37,7 @@ const LeftSideBar: React.FC = () => {
               key={trigger.key}
               icon={iconComponent}
               draggable={false}   
-              onClick={() => handleTriggerClick(trigger)}
+              onClick={() => actions.addMessageToHistory(trigger.instance.generate({}))}
               title={`Execute ${trigger.key} trigger`}
             />
           );
