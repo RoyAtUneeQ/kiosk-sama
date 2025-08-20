@@ -75,15 +75,17 @@ graph TD
 All triggers must implement this simple interface:
 
 ```typescript
+import type { Message } from '@/types/transport/Message';
+
 interface Trigger {
     /** Optional icon name for UI representation */
     icon?: string;
     
     /**
-     * Generate an instruction string (prompt)
+     * Generate a Message object containing prompt and metadata
      * @param args - Optional generation parameters
      */
-    generate: (args: any) => string;
+    generate: (args: any) => Message;
 }
 ```
 
@@ -98,6 +100,8 @@ The system supports **two types of triggers**:
 **File: `src/triggers/ProductDemoTrigger.ts`**
 
 ```typescript
+import type { Message } from "@/types/transport/Message";
+import { MessageSender } from "@/types/transport/MessageSender";
 import type { Trigger } from "./types/Trigger";
 
 export class ProductDemoTrigger implements Trigger {
@@ -106,15 +110,21 @@ export class ProductDemoTrigger implements Trigger {
     /**
      * Generate a product demonstration prompt
      */
-    generate(args: any): string {
+    generate(args: any): Message {
         const products = ['laptop', 'smartphone', 'tablet', 'smartwatch'];
         const randomProduct = products[Math.floor(Math.random() * products.length)];
         
-        return `Please demonstrate the features of our ${randomProduct} in an engaging way. 
-                Include specific details about performance, design, and key benefits. 
-                When you mention showing the product image, use 
-                <uneeq custom event name="product" data="${randomProduct}" /> 
-                to display it visually.`;
+        return {
+            id: crypto.randomUUID(),
+            content: `Please demonstrate the features of our ${randomProduct} in an engaging way. 
+                     Include specific details about performance, design, and key benefits. 
+                     When you mention showing the product image, use 
+                     <uneeq custom event name="product" data="${randomProduct}" /> 
+                     to display it visually.`,
+            timestamp: new Date(),
+            sender: MessageSender.System,
+            prompt: true
+        };
     }
 }
 ```
@@ -124,6 +134,8 @@ export class ProductDemoTrigger implements Trigger {
 **File: `src/triggers/ApiRequestTrigger.ts`**
 
 ```typescript
+import type { Message } from "@/types/transport/Message";
+import { MessageSender } from "@/types/transport/MessageSender";
 import type { Trigger } from "./types/Trigger";
 
 export class ApiRequestTrigger implements Trigger {
@@ -132,12 +144,18 @@ export class ApiRequestTrigger implements Trigger {
     /**
      * Generate API documentation request prompt
      */
-    generate(args: any): string {
+    generate(args: any): Message {
         const endpoint = args.endpoint || '/api/default';
         const method = args.method || 'GET';
         
-        return `Please explain the ${method} ${endpoint} API endpoint, 
-                including required parameters, response format, and example usage.`;
+        return {
+            id: crypto.randomUUID(),
+            content: `Please explain the ${method} ${endpoint} API endpoint, 
+                     including required parameters, response format, and example usage.`,
+            timestamp: new Date(),
+            sender: MessageSender.System,
+            prompt: false
+        };
     }
 }
 ```
@@ -149,6 +167,7 @@ Add your trigger to `src/triggers/index.ts`:
 ```typescript
 // Export all trigger classes for auto-discovery
 export * from './RandomStoryTrigger';
+export * from './CinematicsTrigger';
 export * from './ProductDemoTrigger';     // ← UI trigger (has icon)
 export * from './ApiRequestTrigger';     // ← Programmatic trigger (no icon)
 
@@ -288,10 +307,13 @@ const LeftSideBar: React.FC = () => {
 ### Example 1: Programmatic Trigger - Error Handler
 
 ```typescript
+import type { Message } from "@/types/transport/Message";
+import { MessageSender } from "@/types/transport/MessageSender";
+
 export class ErrorHandlerTrigger implements Trigger {
     // No icon = Available via factory only, not in UI
     
-    generate(args: any): string {
+    generate(args: any): Message {
         const errorType = args.errorType || 'unknown';
         const userAction = args.userAction || 'an action';
         
@@ -302,7 +324,13 @@ export class ErrorHandlerTrigger implements Trigger {
             unknown: `I encountered an unexpected issue. Let me help you resolve this step by step.`
         };
         
-        return errorPrompts[errorType] || errorPrompts.unknown;
+        return {
+            id: crypto.randomUUID(),
+            content: errorPrompts[errorType] || errorPrompts.unknown,
+            timestamp: new Date(),
+            sender: MessageSender.System,
+            prompt: false
+        };
     }
 }
 ```
@@ -310,29 +338,49 @@ export class ErrorHandlerTrigger implements Trigger {
 ### Example 2: Hybrid Usage - UI + Programmatic Integration
 
 ```typescript
+import type { Message } from "@/types/transport/Message";
+import { MessageSender } from "@/types/transport/MessageSender";
+import { getTrigger } from '@/factories/TriggerFactory';
+
 // Programmatic trigger for background processing  
 export class DataProcessorTrigger implements Trigger {
-    generate(args: any): string {
+    generate(args: any): Message {
         const dataType = args.dataType;
-        return `Processing ${dataType} data. Please wait while I prepare the results.`;
+        return {
+            id: crypto.randomUUID(),
+            content: `Processing ${dataType} data. Please wait while I prepare the results.`,
+            timestamp: new Date(),
+            sender: MessageSender.System,
+            prompt: false
+        };
     }
 }
 
 // UI trigger that uses the programmatic trigger
-import { getTrigger } from '@/factories/TriggerFactory';
-
 export class AnalyticsButtonTrigger implements Trigger {
     icon: string = "MdAnalytics";  // Shows in sidebar
     
-    generate(args: any): string {
+    generate(args: any): Message {
         const processor = getTrigger('dataProcessor');
         if (processor) {
-            const processingPrompt = processor.generate({ dataType: 'user analytics' });
-            return `${processingPrompt} I'll display the dashboard once complete.
-                    <uneeq custom event name="analytics" data="dashboard.html" />`;
+            const processingMessage = processor.generate({ dataType: 'user analytics' });
+            return {
+                id: crypto.randomUUID(),
+                content: `${processingMessage.content} I'll display the dashboard once complete.
+                         <uneeq custom event name="analytics" data="dashboard.html" />`,
+                timestamp: new Date(),
+                sender: MessageSender.System,
+                prompt: true
+            };
         }
         
-        return `Let me analyze your data and show you the insights.`;
+        return {
+            id: crypto.randomUUID(),
+            content: `Let me analyze your data and show you the insights.`,
+            timestamp: new Date(),
+            sender: MessageSender.System,
+            prompt: true
+        };
     }
 }
 ```
@@ -342,20 +390,29 @@ export class AnalyticsButtonTrigger implements Trigger {
 Triggers work beautifully with custom events. Here's how to combine them:
 
 ```typescript
+import type { Message } from "@/types/transport/Message";
+import { MessageSender } from "@/types/transport/MessageSender";
+
 export class InteractiveDemoTrigger implements Trigger {
     icon: string = "MdInteractive";
     
-    generate(args: any): string {
-        return `Let me show you our interactive features! 
-                
-                First, here's a welcome image: 
-                <uneeq custom event name="image" data="welcome-banner.jpg" />
-                
-                Now let me play a demo video: 
-                <uneeq custom event name="media" data="interactive-demo.mp4" />
-                
-                As you can see, I can display images and videos seamlessly 
-                during our conversation. What would you like to explore next?`;
+    generate(args: any): Message {
+        return {
+            id: crypto.randomUUID(),
+            content: `Let me show you our interactive features! 
+                     
+                     First, here's a welcome image: 
+                     <uneeq custom event name="image" data="welcome-banner.jpg" />
+                     
+                     Now let me play a demo video: 
+                     <uneeq custom event name="media" data="interactive-demo.mp4" />
+                     
+                     As you can see, I can display images and videos seamlessly 
+                     during our conversation. What would you like to explore next?`,
+            timestamp: new Date(),
+            sender: MessageSender.System,
+            prompt: true
+        };
     }
 }
 ```
@@ -387,27 +444,45 @@ icon: string = "MdHelp";          // Too generic
 ### **3. Dynamic & Contextual Content**
 ```typescript
 // ✅ Good - Dynamic content
-generate(args: any): string {
+generate(args: any): Message {
     const randomElement = this.getRandomOption();
     const contextualInfo = this.getContextualData(args);
-    return `Generated prompt with ${randomElement} and ${contextualInfo}`;
+    return {
+        id: crypto.randomUUID(),
+        content: `Generated prompt with ${randomElement} and ${contextualInfo}`,
+        timestamp: new Date(),
+        sender: MessageSender.System,
+        prompt: true
+    };
 }
 
 // ❌ Avoid - Static content
-generate(args: any): string {
-    return "Always the same prompt";
+generate(args: any): Message {
+    return {
+        id: crypto.randomUUID(),
+        content: "Always the same prompt",
+        timestamp: new Date(),
+        sender: MessageSender.System,
+        prompt: true
+    };
 }
 ```
 
 ### **4. Error Handling**
 ```typescript
-generate(args: any): string {
+generate(args: any): Message {
     try {
         // Your generation logic
         return this.generatePrompt(args);
     } catch (error) {
         console.error('Trigger generation failed:', error);
-        return 'Sorry, I had trouble generating that prompt. Please try again.';
+        return {
+            id: crypto.randomUUID(),
+            content: 'Sorry, I had trouble generating that prompt. Please try again.',
+            timestamp: new Date(),
+            sender: MessageSender.System,
+            prompt: false
+        };
     }
 }
 ```
@@ -437,7 +512,7 @@ generate(args: any): string {
 
 ✅ **Solutions:**
 1. Add console.log in your `generate` method to verify it's called
-2. Check that `generate` returns a string (not undefined)
+2. Check that `generate` returns a Message object (not undefined)
 3. Look for JavaScript errors in browser console
 4. Verify your prompt is being added to message history
 
@@ -454,7 +529,7 @@ generate(args: any): string {
 #### For All Triggers:
 - [ ] Trigger class exported in `triggers/index.ts`
 - [ ] Class implements `Trigger` interface properly
-- [ ] `generate` method returns a string
+- [ ] `generate` method returns a Message object
 - [ ] Development server restarted after changes
 - [ ] Browser console shows no errors
 - [ ] Registration log appears in console: `"TriggerFactory: Registered trigger..."`

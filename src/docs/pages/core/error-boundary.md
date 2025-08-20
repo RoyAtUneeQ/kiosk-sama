@@ -34,8 +34,8 @@ createRoot(document.getElementById('root')!).render(
 
 ### **2. Development Testing**
 ```typescript
-// KioskPage.tsx - ErrorTester for development
-<ErrorTester show={config?.app?.environment === 'development'} />
+// KioskPage.tsx - DebugPanel for development
+<DebugPanel show={config?.app?.environment === 'development'} />
 ```
 
 ### **3. Themed Error UI**
@@ -50,7 +50,7 @@ Our ErrorBoundary provides:
 **✅ Catches:** React component lifecycle errors (render, constructor, lifecycle methods)
 **❌ Does NOT Catch:** Event handler errors, async operations, server-side errors
 
-Use ErrorTester component to verify which errors are caught vs. handled separately.
+Use the DebugPanel component to verify which errors are caught vs. handled separately.
 
 ## 🎯 Alternative Approaches
 
@@ -86,25 +86,37 @@ While we use app-level protection, ErrorBoundary can also be used for:
 
 ## 🐛 Development Testing
 
-**ErrorTester Component**
-Use the included ErrorTester to verify ErrorBoundary behavior during development:
+**DebugPanel Component**
+Use the included DebugPanel to verify ErrorBoundary behavior and monitor performance during development:
 
 ```typescript
 // KioskPage.tsx - Already implemented
-<ErrorTester show={config?.app?.environment === 'development'} />
+<DebugPanel show={config?.app?.environment === 'development'} />
 ```
 
-The ErrorTester allows you to trigger different error types to verify:
+The DebugPanel provides multiple debugging tools:
+
+**Error Testing**
+Allows you to trigger different error types to verify:
 - **Render errors**: Caught by ErrorBoundary ✅  
 - **Async errors**: Not caught, handle with try-catch ❌
 - **Event errors**: Not caught, handle with try-catch ❌
+
+**Performance Monitor**
+Toggles performance monitoring capabilities:
+- **Component render timing**: Tracks render performance
+- **Lifecycle monitoring**: Monitors component lifecycle events
+- **Real-time metrics**: Provides development insights
+
+**Extensible Design**
+The panel is designed to easily accommodate additional debugging tools in the future.
 
 ## 🎉 Summary
 
 **Our Implementation:**
 - **App-level protection** catches all React component errors
 - **Themed recovery UI** maintains brand consistency
-- **Development testing** via ErrorTester component
+- **Development debugging** via DebugPanel component
 - **Console logging** for debugging support
 
 **Key Benefit**: Prevents kiosk crashes while providing clear recovery options for users and detailed debugging information for developers.

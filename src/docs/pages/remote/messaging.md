@@ -49,8 +49,9 @@ import { MessageSender } from '@/types/transport/MessageSender';
 interface Message {
     id: string;                    // Unique identifier (timestamp-based)
     content: string;               // Message content
+    timestamp: Date | string;      // Creation time
     sender: MessageSender;         // Message origin (User, Assistant, System)
-    timestamp: Date;               // Creation time
+    prompt?: boolean;              // Optional flag indicating if message is a prompt
 }
 ```
 
