@@ -5,4 +5,5 @@ export interface Message {
   content: string;
   timestamp: Date | string;
   sender: MessageSender;
+  prompt?: boolean; 
 }

@@ -1,5 +1,7 @@
 export * from './Event';
 export * from './EventType';
+export * from './SpeechEventData';  
+export * from './SpeechEventParams';
 export * from './options/UneeqOptions';
 export * from './options/CameraAnchorOptions';
 export * from './options/ChatPromptOptions';
