@@ -23,7 +23,7 @@ export interface CircleButtonProps extends React.ButtonHTMLAttributes<HTMLButton
 
 export const CircleButton: React.FC<CircleButtonProps> = ({ icon, className, onClick, ...props }: CircleButtonProps) => {
   return (
-    <button onClick={onClick} className={`circleButton ${className || ''}`} {...props}>
+    <button onClick={onClick} className={`circleButton ${className || ''}`} {...props} title={props.title || ''}>
       <span className="pulse"></span>
       <span className="circleIcon">{icon}</span>  
     </button>
