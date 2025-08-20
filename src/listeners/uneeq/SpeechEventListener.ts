@@ -1,31 +1,10 @@
-import { EventType } from "@/types";
+import { EventType, type SpeechEventData } from "@/types";
 import type { UneeqEventListener } from '../types/UneeqEventListener';
 import type { SessionContextType } from "@/contexts/SessionContext";
 import type { CustomEventListener } from '../types/CustomEventListener';
 import * as customEvents from './speech_events';
 
-/**
- * SpeechEventListener handles speech events from the UneeQ API.
- * 
- * This listener processes custom speech events that are embedded in digital human responses
- * using XML-like tags (e.g., `<uneeq\ custom event name="media" />`). These events are
- * triggered at the precise moment they are spoken by the digital human, enabling 
- * synchronized frontend actions.
- * 
- * The listener automatically discovers and registers all custom event handlers 
- * from the custom_events directory, then uses reflection to dynamically call 
- * the appropriate handler based on the event type specified in the speech event data.
- * 
- * @example
- * // Digital human speech with embedded event:
- * // "Here's some content <uneeq\ custom event name='media' url='video.mp4' /> for you"
- * // Will trigger the InMediaInstruction handler when "media" is spoken
- * 
- * // To add a new custom event, simply:
- * // 1. Create a new class implementing CustomEvent in custom_events/
- * // 2. Export it from custom_events/index.ts
- * // 3. It will be automatically registered
- */
+
 export class SpeechEventListener implements UneeqEventListener {
   eventType = EventType.SpeechEvent;
   
@@ -65,28 +44,34 @@ export class SpeechEventListener implements UneeqEventListener {
    * @param data - Speech event data containing event type and parameters
    * @param session - Session context providing actions and state management
    */
-  async execute(data: any, session: SessionContextType): Promise<void> {
+  async execute(data: {speechEvent: SpeechEventData}, session: SessionContextType): Promise<void> {
     try {
+
       // Extract event type from speech event data
-      const eventType = data?.name || data?.type;
-      
-      if (!eventType) {
+      const parsedData = JSON.parse(data?.speechEvent?.param_value || '{}') as {
+        type: string;
+        data: string;
+      };   
+
+      if (!parsedData.type) {
         console.warn('SpeechEventListener: No event type found in data', data);
         return;
       }
 
       // Find matching custom event handler by type
-      const customEvent = this.customEvents.get(eventType);
+      const customEvent = this.customEvents.get(parsedData.type);
       
+      console.info('customEvent', customEvent);
+      console.info('this.customEvents', this.customEvents);
       if (!customEvent) {
-        console.warn(`SpeechEventListener: No handler found for event type "${eventType}"`);
+        console.warn(`SpeechEventListener: No handler found for event type "${parsedData.type}"`);
         return;
       }
 
       // Execute the custom event handler with session actions
-      await customEvent.execute(data, session.actions);
+      await customEvent.execute(parsedData.data, session.actions);
       
-      console.log(`SpeechEventListener: Successfully executed "${eventType}" event`);
+      console.log(`SpeechEventListener: Successfully executed "${parsedData.type}" event`);
     } catch (error) {
       console.error('SpeechEventListener: Error executing speech event', error);
     }

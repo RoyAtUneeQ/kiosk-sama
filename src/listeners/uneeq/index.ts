@@ -5,3 +5,4 @@ export * from './PromptRequestListener';
 export * from './PromptResultListener';
 export * from './SpeechEventListener';
 export * from './AvatarStoppedSpeakingListener';
+export * from './CustomMetadataUpdated';
