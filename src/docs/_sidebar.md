@@ -21,3 +21,4 @@
   - [UneeQ Event Listeners](pages/howto/uneeq-events.md)
   - [Custom Uneeq Event Listeners](pages/howto/custom-events.md)
   - [Interactive Triggers](pages/howto/triggers.md)
+  - [Camera Control](pages/howto/camera-control.md)
