@@ -1,3 +1,5 @@
+import { CameraDistance, CameraHorizontalDistance } from '../constants';
+
 /**
  * Configuration options for UneeQ digital human interface.
  */
@@ -83,14 +85,14 @@ export type UneeqOptions = {
   cameraAnchorPosition?: string;
   /**
    * A string defining the initial camera anchor distance (zoom) when the session starts.
-   * Values: 'close_up', 'loose_close_up', 'tight_medium_shot', 'medium_shot', 'medium_full_shot', 'full_shot'.
+   * Values: CameraDistance enum keys.
    */
-  cameraAnchorDistance?: string;
+  cameraAnchorDistance?: keyof typeof CameraDistance;
   /**
    * A string defining the initial camera anchor horizontal position when the session starts.
-   * Values: 'left', 'right', 'center'.
+   * Values: CameraHorizontalDistance enum keys.
    */
-  cameraAnchorHorizontal?: string;
+  cameraAnchorHorizontal?: keyof typeof CameraHorizontalDistance;
   /**
    * Custom error message when platform is unavailable.
    */
@@ -191,7 +193,7 @@ export const defaultUneeqOptions: UneeqOptions = {
   personaId: '',
   containedElementIdName: 'uneeqContainedLayout',
   displayCallToAction: false,
-  cameraAnchorDistance: 'medium_shot',
+  cameraAnchorDistance: 'medium_shot' as keyof typeof CameraDistance,
   autoStart: false,
   enableMicrophone: false,
   showClosedCaptions: true,

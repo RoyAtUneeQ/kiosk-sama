@@ -1,3 +1,4 @@
 export * from './Actions';
 export * from './Emotions';
-export * from './Camera';
+export * from './CameraDistanceAnchor';
+export * from './CameraHorizontalAnchor';
