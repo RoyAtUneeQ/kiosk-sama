@@ -5,6 +5,7 @@ import type { Uneeq, UneeqOptions, Event } from "@/types";
 import { useSession } from "@/contexts/SessionContext";
 import { MessageSender } from "@/types";
 import { usePerformanceMonitor } from "@/hooks/usePerformanceMonitor";
+import { CameraHorizontalAnchor, CameraDistanceAnchor } from "@/types";
 
 declare const Uneeq: any;
 
@@ -111,5 +112,17 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
     }
 
   }, [state.history]);        
+
+
+  useEffect(() => {
+    if (state.camera && window.uneeq) {
+      const isHorizontal = Object.values(CameraHorizontalAnchor).includes(state.camera as CameraHorizontalAnchor);
+      const cameraEnum = isHorizontal ? CameraHorizontalAnchor : CameraDistanceAnchor;
+      const cameraKey = Object.keys(cameraEnum).find(key => cameraEnum[key as keyof typeof cameraEnum] === state.camera);
+      
+      console.log("[useUneeq] setting camera to", cameraKey);
+      window.uneeq[isHorizontal ? 'cameraAnchorHorizontal' : 'cameraAnchorDistance'](cameraKey as string, 1000);
+    }
+  }, [state.camera]);   
 
 }
