@@ -29,7 +29,7 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
   // Get config values
   const scriptUrl = config?.personas?.[language]?.[type]?.CDN || '';
   const connectionUrl = config?.personas?.[language]?.[type]?.API || '';
-  const personaId = config?.personas?.[language]?.[type]?.key || '';
+  const personaId = config?.personas?.[language]?.[type]?.id || '';
   const sessionKey = `${connectionUrl}-${personaId}`;
 
   // Load script using external library
