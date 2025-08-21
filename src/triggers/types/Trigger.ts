@@ -1,3 +1,4 @@
+import type { SessionContextType } from "@/contexts/SessionContext";
 import type { Message } from "@/types/transport/Message";
 
 /**
@@ -12,5 +13,5 @@ export interface Trigger {
      * Produce an instruction string (e.g., a prompt). May be async.
      * @param type - Optional generation variant or hint
      */
-    generate: (args: any) => Message;
+    generate: (args: SessionContextType) => Message;
 }

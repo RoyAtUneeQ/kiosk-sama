@@ -37,7 +37,7 @@ const LeftSideBar: React.FC = () => {
               key={trigger.key}
               icon={iconComponent}
               draggable={false}   
-              onClick={() => actions.addMessageToHistory(trigger.instance.generate({}))}
+              onClick={() => actions.addMessageToHistory(trigger.instance.generate({state, actions}))}
               title={`Execute ${trigger.key} trigger`}
             />
           );
