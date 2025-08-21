@@ -25,17 +25,112 @@ Digital human kiosk experience with remote mobile control capabilities. Users in
 - **Speech Recognition**: Deepgram streaming API
 - **Build Tool**: Vite
 
+## 📋 Prerequisites
+
+- **Node.js**: v18.0.0 or higher (v20+ recommended)
+- **Backend Service**: This frontend requires the companion backend service running
+  - WebSocket server on port 3001
+  - HTTP API on port 3000
+  - See [Backend Repository](#) for setup instructions *(link to be added)*
+
 ## 🚀 Quick Start
 
-```bash
-# Install dependencies
-npm install
+### 1. Configuration Setup
 
-# Start development server
+**Important:** Before running the application, you must create a configuration file:
+
+```bash
+# Copy the sample configuration to create your config file
+cp src/assets/config.sample.yaml src/assets/config.yaml
+
+# Edit the config file to match your environment
+# - Update backend host/ports if different from defaults
+# - Configure Uneeq persona keys and endpoints
+# - Set appropriate environment (development/staging/production)
+```
+
+### 2. Install Dependencies
+
+```bash
+# Install frontend dependencies
+npm install
+```
+
+### 3. Start Backend Services
+
+**The backend services must be running before starting the frontend:**
+
+```bash
+# In a separate terminal, navigate to the backend project
+# cd ../backend  # adjust path as needed
+# npm install
+# npm run dev
+```
+
+### 4. Start Frontend Development Server
+
+```bash
+# Start the frontend development server
 npm run dev
 
-# Build for production
+# The application will be available at http://localhost:5173
+```
+
+### 5. Verify Setup
+
+Once running, you should see:
+- ✅ **Uneeq Script**: Ready
+- ✅ **WebSocket**: Connected (if backend is running)
+- ✅ **Session ID**: Generated
+- ✅ **Start Button**: Enabled (when both services are ready)
+
+## 🔧 Configuration
+
+The `config.yaml` file controls:
+
+- **Application Settings**
+  - Environment mode (development/staging/production)
+  - Application name
+
+- **Persona Configuration**
+  - Multiple language support (en, fr, etc.)
+  - Render modes (cloud, miniprem)
+  - Uneeq CDN URLs and API keys
+
+- **Backend Connection**
+  - WebSocket server URL and port
+  - HTTP API server URL and port
+  - Authentication keys
+
+Example configuration structure:
+```yaml
+app:
+  name: "Your Kiosk Name"
+  environment: "development"
+
+personas:
+  en:
+    cloud:
+      CDN: "https://cdn-eu.uneeq.io/..."
+      API: "https://api-eu.uneeq.io"
+      key: "your-persona-key"
+
+backend:
+  host: "localhost"
+  ports:
+    http: 3000
+    ws: 3001
+  key: "your-backend-key"
+```
+
+## 🏗️ Build for Production
+
+```bash
+# Build optimized production bundle
 npm run build
+
+# Preview production build locally
+npm run preview
 ```
 
 ## 📚 Documentation Structure
@@ -64,3 +159,28 @@ The codebase follows **simple, standardized, and extensible** patterns:
 - **Modular Components**: Self-contained, reusable components
 
 For detailed implementation guides and architectural decisions, see the comprehensive documentation linked above.
+
+## ❗ Troubleshooting
+
+### Start Button Disabled
+- **Cause**: WebSocket connection not established
+- **Solution**: Ensure backend services are running on the correct ports
+
+### WebSocket Connection Refused
+- **Cause**: Backend WebSocket server not running
+- **Solution**: Start the backend service (default port 3001)
+
+### Config File Not Found
+- **Cause**: Missing `src/assets/config.yaml`
+- **Solution**: Copy from `config.sample.yaml` as shown in setup
+
+### Node Version Issues
+- **Cause**: Node.js version < 18
+- **Solution**: Use Node.js v18+ (recommend v20 LTS)
+
+## 📝 Notes
+
+- The frontend and backend are separate projects that work together
+- Configuration is required before first run (no default config.yaml)
+- Both services must be running for full functionality
+- Development mode includes performance monitoring and debug panels
