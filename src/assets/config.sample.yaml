@@ -9,20 +9,20 @@ personas:
     cloud: 
       CDN: "https://cdn-eu.uneeq.io/hosted-experience/deploy/index.js"  
       API: "https://api-eu.uneeq.io"
-      key: "d909d65a-e278-432e-b026-b7f7caa031e4"
+      id: "d909d65a-e278-432e-b026-b7f7caa031e4"
     miniprem: 
       CDN: "https://cdn-eu.uneeq.io/hosted-experience/deploy/index.js"
       API: "https://api-eu.uneeq.io"
-      key: "d909d65a-e278-432e-b026-b7f7caa031e4"
+      id: "d909d65a-e278-432e-b026-b7f7caa031e4"
   fr:
     cloud: 
       CDN: "https://cdn-eu.uneeq.io/hosted-experience/deploy/index.js"  
       API: "https://api-eu.uneeq.io"
-      key: "d909d65a-e278-432e-b026-b7f7caa031e4"
+      id: "d909d65a-e278-432e-b026-b7f7caa031e4"
     miniprem: 
       CDN: "https://cdn-eu.uneeq.io/hosted-experience/deploy/index.js"
       API: "https://api-eu.uneeq.io"
-      key: "d909d65a-e278-432e-b026-b7f7caa031e4"
+      id: "d909d65a-e278-432e-b026-b7f7caa031e4"
 
 
 # Used for websocket connection and service token retrieval
