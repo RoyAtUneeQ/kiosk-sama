@@ -1,4 +1,4 @@
-import { Actions, CameraDistanceAnchor, CameraHorizontalAnchor, MessageSender, type Message } from "@/types";
+import { Actions, CameraDistanceAnchor, MessageSender, type Message } from "@/types";
 import type { Trigger } from "./types/Trigger";
 import type { SessionContextType } from "@/contexts/SessionContext";
 
