@@ -1,6 +1,6 @@
 
 import { create } from 'zustand';
-import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message } from '@/types';
+import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor } from '@/types';
 import { type State, SessionStatus } from './types';
 
 const initialState: State = {
@@ -21,6 +21,7 @@ const initialState: State = {
   micActive: false,
   sttReady: false,
   showSuggestions: true,
+  camera: CameraHorizontalAnchor.center,
 };
 
 /**
@@ -44,6 +45,7 @@ export type SessionActions = {
   setMicActive: (micActive: boolean) => void;
   setSttReady: (sttReady: boolean) => void;
   setShowSuggestions: (showSuggestions: boolean) => void;
+  setCamera: (camera: CameraHorizontalAnchor | CameraDistanceAnchor) => void;
 };      
 
 /**
@@ -126,6 +128,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     setShowSuggestions: (showSuggestions) => {
       set((prev) => ({ state: { ...prev.state, showSuggestions } }));
+    },
+    setCamera: (camera) => {
+      set((prev) => ({ state: { ...prev.state, camera } }));
     },
   },
 }));

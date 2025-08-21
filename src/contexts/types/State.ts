@@ -1,4 +1,4 @@
-import type { Uneeq } from "@/types";
+import type { CameraAnchorOptions, CameraDistanceAnchor, CameraHorizontalAnchor, Uneeq } from "@/types";
 import type { SessionStatus } from './'; 
 import type { Message, RemoteSessionInfo, WebsocketStatus } from "@/types/transport";
 import type { Event } from "@/types/uneeq/Event";
@@ -24,4 +24,7 @@ export interface State {
     micActive: boolean;
     sttReady: boolean;
     showSuggestions: boolean;
+
+    // Digital Human Controls
+    camera: CameraHorizontalAnchor | CameraDistanceAnchor;
   }
