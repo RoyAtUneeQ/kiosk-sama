@@ -387,7 +387,7 @@ useEffect(() => {
 
 ## 🚀 Summary
 
-The camera control system provides powerful, cinematic control with incredible simplicity:
+The camera control system provides powerful control with incredible simplicity:
 
 ### **Key Benefits:**
 - 🎯 **One-Line Control**: `actions.setCamera(CameraDistanceAnchor.close_up)`
