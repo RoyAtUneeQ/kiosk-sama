@@ -104,7 +104,7 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
   useEffect(() => {
     console.log("[useUneeq] sending message to Uneeq, last message is");
     const lastMessage = state.history[state.history.length - 1];    
-    console.table(lastMessage);
+    console.dir(lastMessage);
     // Only send non-User messages to Uneeq to prevent loops
     if (lastMessage && state.uneeq && lastMessage.sender !== MessageSender.Assistant) {
       window.uneeq?.[lastMessage.prompt ? 'chatPrompt' : 'speak'](lastMessage.content as string);

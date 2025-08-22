@@ -68,7 +68,6 @@ export const useWebSocket = (props: UseWebSocketProps) => {
     const lastMessage = session.state.history[session.state.history.length - 1];
     if(lastMessage && session.state.remoteInfo?.connectionId && lastMessage.sender === MessageSender.Assistant){
       console.log('[useWebSocket] send last message to peer');
-      console.table(lastMessage); 
       websocketRef.current!.send(actionFactory.sendMessage(session.state.remoteInfo.connectionId, lastMessage));
     }
   }, [session.state.history]);
