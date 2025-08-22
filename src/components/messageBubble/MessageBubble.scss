@@ -1,0 +1,405 @@
+/*
+ * MessageBubble Glassmorphism Design
+ * 
+ * A modern, minimalist chat interface featuring:
+ * - Frosted glass (glassmorphism) aesthetic with backdrop blur
+ * - Subtle gradients that complement purple-to-orange backgrounds
+ * - Elegant typing animations with soft white glows
+ * - Typing indicator for real-time feedback
+ * - Accessible design with motion preference support
+ * - Enhanced readability through proper contrast and spacing
+ */
+
+.message-bubble {
+  display: flex;
+  max-width: 85%;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.1));
+
+  &.user-message {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+
+  &.assistant-message {
+    align-self: flex-start;
+  }
+}
+
+.message-bubble-content {
+  border-radius: 20px;
+  padding: 1.25rem 1.5rem;
+  position: relative;
+  max-width: 100%;
+  word-break: break-word;
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.079);
+  font-size: 0.95rem;
+  letter-spacing: 0.015em;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  // Disable fade-in animation for animated assistant messages
+  &.no-fade-in {
+    animation: softAppear 0.3s ease-out;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  p {
+    margin: 0 0 0.5rem 0;
+    line-height: 1.65;
+    color: inherit;
+    font-weight: 400;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  // Glass reflection effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.6) 20%, 
+      rgba(255, 255, 255, 0.6) 80%, 
+      transparent
+    );
+    border-radius: 20px 20px 0 0;
+  }
+}
+
+.user-message .message-bubble-content {
+  background: linear-gradient(135deg, 
+    rgba(20, 80, 153, 0.25) 0%, 
+    rgba(50, 97, 152, 0.35) 50%,
+    rgba(52, 103, 136, 0.4) 100%
+  );
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom-right-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 4px 16px rgba(139, 69, 19, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  &::before {
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.4) 20%, 
+      rgba(255, 255, 255, 0.4) 80%, 
+      transparent
+    );
+  }
+}
+
+.assistant-message .message-bubble-content {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.25) 0%, 
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom-left-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(123, 31, 162, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  &::before {
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.7) 20%, 
+      rgba(255, 255, 255, 0.7) 80%, 
+      transparent
+    );
+  }
+}
+
+.message-bubble-time {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  display: block;
+  text-align: right;
+  margin-top: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.1));
+}
+
+// Typing indicator styles
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  gap: 0.5rem;
+  min-width: 60px;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite;
+
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.4s; }
+}
+
+.typing-text {
+  margin-left: 0.35rem;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+// Animation-specific styles for typing effect
+.typing-char {
+  background: linear-gradient(120deg, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: typingGlow 1.8s ease-in-out infinite alternate, 
+             smoothPulse 2.5s ease-in-out infinite;
+  position: relative;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.8),
+               0 0 60px rgba(255, 255, 255, 0.4),
+               0 0 80px rgba(255, 255, 255, 0.2);
+  filter: brightness(3) saturate(1.2);
+}
+
+.gradient-char {
+  position: relative;
+  animation: gradientFade 2.5s ease-out forwards;
+  
+  &.gradient-char-0 {
+    // Most recent character - bright contrast against dark base
+    background: linear-gradient(120deg, 
+      rgba(255, 255, 255, 1) 0%, 
+      rgba(255, 255, 255, 0.95) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: brightness(2.5) drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.6),
+                 0 0 25px rgba(255, 255, 255, 0.3);
+    animation: gradientFade 2.5s ease-out forwards, 
+               smoothPulse 2.5s ease-in-out infinite;
+  }
+  
+  &.gradient-char-1 {
+    // Middle character - medium brightness
+    background: linear-gradient(120deg, 
+      rgba(255, 255, 255, 0.85) 0%, 
+      rgba(255, 255, 255, 0.75) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: brightness(1.8) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    animation: gradientFade 2.5s ease-out forwards, 
+               smoothPulse 2.5s ease-in-out infinite 0.3s;
+  }
+  
+  &.gradient-char-2 {
+    // Oldest character - back to dark normal text
+    background: none;
+    background-clip: unset;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: inherit;
+    filter: brightness(1);
+    text-shadow: none;
+    animation: gradientFadeToNormal 2.5s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(12px) scale(0.95); 
+    filter: blur(1px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+    filter: blur(0);
+  }
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+@keyframes typingGlow {
+  0% { 
+    filter: brightness(3) saturate(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8),
+                 0 0 40px rgba(255, 255, 255, 0.4),
+                 0 0 60px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    filter: brightness(3.8) saturate(1.4) drop-shadow(0 0 25px rgba(255, 255, 255, 1));
+    text-shadow: 0 0 30px rgba(255, 255, 255, 1),
+                 0 0 60px rgba(255, 255, 255, 0.6),
+                 0 0 80px rgba(255, 255, 255, 0.3);
+  }
+  100% { 
+    filter: brightness(3) saturate(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8),
+                 0 0 60px rgba(255, 255, 255, 0.4),
+                 0 0 80px rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes typingGlowBg {
+  from { 
+    opacity: 0.1;
+    transform: scale(1);
+    backdrop-filter: blur(2px);
+  }
+  to { 
+    opacity: 0.2;
+    transform: scale(1.02);
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes gradientFade {
+  0% {
+    filter: brightness(4) saturate(1.3) drop-shadow(0 0 20px rgba(255, 255, 255, 0.9));
+    transform: scale(1.02);
+  }
+  30% {
+    filter: brightness(3.5) saturate(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.7));
+    transform: scale(1.01);
+  }
+  70% {
+    filter: brightness(2.5) saturate(1.1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+    transform: scale(1);
+  }
+  100% {
+    filter: brightness(2) saturate(1.05);
+    transform: scale(1);
+  }
+}
+
+// New animation for the final character to fade to normal darker text
+@keyframes gradientFadeToNormal {
+  0% {
+    background: linear-gradient(120deg, 
+      rgba(255, 255, 255, 0.85) 0%, 
+      rgba(255, 255, 255, 0.75) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: brightness(1.8) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    transform: scale(1.01);
+  }
+  40% {
+    background: linear-gradient(120deg, 
+      rgba(255, 255, 255, 0.5) 0%, 
+      rgba(255, 255, 255, 0.4) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: brightness(1.3) drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.1);
+    transform: scale(1);
+  }
+  70% {
+    background: none;
+    background-clip: unset;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: inherit;
+    filter: brightness(1.1);
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.05);
+    transform: scale(1);
+  }
+  100% {
+    background: none;
+    background-clip: unset;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: inherit;
+    filter: brightness(1);
+    text-shadow: none;
+    transform: scale(1);
+  }
+}
+
+// New smooth pulse animation with enhanced brightness
+@keyframes smoothPulse {
+  0% {
+    opacity: 0.95;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+    filter: brightness(1.3) saturate(1.1);
+  }
+  100% {
+    opacity: 0.95;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+// Respect user's motion preferences
+@media (prefers-reduced-motion: reduce) {
+  .message-bubble-content,
+  .typing-char,
+  .gradient-char {
+    animation: none !important;
+  }
+  
+  .typing-char {
+    background: none !important;
+    -webkit-text-fill-color: inherit !important;
+    
+    &::after {
+      display: none;
+    }
+  }
+  
+  .gradient-char {
+    background: none !important;
+    -webkit-text-fill-color: inherit !important;
+    filter: none !important;
+    text-shadow: none !important;
+    
+    &.gradient-char-0,
+    &.gradient-char-1,
+    &.gradient-char-2 {
+      animation: none !important;
+      background: none !important;
+      -webkit-background-clip: unset !important;
+      background-clip: unset !important;
+    }
+  }
+}
+
