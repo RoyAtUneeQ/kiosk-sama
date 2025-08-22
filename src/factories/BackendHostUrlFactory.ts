@@ -42,11 +42,23 @@ export class BackendHostUrlFactory {
   }
 
   static getWebSocketUrl(config?: Config | null): string {
+    const backendAny = (config?.backend as any) || {};
+    // Check if endpoints are provided with full URLs
+    if (backendAny.endpoints?.ws) {
+      return backendAny.endpoints.ws;
+    }
+    // Fallback to constructing URL from host/port
     const { ws } = this.getProtocols();
     return `${ws}://${this.getWebSocketHost(config)}`;
   }
 
   static getHttpBaseUrl(config?: Config | null): string {
+    const backendAny = (config?.backend as any) || {};
+    // Check if endpoints are provided with full URLs
+    if (backendAny.endpoints?.http) {
+      return backendAny.endpoints.http;
+    }
+    // Fallback to constructing URL from host/port
     const { http } = this.getProtocols();
     return `${http}://${this.getHttpHost(config)}`;
   }
