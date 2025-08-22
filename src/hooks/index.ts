@@ -1,4 +1,5 @@
-export * from './useConfig';
+export * from './useAnimatedText';
+export * from './useConfig';    
 export * from './useUneeq';
 export * from './useUneeqEvents';
 export * from './useUserInspect';

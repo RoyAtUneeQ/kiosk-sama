@@ -7,4 +7,5 @@ export { default as QRCode } from './qrCode/QRCode';
 export { default as GlowBackground } from './glow/GlowBackground';
 export { default as FeedbackLine } from './feedbackLine/FeedbackLine';
 export { default as ErrorBoundary } from './errorBoundary/ErrorBoundary';
+export { default as MessageBubble } from './messageBubble/MessageBubble';
 
