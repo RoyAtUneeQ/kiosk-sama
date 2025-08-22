@@ -7,9 +7,10 @@ export class PromptResultListener implements UneeqEventListener {
 
   execute(data: any, session: SessionContextType): void {
     session.actions.setAwaitingPromptResponse(false);
-    console.log('PromptResultListener', data);
+    console.log('PromptResultListener');
+    console.dir(data);
     session.actions.addMessageToHistory({
-      id: crypto.randomUUID(),
+      id: data.promptResult.request.requestId,
       content: data.promptResult.response.text,
       sender: MessageSender.Assistant,
       timestamp: new Date()
