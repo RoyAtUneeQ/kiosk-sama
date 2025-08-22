@@ -2,12 +2,15 @@ import './MessageList.scss';
 import React from 'react';
 import type { RefObject } from 'react';
 import type { Message } from '@/types/transport/Message';
+import { MessageBubble } from '@/components';
 
 interface MessageListProps {
   messages: Message[];
   isTyping: boolean;
   messagesEndRef: RefObject<HTMLDivElement>;
 }
+
+
 
 const MessageList: React.FC<MessageListProps> = ({ messages, isTyping, messagesEndRef }) => {
   const getTimestamp = (timestamp: Date | string) => 
@@ -33,33 +36,35 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isTyping, messagesE
     return seenOrder.map(id => ({
       id,
       messages: groups.get(id)!,
-      content: groups.get(id)!.map(msg => msg.content).join(''),
+      content: groups.get(id)!.at(-1)!.content, // Use only the last message's content (accumulated)
       sender: groups.get(id)![0].sender,
       lastTimestamp: groups.get(id)!.at(-1)!.timestamp
     }));
   }, [messages]);
 
+  // Find the latest assistant message to animate
+  const latestAssistantMessageId = React.useMemo(() => {
+    for (let i = messageGroups.length - 1; i >= 0; i--) {
+      if (messageGroups[i].sender === 'assistant') {
+        return messageGroups[i].id;
+      }
+    }
+    return null;
+  }, [messageGroups]);
+
   return (
     <div className="messages-container">
       {messageGroups.map(group => (
-        <div key={group.id} className={`message ${group.sender}-message`}>
-          <div className="message-bubble">
-            <p>{group.content}</p>
-            <span className="message-time">
-              {getTimestamp(group.lastTimestamp).toLocaleTimeString()}
-            </span>
-          </div>
-        </div>
+        <MessageBubble
+          key={group.id}
+          content={group.content}
+          sender={group.sender}
+          timestamp={group.lastTimestamp}
+          shouldAnimate={group.id === latestAssistantMessageId}
+        />
       ))}
       {isTyping && (
-        <div className="message assistant-message">
-          <div className="message-bubble typing-indicator">
-            <div className="typing-dot"></div>
-            <div className="typing-dot"></div>
-            <div className="typing-dot"></div>
-            <span className="typing-text"></span>
-          </div>
-        </div>
+        <MessageBubble isTyping={true} />
       )}
       <div ref={messagesEndRef} />
     </div>
