@@ -1,6 +1,6 @@
 # Generic Kiosk - Frontend
 
-Digital human kiosk experience with remote mobile control capabilities. Users interact with an AI-powered avatar (Uneeq) on the main kiosk display, while remote users can connect via mobile devices to send messages and control the conversation.
+Digital human kiosk experience with remote mobile control capabilities. Users interact with an AI-powered digital human (UneeQ) on the main kiosk display, while remote users can connect via mobile devices to send messages and control the conversation.
 
 ## 📖 Documentation
 
@@ -31,7 +31,7 @@ Digital human kiosk experience with remote mobile control capabilities. Users in
 - **Backend Service**: This frontend requires the companion backend service running
   - WebSocket server on port 3001
   - HTTP API on port 3000
-  - See [Backend Repository](#) for setup instructions *(link to be added)*
+  - See [Backend Repository](https://websocket-api-75b4d0.gitlab.io/#/) for setup instructions 
 
 ## 🚀 Quick Start
 
