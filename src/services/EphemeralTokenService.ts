@@ -103,7 +103,13 @@ export class EphemeralTokenService {
       throw new Error('No API base URL configured');
     }
 
-    const url = new URL('service-token', baseUrl);
+    console.log('[EphemeralTokenService] baseUrl:', baseUrl);
+    const baseUrlObj = new URL(baseUrl);
+    baseUrlObj.pathname = baseUrlObj.pathname.endsWith('/') 
+      ? baseUrlObj.pathname + 'service-token' 
+      : baseUrlObj.pathname + '/service-token';
+    const url = baseUrlObj;
+    console.log('[EphemeralTokenService] constructed URL:', url.toString());
     url.searchParams.set('provider', provider);
     url.searchParams.set('service', service);
     url.searchParams.set('ttl', String(ttlSeconds));

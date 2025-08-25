@@ -1,4 +1,5 @@
-import type { CameraAnchorOptions, CameraDistanceAnchor, CameraHorizontalAnchor, Uneeq } from "@/types";
+import type { CameraDistanceAnchor, CameraHorizontalAnchor, Uneeq } from "@/types";
+// Available for configuration: import type { CameraAnchorOptions } from "@/types";
 import type { SessionStatus } from './'; 
 import type { Message, RemoteSessionInfo, WebsocketStatus } from "@/types/transport";
 import type { Event } from "@/types/uneeq/Event";

@@ -2,7 +2,8 @@ import './LeftSideBar.scss';
 import { useSession } from '@/contexts';
 import { CircleButton } from '@/components';
 import { BsHourglassSplit } from "react-icons/bs";
-import { getAllTriggers, useIconFactory, type TriggerItem } from '@/factories';
+import { getAllTriggers, useIconFactory } from '@/factories';
+// Available for customization: import type { TriggerItem } from '@/factories';
 import { useMemo } from 'react';  
 
 const LeftSideBar: React.FC = () => {
