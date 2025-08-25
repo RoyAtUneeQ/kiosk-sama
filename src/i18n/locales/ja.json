@@ -68,5 +68,10 @@
     "stopListening": "音声認識停止",
     "requestPermission": "マイクを許可",
     "permissionDenied": "マイクアクセスが拒否されました"
+  },
+  "captions": {
+    "label": "字幕",
+    "on": "オン",
+    "off": "オフ"
   }
 }

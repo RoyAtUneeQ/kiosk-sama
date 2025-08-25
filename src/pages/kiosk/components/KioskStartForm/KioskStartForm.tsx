@@ -91,19 +91,19 @@ const KioskStartForm: React.FC = () => {
                     </div>
                   </div>
                   <div className="render-mode-selector">
-                    <div className="render-mode-label">Captions:</div>
+                    <div className="render-mode-label">{t('captions.label')}:</div>
                     <div className="render-mode-options">
                       <div 
                         className={`render-mode-option ${state.showClosedCaptions ? 'active' : ''}`}
                         onClick={() => actions.setShowClosedCaptions(true)}
                       >
-                        on
+                        {t('captions.on')}
                       </div>
                       <div 
                         className={`render-mode-option ${!state.showClosedCaptions ? 'active' : ''}`}
                         onClick={() => actions.setShowClosedCaptions(false)}
                       >
-                        off
+                        {t('captions.off')}
                       </div>
                     </div>
                   </div>
@@ -113,19 +113,19 @@ const KioskStartForm: React.FC = () => {
               {getRenderByLanguage(state.language).length <= 1 && (
                 <div className="kiosk-options-container">
                   <div className="render-mode-selector">
-                    <div className="render-mode-label">Captions:</div>
+                    <div className="render-mode-label">{t('captions.label')}:</div>
                     <div className="render-mode-options">
                       <div 
                         className={`render-mode-option ${state.showClosedCaptions ? 'active' : ''}`}
                         onClick={() => actions.setShowClosedCaptions(true)}
                       >
-                        on
+                        {t('captions.on')}
                       </div>
                       <div 
                         className={`render-mode-option ${!state.showClosedCaptions ? 'active' : ''}`}
                         onClick={() => actions.setShowClosedCaptions(false)}
                       >
-                        off
+                        {t('captions.off')}
                       </div>
                     </div>
                   </div>

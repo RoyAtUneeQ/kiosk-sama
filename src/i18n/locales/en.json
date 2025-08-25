@@ -68,5 +68,10 @@
     "stopListening": "Stop Listening",
     "requestPermission": "Allow Microphone",
     "permissionDenied": "Microphone Access Denied"
+  },
+  "captions": {
+    "label": "Captions",
+    "on": "on",
+    "off": "off"
   }
 } 

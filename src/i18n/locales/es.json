@@ -68,5 +68,10 @@
     "stopListening": "Dejar de escuchar",
     "requestPermission": "Permitir micrófono",
     "permissionDenied": "Acceso al micrófono denegado"
+  },
+  "captions": {
+    "label": "Subtítulos",
+    "on": "sí",
+    "off": "no"
   }
 } 

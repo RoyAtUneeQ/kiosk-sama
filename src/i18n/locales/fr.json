@@ -68,5 +68,10 @@
     "stopListening": "Arrêter l'écoute",
     "requestPermission": "Autoriser le microphone",
     "permissionDenied": "Accès au microphone refusé"
+  },
+  "captions": {
+    "label": "Sous-titres",
+    "on": "oui",
+    "off": "non"
   }
 } 
