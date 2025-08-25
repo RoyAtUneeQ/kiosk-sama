@@ -80,7 +80,7 @@ Now edit `src/assets/config.yaml` to configure:
 npm install
 ```
 
-If you see warnings about engine compatibility, ensure you're using Node.js v18+.
+If you see warnings about engine compatibility, ensure you're using Node.js v20+.
 
 ### Step 5: Start the Backend Service
 
@@ -148,7 +148,7 @@ When everything is working correctly, you should see:
 | **WebSocket disconnected** | Red "Disconnected" status | Start the backend service (Step 5) |
 | **Start button disabled** | Button is grayed out | Check both WebSocket and Uneeq status |
 | **Port already in use** | Error when starting dev server | Change port: `npm run dev -- --port 5174` |
-| **Node version error** | Build/install failures | Update to Node.js v18+ |
+| **Node version error** | Build/install failures | Update to Node.js v20+ |
 
 ## Project Structure
 

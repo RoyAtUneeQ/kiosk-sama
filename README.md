@@ -131,7 +131,36 @@ npm run build
 
 # Preview production build locally
 npm run preview
+
+# Analyze build performance and get optimization recommendations
+./optimize-build.js
 ```
+
+### 📊 Build Analysis & Optimization
+
+The `optimize-build.js` script provides detailed analysis of your production build:
+
+```bash
+# Run after building to get performance insights
+npm run build
+./optimize-build.js
+```
+
+**What it analyzes:**
+- **Bundle sizes**: Identifies large JavaScript/CSS files that need code splitting
+- **Asset fingerprinting**: Verifies Vite's content hashing for optimal caching
+- **Performance recommendations**: Suggests image optimization, lazy loading, etc.
+- **Cache strategy**: Provides CloudFront/CDN cache header recommendations
+
+**Output includes:**
+- 📦 Build summary with file counts and sizes
+- 🚀 JavaScript bundle analysis with size warnings
+- 💾 Cache configuration recommendations
+- 💡 Specific optimization suggestions
+- 📁 Saves detailed report to `build-analysis.json`
+
+**Integration with deployment:**
+The deployment script (`./deploy-to-aws.sh`) will optionally run this analysis before deploying, giving you a chance to optimize before going live.
 
 ## 📚 Documentation Structure
 
@@ -176,7 +205,7 @@ For detailed implementation guides and architectural decisions, see the comprehe
 
 ### Node Version Issues
 - **Cause**: Node.js version < 18
-- **Solution**: Use Node.js v18+ (recommend v20 LTS)
+- **Solution**: Use Node.js v20+ (recommend v20 LTS)
 
 ## 📝 Notes
 

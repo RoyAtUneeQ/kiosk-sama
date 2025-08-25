@@ -1,0 +1,28 @@
+{
+  "stackName": "kiosk-frontend-stack",
+  "s3Region": "us-east-2",
+  "cfRegion": "us-east-1",
+  "bucketName": "",
+  "bucketPrefix": "",
+  "usesExistingBucket": false,
+  "distributionId": "",
+  "websiteUrl": "",
+  "domainName": "",
+  "sslCertificateArn": "",
+  "awsProfile": "",
+  "lastDeployment": "2025-01-20T10:30:00Z",
+  "deploymentNotes": {
+    "stackName": "CloudFormation stack name for your deployment",
+    "s3Region": "AWS region for S3 bucket (us-east-2 recommended)", 
+    "cfRegion": "CloudFront region (always us-east-1 for SSL certificates)",
+    "bucketName": "S3 bucket name (auto-generated if empty)",
+    "bucketPrefix": "S3 prefix/folder path within bucket (optional)",
+    "usesExistingBucket": "Whether using an existing bucket with prefix",
+    "distributionId": "CloudFront distribution ID (populated after deployment)",
+    "websiteUrl": "Final HTTPS URL of your deployed site",
+    "domainName": "Custom domain name (optional)",
+    "sslCertificateArn": "ACM certificate ARN for custom domain",
+    "awsProfile": "AWS CLI profile to use (for SSO or multi-account setups)",
+    "lastDeployment": "ISO timestamp of last successful deployment"
+  }
+}

@@ -11,6 +11,10 @@ config.yaml
 .env
 .cursor/*
 
+# Deployment configuration (contains AWS account info)
+deployment-config.json
+build-analysis.json
+
 node_modules
 dist
 dist-ssr
