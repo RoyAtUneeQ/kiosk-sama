@@ -102,6 +102,7 @@ function RemotePage() {
         // Resolve token before constructing the client
         const token = await ephemeralTokenService.ensure('deepgram', 'stt');
         if (cancelled) return;
+        console.log('[RemotePage] Creating initial STT client');
         const streamClient = createStreamClient(SpeechToTextProviders.DEEPGRAM, {
           token,
           model: 'nova-3',
@@ -113,14 +114,23 @@ function RemotePage() {
           onOpen: () => {
             actions.setSttReady(true);
             endTiming('service-init');
+            console.log('[RemotePage] ✅ Initial STT client connected and ready');
           },
           onPartial: () => actions.setIsTyping(true),
           onFinal: (text: string) => {
             actions.setIsTyping(false);
             addMessage(text, MessageSender.User);
           },
-          onError: (err: any) => console.error('[STT] error:', err),
-          onClose: () => console.info('[STT] closed')    });
+          onError: (err: any) => {
+            console.error('[STT] ❌ Initial STT client error:', err);
+            // Mark as not ready on error to trigger refresh on next use
+            actions.setSttReady(false);
+          },
+          onClose: () => {
+            console.info('[STT] 🔌 Initial STT connection closed');
+            actions.setSttReady(false);
+          }
+        });
 
         if (!streamClient) {
           console.error('[RemotePage] Failed to create STT client');
@@ -186,6 +196,75 @@ function RemotePage() {
     actions.setIsTyping(true);
   };
 
+  // Helper function to refresh STT client connection
+  const refreshSttClient = async () => {
+    console.log('[RemotePage] Refreshing STT client connection...');
+    
+    // Close existing connection and log details
+    if (sttRef.current) {
+      console.log('[RemotePage] Closing existing STT connection before refresh');
+      try { 
+        sttRef.current.close(); 
+      } catch (e) {
+        console.error('[RemotePage] Error closing existing STT client:', e);
+      }
+    }
+    sttRef.current = null;
+    actions.setSttReady(false);
+    
+    // Create new connection
+    try {
+      console.log('[RemotePage] Requesting new ephemeral token for STT refresh');
+      const token = await ephemeralTokenService.ensure('deepgram', 'stt');
+      
+      console.log('[RemotePage] Creating new STT client after refresh');
+      const streamClient = createStreamClient(SpeechToTextProviders.DEEPGRAM, {
+        token,
+        model: 'nova-3',
+        language: 'en-US',
+        encoding: 'linear16',
+        sampleRate: 16000,
+        channels: 1,
+        smartFormat: true,
+        onOpen: () => {
+          actions.setSttReady(true);
+          console.log('[RemotePage] ✅ STT client refreshed and ready - new WebSocket connection established');
+        },
+        onPartial: () => actions.setIsTyping(true),
+        onFinal: (text: string) => {
+          actions.setIsTyping(false);
+          addMessage(text, MessageSender.User);
+        },
+        onError: (err: any) => {
+          console.error('[STT] ❌ STT client error:', err);
+          // Mark as not ready on error to trigger refresh on next use
+          actions.setSttReady(false);
+        },
+        onClose: () => {
+          console.info('[STT] 🔌 STT connection closed');
+          actions.setSttReady(false);
+        }
+      });
+
+      if (!streamClient) {
+        console.error('[RemotePage] Failed to create refreshed STT client');
+        return false;
+      }
+
+      sttRef.current = streamClient;
+      
+      console.log('[RemotePage] Connecting refreshed STT client...');
+      await streamClient.connect();
+      console.log('[RemotePage] STT client refresh complete');
+      return true;
+    } catch (e) {
+      console.error('[RemotePage] Failed to refresh STT client:', e);
+      sttRef.current = null;
+      actions.setSttReady(false);
+      return false;
+    }
+  };
+
   const toggleMic = async () => {
     // Check permissions first
     if (!micPermissions.canUseMic) {
@@ -198,11 +277,12 @@ function RemotePage() {
 
     if (currentState === MicUsageState.LISTENING) {
       // User wants to mute
-      console.log('[RemotePage] Muting microphone');
+      console.log('[RemotePage] 🔇 Muting microphone (keeping STT connection alive)');
       micPermissions.setUsageState(MicUsageState.MUTED);
       actions.setMicActive(false);
       try { 
         await mic.stop(); 
+        console.log('[RemotePage] Microphone stream stopped successfully');
       } catch (e) {
         console.error('[RemotePage] Failed to stop mic:', e);
       }
@@ -213,18 +293,43 @@ function RemotePage() {
         console.warn('[RemotePage] Cannot start STT, WebSocket not connected');
         return;
       }
-      if (!state.sttReady) {
-        console.warn('[RemotePage] STT not ready yet');
+
+      console.log('[RemotePage] Starting microphone - setting up connection...');
+      micPermissions.setUsageState(MicUsageState.REQUESTING);
+      actions.setShowSuggestions(false);
+      
+      // If we're coming from MUTED state, check if STT client needs refreshing
+      let sttReady = state.sttReady;
+      if (currentState === MicUsageState.MUTED) {
+        // Test if the existing STT client is still functional by checking if we can send to it
+        // If not ready or connection seems stale, refresh it
+        if (!sttReady || !sttRef.current) {
+          console.log('[RemotePage] STT client not ready, refreshing after mute...');
+          sttReady = await refreshSttClient();
+          if (!sttReady) {
+            console.error('[RemotePage] Failed to refresh STT client');
+            micPermissions.setUsageState(MicUsageState.IDLE);
+            actions.setMicActive(false);
+            actions.setShowSuggestions(true);
+            return;
+          }
+        } else {
+          console.log('[RemotePage] STT client appears ready, reusing existing connection');
+        }
+      }
+      
+      if (!sttReady) {
+        console.warn('[RemotePage] STT not ready');
+        micPermissions.setUsageState(MicUsageState.IDLE);
+        actions.setShowSuggestions(true);
         return;
       }
-
-      console.log('[RemotePage] Starting microphone');
-      micPermissions.setUsageState(MicUsageState.LISTENING);
-      actions.setMicActive(true);
-      actions.setShowSuggestions(false);
       
       try {
         await mic.start();
+        // Once mic starts successfully, transition to listening
+        micPermissions.setUsageState(MicUsageState.LISTENING);
+        actions.setMicActive(true);
       } catch (e) {
         console.error('[RemotePage] Failed to start mic:', e);
         micPermissions.setUsageState(MicUsageState.IDLE);

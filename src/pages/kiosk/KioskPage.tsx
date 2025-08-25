@@ -18,7 +18,10 @@ function KioskPage() {
   const { state } = useSession();
   const actionFactory = createActionFactory();
   
-  useUneeq({...defaultUneeqOptions} as UneeqOptions);
+  useUneeq({
+    ...defaultUneeqOptions,
+    showClosedCaptions: state.showClosedCaptions
+  } as UneeqOptions);
   useUneeqEvents();
   
 

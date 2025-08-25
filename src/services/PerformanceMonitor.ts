@@ -17,7 +17,7 @@
 export class PerformanceMonitor {
   private static timings = new Map<string, number>();
   private static metrics = new Map<string, number>();
-  private static isEnabled = process.env.NODE_ENV === 'development';
+  private static isEnabled = false; // Will be set by config or environment
 
   /**
    * Start timing an operation
@@ -109,6 +109,18 @@ export class PerformanceMonitor {
    */
   static setEnabled(enabled: boolean): void {
     this.isEnabled = enabled;
+  }
+
+  /**
+   * Initialize performance monitoring based on environment and config
+   */
+  static initialize(config?: { app?: { environment?: string } }): void {
+    // Check config.yaml app.environment setting first, fallback to NODE_ENV
+    const configEnvironment = config?.app?.environment;
+    const isDevelopment = configEnvironment === 'development' || 
+                         (configEnvironment === undefined && process.env.NODE_ENV === 'development');
+    
+    this.setEnabled(isDevelopment);
   }
 }
 

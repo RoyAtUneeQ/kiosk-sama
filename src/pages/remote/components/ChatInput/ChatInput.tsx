@@ -45,6 +45,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const getMicButtonState = () => {
     switch (micUsageState) {
+      case MicUsageState.REQUESTING:
+        return {
+          className: 'mic-button requesting',
+          icon: <FiMic />,
+          label: 'Setting up microphone...',
+          disabled: true
+        };
       case MicUsageState.LISTENING:
         return {
           className: 'mic-button listening',

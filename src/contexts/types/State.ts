@@ -28,4 +28,5 @@ export interface State {
 
     // Digital Human Controls
     camera: CameraHorizontalAnchor | CameraDistanceAnchor;
+    showClosedCaptions: boolean;
   }

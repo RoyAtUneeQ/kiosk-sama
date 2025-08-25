@@ -9,6 +9,7 @@ export enum MicPermissionState {
 
 export enum MicUsageState {
   IDLE = 'idle',           // Permission granted, not listening
+  REQUESTING = 'requesting', // Permission granted, setting up token/connection
   LISTENING = 'listening', // Permission granted, actively listening
   MUTED = 'muted',         // Permission granted, user muted
   DENIED = 'denied'        // Permission denied

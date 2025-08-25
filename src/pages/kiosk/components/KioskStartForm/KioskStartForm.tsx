@@ -64,6 +64,7 @@ const KioskStartForm: React.FC = () => {
                   {t('welcome.description')}
                 </p>
               </div>
+
               
               <div className="kiosk-actions">
                 <Button onClick={startExperience} className="kiosk-start-button" disabled={state.uneeq === null || state.webSocketState === WebsocketStatus.DISCONNECTED}>
@@ -73,19 +74,60 @@ const KioskStartForm: React.FC = () => {
             </div>
 
             <div className="kiosk-connection-statuses">
-              {getRenderByLanguage(state.language).length > 1 && (
-                <div className="render-mode-selector">
-                  <div className="render-mode-label">{t('renderMode.label')}:</div>
-                  <div className="render-mode-options">
-                    {getRenderByLanguage(state.language).map(option => (
+              {(getRenderByLanguage(state.language).length > 1) && (
+                <div className="kiosk-options-container">
+                  <div className="render-mode-selector">
+                    <div className="render-mode-label">{t('renderMode.label')}:</div>
+                    <div className="render-mode-options">
+                      {getRenderByLanguage(state.language).map(option => (
+                        <div 
+                            key={option}
+                          className={`render-mode-option ${state.renderMode === option ? 'active' : ''}`}
+                          onClick={() => actions.setRenderMode(option as "cloud" | "miniprem")}
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="render-mode-selector">
+                    <div className="render-mode-label">Captions:</div>
+                    <div className="render-mode-options">
                       <div 
-                          key={option}
-                        className={`render-mode-option ${state.renderMode === option ? 'active' : ''}`}
-                        onClick={() => actions.setRenderMode(option as "cloud" | "miniprem")}
+                        className={`render-mode-option ${state.showClosedCaptions ? 'active' : ''}`}
+                        onClick={() => actions.setShowClosedCaptions(true)}
                       >
-                        {option}
+                        on
                       </div>
-                    ))}
+                      <div 
+                        className={`render-mode-option ${!state.showClosedCaptions ? 'active' : ''}`}
+                        onClick={() => actions.setShowClosedCaptions(false)}
+                      >
+                        off
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* Show captions toggle even when no render mode options */}
+              {getRenderByLanguage(state.language).length <= 1 && (
+                <div className="kiosk-options-container">
+                  <div className="render-mode-selector">
+                    <div className="render-mode-label">Captions:</div>
+                    <div className="render-mode-options">
+                      <div 
+                        className={`render-mode-option ${state.showClosedCaptions ? 'active' : ''}`}
+                        onClick={() => actions.setShowClosedCaptions(true)}
+                      >
+                        on
+                      </div>
+                      <div 
+                        className={`render-mode-option ${!state.showClosedCaptions ? 'active' : ''}`}
+                        onClick={() => actions.setShowClosedCaptions(false)}
+                      >
+                        off
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

@@ -67,17 +67,17 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
       // Clean up previous session
       window.uneeq?.endSession?.();
       
-      console.log('Initializing Uneeq session', {
+      const finalOptions = {
         ...options,
         connectionUrl,
-        personaId
-      });
+        personaId,
+        showClosedCaptions: options.showClosedCaptions
+      };
+      
+      console.log('🎬 Initializing Uneeq session with options:', finalOptions);
+      
       // Initialize new session
-      window.uneeq = new Uneeq({
-        ...options,
-        connectionUrl,
-        personaId
-      });
+      window.uneeq = new Uneeq(finalOptions);
       window.uneeqSessionKey = sessionKey;
       const uneeq = window.uneeq as Uneeq;
       actions.setUneeq(uneeq);
@@ -123,6 +123,42 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
       console.log("[useUneeq] setting camera to", cameraKey);
       window.uneeq[isHorizontal ? 'cameraAnchorHorizontal' : 'cameraAnchorDistance'](cameraKey as string, 1000);
     }
-  }, [state.camera]);   
+  }, [state.camera]);
+
+  // Update closed captions setting when options change
+  useEffect(() => {
+    if (window.uneeq && typeof options.showClosedCaptions !== 'undefined') {
+      console.log(`[useUneeq] 📝 Setting closed captions to: ${options.showClosedCaptions}`);
+      console.log(`[useUneeq] Uneeq methods available:`, Object.getOwnPropertyNames(window.uneeq));
+      
+      try {
+        window.uneeq.setShowClosedCaptions(options.showClosedCaptions);
+        console.log(`[useUneeq] ✅ Successfully called setShowClosedCaptions(${options.showClosedCaptions})`);
+      } catch (error) {
+        console.error(`[useUneeq] ❌ Error calling setShowClosedCaptions:`, error);
+      }
+    }
+  }, [options.showClosedCaptions]);
+
+  // Monitor session state changes and apply captions setting when session becomes LIVE
+  useEffect(() => {
+    if (window.uneeq && state.status === 'LIVE' && typeof options.showClosedCaptions === 'boolean') {
+      console.log(`[useUneeq] 🎯 Session is LIVE - applying captions setting: ${options.showClosedCaptions}`);
+      
+      // Apply immediately and with delays to ensure it sticks
+      const applyCaptions = () => {
+        try {
+          window.uneeq?.setShowClosedCaptions(options.showClosedCaptions as boolean);
+          console.log(`[useUneeq] ✅ Captions applied during LIVE session: ${options.showClosedCaptions}`);
+        } catch (error) {
+          console.error(`[useUneeq] ❌ Error applying captions during LIVE session:`, error);
+        }
+      };
+      
+      applyCaptions(); // Apply immediately
+      setTimeout(applyCaptions, 500); // Apply after 500ms
+      setTimeout(applyCaptions, 2000); // Apply after 2s to be sure
+    }
+  }, [state.status, options.showClosedCaptions]);   
 
 }

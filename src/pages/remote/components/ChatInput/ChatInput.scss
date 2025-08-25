@@ -71,8 +71,6 @@
 
   // LISTENING state - actively recording (prominent animation)
   &.listening {
-    min-width: 56px;
-    height: 56px;
     background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
     color: white;
     box-shadow: 
@@ -126,6 +124,22 @@
       transform: scale(1.05);
     }
     &:active:not(:disabled) { transform: scale(0.95); }
+  }
+
+  // REQUESTING state - setting up connection/token
+  &.requesting {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
+    
+    .mic-icon {
+      animation: requestingPulse 1.5s ease-in-out infinite;
+    }
+
+    &:hover:not(:disabled) { 
+      cursor: not-allowed;
+      transform: none;
+    }
   }
 
   // DENIED state - permissions denied
@@ -192,6 +206,18 @@
   50% { 
     transform: scale(1.1);
     opacity: 0.3;
+  }
+}
+
+// Requesting pulse animation
+@keyframes requestingPulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(0.95);
   }
 }
 

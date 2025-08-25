@@ -22,6 +22,7 @@ const initialState: State = {
   sttReady: false,
   showSuggestions: true,
   camera: CameraHorizontalAnchor.center,
+  showClosedCaptions: true,
 };
 
 /**
@@ -46,6 +47,7 @@ export type SessionActions = {
   setSttReady: (sttReady: boolean) => void;
   setShowSuggestions: (showSuggestions: boolean) => void;
   setCamera: (camera: CameraHorizontalAnchor | CameraDistanceAnchor) => void;
+  setShowClosedCaptions: (showClosedCaptions: boolean) => void;
 };      
 
 /**
@@ -125,6 +127,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     setCamera: (camera) => {
       set((prev) => ({ state: { ...prev.state, camera } }));
+    },
+    setShowClosedCaptions: (showClosedCaptions) => {
+      set((prev) => ({ state: { ...prev.state, showClosedCaptions } }));
     },
   },
 }));

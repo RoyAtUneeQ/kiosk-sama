@@ -29,7 +29,8 @@ import { ErrorBoundary } from './components/errorBoundary/ErrorBoundary'
 import { LoadingFallback } from './components/loadingFallback/LoadingFallback'
 import { PerformanceMonitor } from './services'
 
-// Initialize performance monitoring
+// Performance monitoring will be initialized by ConfigLoader after config is loaded
+// Start initial app timing and web vitals tracking
 PerformanceMonitor.startTiming('app-initialization');
 PerformanceMonitor.trackWebVitals();
 
