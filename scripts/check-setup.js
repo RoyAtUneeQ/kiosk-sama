@@ -18,7 +18,7 @@ const nodeVersion = process.version;
 const majorVersion = parseInt(nodeVersion.split('.')[0].substring(1));
 
 if (majorVersion < 18) {
-  console.log(`❌ Node.js ${nodeVersion} - Requires v18.0.0+`);
+  console.log(`❌ Node.js ${nodeVersion} - Requires v20.0.0+`);
   errors++;
 } else if (majorVersion < 20) {
   console.log(`⚠️  Node.js ${nodeVersion} - Works but v20+ recommended`);
@@ -60,14 +60,14 @@ function checkService(url, name) {
         resolve(false);
       }
     });
-    
+
     request.on('error', () => {
       console.log(`❌ ${name} not reachable at ${url}`);
       console.log(`   Start the backend service first`);
       errors++;
       resolve(false);
     });
-    
+
     request.on('timeout', () => {
       request.destroy();
       console.log(`❌ ${name} timeout at ${url}`);
@@ -79,7 +79,7 @@ function checkService(url, name) {
 
 async function checkBackend() {
   await checkService('http://localhost:3000/health', 'Backend API');
-  
+
   // Check WebSocket (basic HTTP check since we can't easily test WS from here)
   await checkService('http://localhost:3001/', 'WebSocket Server');
 }

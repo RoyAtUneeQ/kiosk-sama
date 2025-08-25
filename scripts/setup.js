@@ -15,7 +15,7 @@ const majorVersion = parseInt(nodeVersion.split('.')[0].substring(1));
 
 if (majorVersion < 18) {
   console.error(`❌ Node.js version ${nodeVersion} is not supported.`);
-  console.error('   Please upgrade to Node.js v18.0.0 or higher.');
+  console.error('   Please upgrade to Node.js v20.0.0 or higher.');
   console.error('   Recommended: Node.js v20 LTS\n');
   process.exit(1);
 }
@@ -28,7 +28,7 @@ const sampleConfigPath = path.join(__dirname, '..', 'src', 'assets', 'config.sam
 
 if (!fs.existsSync(configPath)) {
   console.log('\n📋 Configuration file not found. Creating from sample...');
-  
+
   if (fs.existsSync(sampleConfigPath)) {
     try {
       fs.copyFileSync(sampleConfigPath, configPath);

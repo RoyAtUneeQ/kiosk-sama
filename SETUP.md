@@ -5,7 +5,7 @@ This guide provides step-by-step instructions for setting up the Generic Kiosk f
 ## System Requirements
 
 ### Minimum Requirements
-- **Node.js**: v18.0.0 or higher
+- **Node.js**: v20.0.0 or higher
 - **npm**: v8.0.0 or higher  
 - **Memory**: 4GB RAM minimum
 - **Browser**: Chrome, Firefox, Safari, or Edge (latest versions)
@@ -29,7 +29,7 @@ cd frontend
 
 ```bash
 node --version
-# Should output v18.0.0 or higher
+# Should output v20.0.0 or higher
 ```
 
 If you need to install or update Node.js:

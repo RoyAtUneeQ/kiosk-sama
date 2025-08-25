@@ -27,7 +27,7 @@ Digital human kiosk experience with remote mobile control capabilities. Users in
 
 ## 📋 Prerequisites
 
-- **Node.js**: v18.0.0 or higher (v20+ recommended)
+- **Node.js**: v20.0.0 or higher (v20+ recommended)
 - **Backend Service**: This frontend requires the companion backend service running
   - WebSocket server on port 3001
   - HTTP API on port 3000
