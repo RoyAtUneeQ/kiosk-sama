@@ -360,12 +360,26 @@ deploy_stack() {
     # Check if stack exists
     if aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$S3_REGION" &>/dev/null; then
         log_info "Updating existing stack..."
-        aws cloudformation update-stack \
+        
+        # Capture the update command output and error
+        if update_output=$(aws cloudformation update-stack \
             --stack-name "$STACK_NAME" \
             --template-body file://cloudformation-template.yaml \
             --parameters $PARAMS \
             --region "$S3_REGION" \
-            --capabilities CAPABILITY_IAM
+            --capabilities CAPABILITY_IAM 2>&1); then
+            # Update succeeded, monitor it
+            monitor_stack_deployment
+        else
+            # Check if it's the "no updates" error
+            if echo "$update_output" | grep -q "No updates are to be performed"; then
+                log_success "✅ Stack is already up-to-date - no changes needed"
+            else
+                # It's a real error
+                log_error "Stack update failed: $update_output"
+                return 1
+            fi
+        fi
     else
         log_info "Creating new stack..."
         aws cloudformation create-stack \
@@ -374,10 +388,10 @@ deploy_stack() {
             --parameters $PARAMS \
             --region "$S3_REGION" \
             --capabilities CAPABILITY_IAM
+        
+        # Monitor stack deployment with interactive feedback
+        monitor_stack_deployment
     fi
-    
-    # Monitor stack deployment with interactive feedback
-    monitor_stack_deployment
     
     log_success "Stack deployment completed"
 }

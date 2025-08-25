@@ -6,5 +6,6 @@ export * from './useUserInspect';
 export * from './useWebSocket';
 export * from './useTranslation';
 export * from './useMicStream';
+export * from './useMicPermissions';
 export * from './useDynamicIcons';
 export * from './usePerformanceMonitor';

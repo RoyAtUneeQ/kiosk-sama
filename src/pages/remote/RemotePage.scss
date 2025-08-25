@@ -12,6 +12,8 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: calc(var(--vh, 1vh) * 100); /* Fallback for older browsers */
+  height: 100dvh; /* Dynamic viewport height for modern browsers */
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -26,7 +28,11 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: calc(var(--vh, 1vh) * 100); /* Fallback for older browsers */
+  height: 100dvh; /* Dynamic viewport height for modern browsers */
   min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100); /* Fallback for older browsers */
+  min-height: 100dvh; /* Dynamic viewport height for modern browsers */
 }
 
 /* Listening overlay */
@@ -99,11 +105,29 @@
   .chat-header h1 { font-size: 1.5rem; }
 }
 
-/* Extra styling for iOS safe areas */
+/* Mobile-specific optimizations */
+@media (max-width: 767px) {
+  /* Prevent bounce scrolling on iOS */
+  .chat-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Ensure content doesn't get behind mobile browser UI */
+  .chat-content {
+    overflow: hidden;
+  }
+}
+
+/* Mobile browser safe area handling */
 @supports (padding: max(0px)) {
   .chat-container {
     padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    /* Don't add padding-bottom here - let ChatInput handle it */
   }
 }
 

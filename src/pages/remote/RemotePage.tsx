@@ -1,6 +1,6 @@
 import './RemotePage.scss';
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { useWebSocket, useUserInspect, useMicStream, usePageLoadMonitor, usePerformanceMonitor } from '@/hooks';
+import { useWebSocket, useUserInspect, useMicStream, usePageLoadMonitor, usePerformanceMonitor, useMicPermissions } from '@/hooks';
 import { WebsocketStatus } from '@/types/transport/WebsocketStatus';
 import { useParams } from 'react-router-dom';
 import { MessageSender, type Message } from '@/types';
@@ -15,6 +15,7 @@ import { createStreamClient } from '@/factories';
 import { SpeechToTextProviders } from '@/types/providers/SpeechToTextProviders';
 import { EphemeralTokenService } from '@/services';
 import { BackendHostUrlFactory } from '@/factories';
+import { MicUsageState } from '@/hooks/useMicPermissions';
 
 function RemotePage() {
   // Track page load performance to measure lazy loading impact
@@ -31,6 +32,9 @@ function RemotePage() {
 
   const { state, actions } = useSession();
   const { websocket } = useWebSocket({ webSocketUrl: BackendHostUrlFactory.getWebSocketUrl(config) });
+  
+  // Microphone permissions management - requests permissions automatically on mount
+  const micPermissions = useMicPermissions();
   
   // Memoize the token service to prevent re-instantiation on every render
   // This preserves the static cache across component updates
@@ -53,11 +57,27 @@ function RemotePage() {
 
   // Track viewport to tailor animation load for large screens
   const [viewportWidth, setViewportWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
+  
   useEffect(() => {
-    const handleResize = () => setViewportWidth(window.innerWidth);
+    const handleResize = () => {
+      setViewportWidth(window.innerWidth);
+      
+      // Set CSS custom property for viewport height (fallback for browsers without dvh support)
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    };
+    
+    // Initial call
+    handleResize();
+    
     window.addEventListener('resize', handleResize, { passive: true });
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize, { passive: true });
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
+  
   const isLargeScreen = viewportWidth >= 1280; // big screens: reduce background complexity
 
   useEffect(() => {
@@ -167,33 +187,50 @@ function RemotePage() {
   };
 
   const toggleMic = async () => {
-    const next = !state.micActive;
-    console.log('[RemotePage] toggleMic ->', next);
-    actions.setMicActive(next);
-    if (next) {
+    // Check permissions first
+    if (!micPermissions.canUseMic) {
+      console.warn('[RemotePage] Cannot use microphone - permissions not granted');
+      return;
+    }
+
+    const currentState = micPermissions.usageState;
+    console.log('[RemotePage] toggleMic - current state:', currentState);
+
+    if (currentState === MicUsageState.LISTENING) {
+      // User wants to mute
+      console.log('[RemotePage] Muting microphone');
+      micPermissions.setUsageState(MicUsageState.MUTED);
+      actions.setMicActive(false);
+      try { 
+        await mic.stop(); 
+      } catch (e) {
+        console.error('[RemotePage] Failed to stop mic:', e);
+      }
+      actions.setIsTyping(false);
+    } else if (currentState === MicUsageState.MUTED || currentState === MicUsageState.IDLE) {
+      // User wants to start listening
       if (state.webSocketState !== WebsocketStatus.CONNECTED) {
         console.warn('[RemotePage] Cannot start STT, WebSocket not connected');
-        actions.setMicActive(false);
         return;
       }
       if (!state.sttReady) {
         console.warn('[RemotePage] STT not ready yet');
-        actions.setMicActive(false);
         return;
       }
+
+      console.log('[RemotePage] Starting microphone');
+      micPermissions.setUsageState(MicUsageState.LISTENING);
+      actions.setMicActive(true);
       actions.setShowSuggestions(false);
-      console.log('[RemotePage] start mic stream');
+      
       try {
         await mic.start();
       } catch (e) {
         console.error('[RemotePage] Failed to start mic:', e);
+        micPermissions.setUsageState(MicUsageState.IDLE);
         actions.setMicActive(false);
         actions.setShowSuggestions(true);
       }
-    } else {
-      console.log('[RemotePage] stop mic stream');
-      try { await mic.stop(); } catch {}
-      actions.setIsTyping(false);
     }
   };
 
@@ -209,6 +246,20 @@ function RemotePage() {
       actions.setIsTyping(false);
     }
   }, [state.history, actions]);
+
+  // Auto-start microphone when permissions are granted and everything is ready
+  useEffect(() => {
+    const shouldAutoStart = 
+      micPermissions.canUseMic &&
+      micPermissions.usageState === MicUsageState.IDLE &&
+      state.webSocketState === WebsocketStatus.CONNECTED &&
+      state.sttReady;
+
+    if (shouldAutoStart) {
+      console.log('[RemotePage] Auto-starting microphone after permission grant');
+      toggleMic();
+    }
+  }, [micPermissions.canUseMic, micPermissions.usageState, state.webSocketState, state.sttReady]);
 
   const handleEnter = () => sendText(inputText);
 
@@ -264,9 +315,10 @@ function RemotePage() {
               onChange={setInputText}
               onEnter={handleEnter}
               disabled={state.webSocketState !== WebsocketStatus.CONNECTED}
-              micActive={state.micActive}
+              micUsageState={micPermissions.usageState}
               onToggleMic={toggleMic}
               speaking={false}
+              micError={micPermissions.errorMessage}
             />
           </div>
         </>
