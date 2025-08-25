@@ -24,6 +24,7 @@
     "en": "English",
     "fr": "Français",
     "es": "Español",
+    "ja": "日本語",
     "ar": "العربية",
     "pt": "Português",
     "de": "Deutsch"
@@ -60,5 +61,12 @@
     "stadium": "Mostrar información del estadio",
     "schedule": "Mostrar horario de la ciudad",
     "culture": "Mostrar cultura de la ciudad"
+  },
+  "micButton": {
+    "startListening": "Comenzar a escuchar",
+    "listening": "Escuchando...",
+    "stopListening": "Dejar de escuchar",
+    "requestPermission": "Permitir micrófono",
+    "permissionDenied": "Acceso al micrófono denegado"
   }
 } 

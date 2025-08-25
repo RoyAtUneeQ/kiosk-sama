@@ -33,6 +33,7 @@ const LANGUAGE_METADATA = {
   en: { nativeName: 'English', flag: '🇺🇸', isRTL: false },
   fr: { nativeName: 'Français', flag: '🇫🇷', isRTL: false },
   es: { nativeName: 'Español', flag: '🇪🇸', isRTL: false },
+  ja: { nativeName: '日本語', flag: '🇯🇵', isRTL: false },
   ar: { nativeName: 'العربية', flag: '🇸🇦', isRTL: true },
   pt: { nativeName: 'Português', flag: '🇵🇹', isRTL: false },
   de: { nativeName: 'Deutsch', flag: '🇩🇪', isRTL: false },

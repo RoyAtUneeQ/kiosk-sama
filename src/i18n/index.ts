@@ -5,6 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // Import translation files
 import en from './locales/en.json';
 import es from './locales/es.json';
+import ja from './locales/ja.json';
 import ar from './locales/ar.json';
 import pt from './locales/pt.json';
 import de from './locales/de.json';
@@ -13,6 +14,7 @@ import fr from './locales/fr.json';
 const resources = {
   en: { translation: en },
   es: { translation: es },
+  ja: { translation: ja },
   ar: { translation: ar },
   pt: { translation: pt },
   de: { translation: de },

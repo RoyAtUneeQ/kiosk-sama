@@ -1,0 +1,72 @@
+{
+  "welcome": {
+    "title": "ようこそ！",
+    "description": "デジタル体験が始まろうとしています。"
+  },
+  "actions": {
+    "startExperience": "体験開始"
+  },
+  "status": {
+    "webSocket": "WebSocket",
+    "uneeqScript": "Uneeqスクリプト",
+    "sessionId": "セッションID",
+    "connected": "接続済み",
+    "disconnected": "切断",
+    "ready": "準備完了",
+    "notReady": "未準備"
+  },
+  "renderMode": {
+    "label": "レンダーモード",
+    "cloud": "クラウド",
+    "miniPrem": "MiniPrem"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français", 
+    "es": "Español",
+    "ja": "日本語",
+    "ar": "العربية",
+    "pt": "Português",
+    "de": "Deutsch"
+  },
+  "loading": {
+    "default": "読み込み中...",
+    "initializing": "初期化中...",
+    "connecting": "接続中...",
+    "phrases": [
+      "ニューラルプロセッサーを温めています",
+      "心拍数を微調整しています",
+      "魂を回路と同期しています",
+      "感情ファームウェアを調整しています",
+      "自己認識プロトコルを実行しています",
+      "意識の火花を活性化しています",
+      "魂センサーを校正しています",
+      "優しさレベルが上昇しています"
+    ]
+  },
+  "errors": {
+    "microphonePermission": "マイクの許可が拒否されました",
+    "connectionFailed": "接続に失敗しました",
+    "sessionError": "セッションエラーが発生しました"
+  },
+  "accessibility": {
+    "micButton": "押し続けて話す",
+    "zoomIn": "カメラをズームイン",
+    "zoomOut": "カメラをズームアウト",
+    "emotion": "感情を表示",
+    "action": "アクションを実行",
+    "image": "画像を表示",
+    "tutorial": "チュートリアルを表示",
+    "chat": "チャットボタン",
+    "stadium": "スタジアム情報を表示",
+    "schedule": "都市スケジュールを表示",
+    "culture": "都市文化を表示"
+  },
+  "micButton": {
+    "startListening": "音声認識開始",
+    "listening": "聞いています...",
+    "stopListening": "音声認識停止",
+    "requestPermission": "マイクを許可",
+    "permissionDenied": "マイクアクセスが拒否されました"
+  }
+}
