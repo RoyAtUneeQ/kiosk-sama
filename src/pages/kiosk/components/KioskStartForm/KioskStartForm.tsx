@@ -1,7 +1,9 @@
 import "./KioskStartForm.scss";
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Button from "@/components/button/Button";
 import Panel from "@/components/panel/Panel";
+import { SettingsPanel, StatusPanel } from "@/components";
+import type { SettingsOption, StatusItem } from "@/components";
 import splashImage from "@/assets/splash.png";
 import { useConfig, useTranslation } from "@/hooks";  
 import { useSession } from "@/contexts/SessionContext";
@@ -16,6 +18,70 @@ const KioskStartForm: React.FC = () => {
   
   // Performance monitoring for experience startup
   const { startTiming, endTiming } = usePerformanceMonitor('KioskStartForm');
+
+  // Configure settings options
+  const settingsOptions = useMemo<SettingsOption[]>(() => {
+    const options: SettingsOption[] = [];
+    
+    // Add render mode options if multiple are available
+    if (getRenderByLanguage(state.language).length > 1) {
+      options.push({
+        id: 'renderMode',
+        label: t('renderMode.label'),
+        options: getRenderByLanguage(state.language).map(option => ({
+          value: option,
+          label: option,
+          active: state.renderMode === option
+        })),
+        onSelect: (value) => actions.setRenderMode(value as "cloud" | "miniprem")
+      });
+    }
+    
+    // Add captions options
+    options.push({
+      id: 'captions',
+      label: t('captions.label'),
+      options: [
+        {
+          value: true,
+          label: t('captions.on'),
+          active: state.showClosedCaptions
+        },
+        {
+          value: false,
+          label: t('captions.off'),
+          active: !state.showClosedCaptions
+        }
+      ],
+      onSelect: (value) => actions.setShowClosedCaptions(value as boolean)
+    });
+    
+    return options;
+  }, [state.language, state.renderMode, state.showClosedCaptions, getRenderByLanguage, t, actions]);
+
+  // Configure status items
+  const statusItems = useMemo<StatusItem[]>(() => [
+    {
+      id: 'webSocket',
+      label: t('status.webSocket'),
+      value: state.webSocketState === WebsocketStatus.CONNECTED ? t('status.connected') : t('status.disconnected'),
+      status: state.webSocketState === WebsocketStatus.CONNECTED ? 'ready' : 'not-ready'
+    },
+    {
+      id: 'uneeqScript',
+      label: t('status.uneeqScript'),
+      value: state.uneeq === null ? t('status.notReady') : t('status.ready'),
+      status: state.uneeq === null ? 'not-ready' : 'ready'
+    },
+    {
+      id: 'sessionId',
+      label: t('status.sessionId'),
+      value: state.connectionId || 'Not available',
+      status: 'info',
+      target: '_blank',
+      className: 'connection-id'
+    }
+  ], [state.webSocketState, state.uneeq, state.connectionId, t]);
 
   // Start the experience when the user clicks the start button
   const startExperience = useCallback(() => {
@@ -40,6 +106,7 @@ const KioskStartForm: React.FC = () => {
         mediaAltText="Uneeq - Digital Human"
         formSlot={
           <div className="kiosk-form-slot"> 
+            {/* Language Selector */}
             <div className="kiosk-language-selector">
               {getSupportedLanguages().map(option => (
                 <button
@@ -58,14 +125,14 @@ const KioskStartForm: React.FC = () => {
             </div>
               
             <div className="kiosk-content">
+              {/* Welcome Message */}
               <div className="kiosk-header">
                 <h1 className="kiosk-welcome-message">{t('welcome.title')}</h1>
                 <p className="kiosk-description">
                   {t('welcome.description')}
                 </p>
               </div>
-
-              
+              {/* Start Experience Button */}
               <div className="kiosk-actions">
                 <Button onClick={startExperience} className="kiosk-start-button" disabled={state.uneeq === null || state.webSocketState === WebsocketStatus.DISCONNECTED}>
                   {t('actions.startExperience')}
@@ -73,83 +140,18 @@ const KioskStartForm: React.FC = () => {
               </div>
             </div>
 
-            <div className="kiosk-connection-statuses">
-              {(getRenderByLanguage(state.language).length > 1) && (
-                <div className="kiosk-options-container">
-                  <div className="render-mode-selector">
-                    <div className="render-mode-label">{t('renderMode.label')}:</div>
-                    <div className="render-mode-options">
-                      {getRenderByLanguage(state.language).map(option => (
-                        <div 
-                            key={option}
-                          className={`render-mode-option ${state.renderMode === option ? 'active' : ''}`}
-                          onClick={() => actions.setRenderMode(option as "cloud" | "miniprem")}
-                        >
-                          {option}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="render-mode-selector">
-                    <div className="render-mode-label">{t('captions.label')}:</div>
-                    <div className="render-mode-options">
-                      <div 
-                        className={`render-mode-option ${state.showClosedCaptions ? 'active' : ''}`}
-                        onClick={() => actions.setShowClosedCaptions(true)}
-                      >
-                        {t('captions.on')}
-                      </div>
-                      <div 
-                        className={`render-mode-option ${!state.showClosedCaptions ? 'active' : ''}`}
-                        onClick={() => actions.setShowClosedCaptions(false)}
-                      >
-                        {t('captions.off')}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {/* Show captions toggle even when no render mode options */}
-              {getRenderByLanguage(state.language).length <= 1 && (
-                <div className="kiosk-options-container">
-                  <div className="render-mode-selector">
-                    <div className="render-mode-label">{t('captions.label')}:</div>
-                    <div className="render-mode-options">
-                      <div 
-                        className={`render-mode-option ${state.showClosedCaptions ? 'active' : ''}`}
-                        onClick={() => actions.setShowClosedCaptions(true)}
-                      >
-                        {t('captions.on')}
-                      </div>
-                      <div 
-                        className={`render-mode-option ${!state.showClosedCaptions ? 'active' : ''}`}
-                        onClick={() => actions.setShowClosedCaptions(false)}
-                      >
-                        {t('captions.off')}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {getRenderByLanguage(state.language).length > 1 && <br />}
-              <div className="kiosk-connection-status-row">
-                <span className="kiosk-status-label">{t('status.webSocket')}: &nbsp;</span>
-                <span className={`status-${state.webSocketState === WebsocketStatus.CONNECTED ? 'ready' : 'not-ready'}`}>
-                  {state.webSocketState === WebsocketStatus.CONNECTED ? t('status.connected') : t('status.disconnected')}
-                </span>
-                &nbsp; | &nbsp; 
-                <span className="kiosk-status-label">{t('status.uneeqScript')}: &nbsp;</span>
-                <span className={`status-${state.uneeq === null ? 'not-ready' : 'ready'}`}>
-                  {state.uneeq === null ? t('status.notReady') : t('status.ready')}
-                </span>
-              </div>
-              <div className="kiosk-connection-status-row">
-                <a href={`/remote/${state.connectionId}`} target="_blank" rel="noopener noreferrer"> 
-                  <span className="kiosk-status-label">{t('status.sessionId')}: &nbsp;</span>
-                  <span className="kiosk-status-value kiosk-connection-id">{state.connectionId}</span>
-                </a>
-              </div>
-            </div>
+            {/* Floating Settings Panel */}
+            <SettingsPanel 
+              settings={settingsOptions}
+              className="kiosk-settings"
+            />
+
+            {/* Connection Status Panel */}
+            <StatusPanel 
+              items={statusItems}
+              orientation="horizontal"
+              className="kiosk-status-panel"
+            />
           </div>
         }
       />

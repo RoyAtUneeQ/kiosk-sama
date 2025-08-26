@@ -134,39 +134,9 @@
   font-size: 0.9rem;
 }
 
-.kiosk-connection-statuses {
-  display: flex;
-  font-size: 0.8rem;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  justify-content: center;
+/* Custom styling for the kiosk status panel */
+.kiosk-status-panel {
   margin-top: 2.6rem;
-  position: relative;
-}
-
-.kiosk-connection-status-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -0.5rem;
-}
-
-.kiosk-connection-id {
-  
-  font-size: 0.8rem;
-  color: rgba(250, 250, 250, 0.562);
-  font-weight: 500;
-}
-
-
-.status-ready {
-  color: var(--theme-status-success); /* Green */
-}
-
-.status-not-ready {
-  color: var(--theme-status-error); /* Red */
 }
 
 /* The collapsible section for Session ID input. */
@@ -450,16 +420,9 @@ button.kiosk-start-button:disabled .buttonText::before {
   margin-top: -0.5rem;
 }
 
-/* Kiosk Options Container - holds both render mode and captions */
-.kiosk-options-container {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  width: auto;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* Custom styling for the kiosk settings panel */
+.kiosk-settings {
+  /* Any kiosk-specific overrides can go here */
 }
 
 /* Render Mode Selector Styles */
@@ -550,12 +513,6 @@ button.kiosk-start-button:disabled .buttonText::before {
 
 // SMARTPHONE (mobile)
 @include smartphone {
-  .kiosk-connection-status-row {
-    display: none;
-  }
-  .kiosk-connection-statuses {
-    margin-top: 0;
-  }
   .kiosk-form-slot {
     gap: 4rem;
   }
@@ -564,4 +521,7 @@ button.kiosk-start-button:disabled .buttonText::before {
     font-size: 2rem;
   }
   
+  .kiosk-status-panel {
+    margin-top: 1rem;
+  }
 }
