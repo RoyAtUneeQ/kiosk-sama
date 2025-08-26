@@ -98,6 +98,11 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
     return () => {
       window.removeEventListener('UneeqMessage', handleUneeqMessage as EventListener);
     };
+
+    //Set camera to close_up
+    actions.setCamera(options.cameraAnchorDistance as CameraDistanceAnchor);
+    actions.setCamera(options.cameraAnchorHorizontal as CameraHorizontalAnchor);
+
   }, [scriptLoading, scriptError, connectionUrl, personaId, loading, sessionKey, handleUneeqMessage]);
 
   //Send last history message to Uneeq  

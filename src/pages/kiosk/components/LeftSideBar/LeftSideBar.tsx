@@ -5,14 +5,14 @@ import { BsHourglassSplit } from "react-icons/bs";
 import { getAllTriggers, useIconFactory } from '@/factories';
 // Available for customization: import type { TriggerItem } from '@/factories';
 import { useMemo } from 'react';  
+import type { Trigger } from '@/triggers/types/Trigger';
 
 const LeftSideBar: React.FC = () => {
   const { state, actions } = useSession();
   
   // Get all registered triggers from the factory - memoized to prevent re-renders
   const triggerInstances = useMemo(() => getAllTriggers(), []);
-  
-  // Memoize icon names to prevent useDynamicIcons from re-running constantly
+
   const iconNames = useMemo(() => 
     triggerInstances
       .sort((a, b) => a.instance.id - b.instance.id)
@@ -20,6 +20,13 @@ const LeftSideBar: React.FC = () => {
       .filter(Boolean),
     [triggerInstances]
   );
+
+  const handleTriggerClick = (trigger: Trigger) => {
+    // Generate a message from the trigger and add it to the history ortherwise just execute the trigger
+    const message = trigger.execute({state, actions});
+    message && actions.addMessageToHistory(message);
+  };
+
   const { getIconComponent } = useIconFactory(iconNames);
 
   return (
@@ -41,7 +48,7 @@ const LeftSideBar: React.FC = () => {
               key={trigger.key}
               icon={iconComponent}
               draggable={false}   
-              onClick={() => actions.addMessageToHistory(trigger.instance.generate({state, actions}))}
+              onClick={() => handleTriggerClick(trigger.instance)}
               title={`Execute ${trigger.key} trigger`}
             />
           );

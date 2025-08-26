@@ -20,6 +20,7 @@ export class DynamicIconLoaderService {
     Bs: import('react-icons/bs'),
     Md: import('react-icons/md'),
     Fa: import('react-icons/fa'),
+    Fa6: import('react-icons/fa6'),
     Fi: import('react-icons/fi'),
     Gi: import('react-icons/gi'),
     Hi: import('react-icons/hi'),
@@ -80,7 +81,13 @@ export class DynamicIconLoaderService {
     try {
       const prefix = this.getIconPrefix(iconName);
       const iconModule = await DynamicIconLoaderService.iconLibraries[prefix];
-      const iconComponent = iconModule[iconName];
+      let iconComponent = iconModule[iconName];
+
+      // If not found and prefix is "Fa", try "Fa6" as fallback
+      if (!iconComponent && prefix === 'Fa') {
+        const fa6Module = await DynamicIconLoaderService.iconLibraries['Fa6'];
+        iconComponent = fa6Module[iconName];
+      }
 
       if (iconComponent) {
         this.cache.set(iconName, iconComponent);
