@@ -1,0 +1,276 @@
+@use "@/styles/breakpoints" as *;
+
+/* Settings Panel Wrapper */
+.settings-panel-wrapper {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+/* Settings Toggle Button Container */
+.settings-toggle-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0;
+}
+
+/* Modern Minimal Toggle Button */
+.settings-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.1);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.12),
+      0 0 0 8px rgba(255, 255, 255, 0.04);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--theme-primary-main, #3A5F8A);
+    outline-offset: 4px;
+  }
+}
+
+/* Three Dots Trigger */
+.settings-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  .dot {
+    width: 3px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  &.active {
+    transform: rotate(90deg);
+    
+    .dot {
+      background: #fff;
+      box-shadow: 0 0 8px #fff;
+    }
+  }
+}
+
+.settings-toggle:hover .settings-dots .dot {
+  background: rgba(255, 255, 255, 0.9);
+  transform: scale(1.2);
+}
+
+/* Floating Settings Panel */
+.settings-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 1001;
+  width: max-content;
+  min-width: 240px;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &.collapsed {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+    pointer-events: none;
+    visibility: hidden;
+  }
+  
+  &.expanded {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+    visibility: visible;
+  }
+}
+
+/* Modern Floating Card */
+.settings-content {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 1rem;
+  backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  
+  /* Subtle glow effect */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.2) 0%, 
+      transparent 50%, 
+      rgba(255, 255, 255, 0.1) 100%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    pointer-events: none;
+  }
+}
+
+/* Refined Setting Group */
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+/* Clean Setting Label */
+.setting-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  text-align: left;
+}
+
+/* Horizontal Options Container */
+.setting-options {
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Pill-style Setting Options */
+.setting-option {
+  flex: 1;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  border: none;
+  position: relative;
+  
+  &:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-1px);
+  }
+  
+  &.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.95);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    
+    /* Active indicator */
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 2px;
+      background: var(--theme-primary-light, #5A7FAA);
+      border-radius: 1px;
+      box-shadow: 0 0 8px var(--theme-primary-light, #5A7FAA);
+    }
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--theme-primary-main, #3A5F8A);
+    outline-offset: 2px;
+  }
+}
+
+// SMARTPHONE (mobile)
+@include smartphone {
+  .settings-panel-wrapper {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+  
+  .settings-toggle {
+    width: 28px;
+    height: 28px;
+    
+    .settings-dots .dot {
+      width: 2.5px;
+      height: 2.5px;
+    }
+  }
+  
+  .settings-panel {
+    min-width: 200px;
+    right: 0;
+    
+    &.expanded {
+      transform: translateY(0) scale(1);
+    }
+    
+    &.collapsed {
+      transform: translateY(-10px) scale(0.95);
+    }
+  }
+  
+  .settings-content {
+    padding: 0.75rem;
+    border-radius: 12px;
+    gap: 0.5rem;
+  }
+  
+  .setting-label {
+    font-size: 0.65rem;
+  }
+  
+  .setting-option {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* Tablet adjustments */
+@include tablet {
+  .settings-panel {
+    min-width: 220px;
+  }
+}
