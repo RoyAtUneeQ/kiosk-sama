@@ -5,6 +5,7 @@ import { createCustomEventTag } from "@/factories/UneeqEventFactory";
 import type { SessionContextType } from "@/contexts/SessionContext";
 
 export class CinematicsTrigger implements Trigger {
+    id: number = 1; 
     icon: string = "MdMovie";
     /** 
      * Generate a cinematic introduction prompt that plays the splash video.

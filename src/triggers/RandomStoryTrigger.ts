@@ -3,6 +3,7 @@ import type { Trigger } from "./types/Trigger";
 import type { SessionContextType } from "@/contexts/SessionContext";
 
 export class RandomStoryTrigger implements Trigger {
+    id: number = 2; 
     icon: string = "MdHistoryEdu";
 
     /** 

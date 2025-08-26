@@ -6,6 +6,8 @@ import type { Message } from "@/types/transport/Message";
  * Outgoing instructions produce prompt strings or messages to send to backend.
  */
 export interface Trigger {
+    id: number;
+
     /** Optional icon name for UI representation. */
     icon?: string;
 

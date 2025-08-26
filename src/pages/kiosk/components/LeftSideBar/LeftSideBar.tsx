@@ -14,7 +14,10 @@ const LeftSideBar: React.FC = () => {
   
   // Memoize icon names to prevent useDynamicIcons from re-running constantly
   const iconNames = useMemo(() => 
-    triggerInstances.map(trigger => trigger.instance.icon).filter(Boolean),
+    triggerInstances
+      .sort((a, b) => a.instance.id - b.instance.id)
+      .map(trigger => trigger.instance.icon)
+      .filter(Boolean),
     [triggerInstances]
   );
   const { getIconComponent } = useIconFactory(iconNames);
