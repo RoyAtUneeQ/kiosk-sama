@@ -34,3 +34,6 @@ dist-ssr
 # Sonar
 sonar-project.properties
 .scannerwork/
+
+# Claude Code configuration
+commits.mdc
