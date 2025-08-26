@@ -163,13 +163,10 @@ return (
 const triggerInstances = useMemo(() => getAllTriggers(), []);
 
 const handleTriggerClick = async (trigger: TriggerItem) => {
-    const prompt = trigger.instance.generate({});
-    actions.addMessageToHistory({
-        id: crypto.randomUUID(),
-        content: prompt,
-        timestamp: new Date(),
-        sender: MessageSender.System,
-    });
+    const result = trigger.instance.execute(sessionContext);
+    if (result) {
+        actions.addMessageToHistory(result);
+    }
 };
 ```
 

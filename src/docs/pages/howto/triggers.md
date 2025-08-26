@@ -46,7 +46,7 @@ sequenceDiagram
     Dev->>System: Create & Export Trigger
     System->>UI: Auto-generate Button
     User->>UI: Click Trigger Button
-    UI->>System: Execute trigger.generate()
+    UI->>System: Execute trigger.execute()
     System->>DH: Send Generated Prompt
     DH->>User: Respond with Actions
 ```
@@ -76,16 +76,20 @@ All triggers must implement this simple interface:
 
 ```typescript
 import type { Message } from '@/types/transport/Message';
+import type { SessionContextType } from '@/contexts/SessionContext';
 
 interface Trigger {
+    /** Unique identifier for the trigger */
+    id: number;
+    
     /** Optional icon name for UI representation */
     icon?: string;
     
     /**
-     * Generate a Message object containing prompt and metadata
-     * @param args - Optional generation parameters
+     * Execute the trigger logic and generate a Message object or perform actions
+     * @param args - Session context with state and actions
      */
-    generate: (args: any) => Message;
+    execute: (args: SessionContextType) => Message | void;
 }
 ```
 
@@ -97,30 +101,37 @@ The system supports **two types of triggers**:
 
 #### UI Trigger Example (Appears in Sidebar)
 
-**File: `src/triggers/ProductDemoTrigger.ts`**
+**File: `src/triggers/ActionTrigger.ts`**
 
 ```typescript
 import type { Message } from "@/types/transport/Message";
 import { MessageSender } from "@/types/transport/MessageSender";
 import type { Trigger } from "./types/Trigger";
+import type { SessionContextType } from "@/contexts/SessionContext";
+import { Actions, CameraDistanceAnchor } from "../types";
 
-export class ProductDemoTrigger implements Trigger {
-    icon: string = "MdShoppingCart";  // ← Has icon = Shows in sidebar
+export class ActionTrigger implements Trigger {
+    id: number = 4;
+    icon: string = "MdEmojiPeople";  // ← Has icon = Shows in sidebar
     
     /**
-     * Generate a product demonstration prompt
+     * Execute action trigger with camera positioning and random action generation
      */
-    generate(args: any): Message {
-        const products = ['laptop', 'smartphone', 'tablet', 'smartwatch'];
-        const randomProduct = products[Math.floor(Math.random() * products.length)];
-        
+    execute({actions}: SessionContextType): Message {
+        const actionsKeys = Object.keys(Actions);
+        const randomAction = actionsKeys[Math.floor(Math.random() * actionsKeys.length)];   
+        const description = Actions[randomAction as keyof typeof Actions];
+
+        // Set camera to full shot for action demonstration
+        actions.setCamera(CameraDistanceAnchor.full_shot);
+
+        const prompt = `Using the tags related to "${description}" you need to generate story naturally with 1 sentence, includes the tag <uneeq:action_${randomAction} /> 
+        at the exact moment where the action happens. The story should be engaging and lightly amusing, using a subtle, relatable tone—something clever and entertaining 
+        without overdoing the humor or sounding like a joke.`;
+
         return {
             id: crypto.randomUUID(),
-            content: `Please demonstrate the features of our ${randomProduct} in an engaging way. 
-                     Include specific details about performance, design, and key benefits. 
-                     When you mention showing the product image, use 
-                     <uneeq custom event name="product" data="${randomProduct}" /> 
-                     to display it visually.`,
+            content: prompt,
             timestamp: new Date(),
             sender: MessageSender.System,
             prompt: true
@@ -138,24 +149,36 @@ import type { Message } from "@/types/transport/Message";
 import { MessageSender } from "@/types/transport/MessageSender";
 import type { Trigger } from "./types/Trigger";
 
-export class ApiRequestTrigger implements Trigger {
+export class ZoomInTrigger implements Trigger {
+    id: number = 1;
     // No icon = Available via factory but not in sidebar UI
     
     /**
-     * Generate API documentation request prompt
+     * Execute zoom in camera action - moves camera closer step by step
      */
-    generate(args: any): Message {
-        const endpoint = args.endpoint || '/api/default';
-        const method = args.method || 'GET';
+    execute({state, actions}: SessionContextType): void {
+        const currentCamera = state.camera;
+        const cameraProgression = Object.values(CameraDistanceAnchor);
         
-        return {
-            id: crypto.randomUUID(),
-            content: `Please explain the ${method} ${endpoint} API endpoint, 
-                     including required parameters, response format, and example usage.`,
-            timestamp: new Date(),
-            sender: MessageSender.System,
-            prompt: false
-        };
+        // Find current position in the progression
+        const currentIndex = cameraProgression.findIndex(anchor => anchor === currentCamera);
+        
+        // If current camera is not a distance anchor or not found, start from full_shot
+        if (currentIndex === -1) {
+            actions.setCamera(CameraDistanceAnchor.full_shot);
+            return;
+        }
+        
+        // If already at the closest position (close_up), do nothing
+        if (currentIndex === 0) {
+            console.log("Already at closest camera position, cannot zoom in further");
+            return;
+        }
+        
+        // Move one step toward the closest position
+        const nextIndex = currentIndex - 1;
+        const nextCamera = cameraProgression[nextIndex];
+        actions.setCamera(nextCamera);
     }
 }
 ```
@@ -166,10 +189,10 @@ Add your trigger to `src/triggers/index.ts`:
 
 ```typescript
 // Export all trigger classes for auto-discovery
-export * from './RandomStoryTrigger';
-export * from './CinematicsTrigger';
-export * from './ProductDemoTrigger';     // ← UI trigger (has icon)
-export * from './ApiRequestTrigger';     // ← Programmatic trigger (no icon)
+export * from './EmotionTrigger';
+export * from './ActionTrigger';         // ← UI trigger (has icon)
+export * from './ZoomIn';               // ← Programmatic trigger (no icon)
+export * from './ZoomOut';              // ← Programmatic trigger (no icon)
 
 // Export types for usage in components
 export type { Trigger } from './types/Trigger';
@@ -192,10 +215,10 @@ Use programmatic triggers anywhere in your code:
 import { getTrigger, getAllTriggers } from '@/factories/TriggerFactory';
 
 // Get a specific trigger by key
-const apiTrigger = getTrigger('apiRequest');
-if (apiTrigger) {
-    const prompt = apiTrigger.generate({ endpoint: '/users', method: 'POST' });
-    console.log(prompt);
+const zoomTrigger = getTrigger('zoomIn');
+if (zoomTrigger) {
+    // Note: ZoomIn returns void, so we call execute with session context
+    zoomTrigger.execute(sessionContext);
 }
 
 // Or get all triggers (including both UI and programmatic)
@@ -311,11 +334,12 @@ import type { Message } from "@/types/transport/Message";
 import { MessageSender } from "@/types/transport/MessageSender";
 
 export class ErrorHandlerTrigger implements Trigger {
+    id: number = 7;
     // No icon = Available via factory only, not in UI
     
-    generate(args: any): Message {
-        const errorType = args.errorType || 'unknown';
-        const userAction = args.userAction || 'an action';
+    execute({state}: SessionContextType): Message {
+        const errorType = 'connection'; // Could be determined from state
+        const userAction = 'connect to services';
         
         const errorPrompts = {
             connection: `I'm experiencing a connection issue while trying to ${userAction}. Let me try a different approach.`,
@@ -344,8 +368,10 @@ import { getTrigger } from '@/factories/TriggerFactory';
 
 // Programmatic trigger for background processing  
 export class DataProcessorTrigger implements Trigger {
-    generate(args: any): Message {
-        const dataType = args.dataType;
+    id: number = 6;
+    
+    execute({state}: SessionContextType): Message {
+        const dataType = 'analytics'; // Could be extracted from state if needed
         return {
             id: crypto.randomUUID(),
             content: `Processing ${dataType} data. Please wait while I prepare the results.`,
@@ -358,20 +384,23 @@ export class DataProcessorTrigger implements Trigger {
 
 // UI trigger that uses the programmatic trigger
 export class AnalyticsButtonTrigger implements Trigger {
+    id: number = 5;
     icon: string = "MdAnalytics";  // Shows in sidebar
     
-    generate(args: any): Message {
+    execute(sessionContext: SessionContextType): Message {
         const processor = getTrigger('dataProcessor');
         if (processor) {
-            const processingMessage = processor.generate({ dataType: 'user analytics' });
-            return {
-                id: crypto.randomUUID(),
-                content: `${processingMessage.content} I'll display the dashboard once complete.
-                         <uneeq custom event name="analytics" data="dashboard.html" />`,
-                timestamp: new Date(),
-                sender: MessageSender.System,
-                prompt: true
-            };
+            const processingMessage = processor.execute(sessionContext);
+            if (processingMessage) {
+                return {
+                    id: crypto.randomUUID(),
+                    content: `${processingMessage.content} I'll display the dashboard once complete.
+                             <uneeq custom event name="analytics" data="dashboard.html" />`,
+                    timestamp: new Date(),
+                    sender: MessageSender.System,
+                    prompt: true
+                };
+            }
         }
         
         return {
@@ -394,9 +423,10 @@ import type { Message } from "@/types/transport/Message";
 import { MessageSender } from "@/types/transport/MessageSender";
 
 export class InteractiveDemoTrigger implements Trigger {
+    id: number = 8;
     icon: string = "MdInteractive";
     
-    generate(args: any): Message {
+    execute({state, actions}: SessionContextType): Message {
         return {
             id: crypto.randomUUID(),
             content: `Let me show you our interactive features! 
@@ -444,9 +474,9 @@ icon: string = "MdHelp";          // Too generic
 ### **3. Dynamic & Contextual Content**
 ```typescript
 // ✅ Good - Dynamic content
-generate(args: any): Message {
+execute({state, actions}: SessionContextType): Message {
     const randomElement = this.getRandomOption();
-    const contextualInfo = this.getContextualData(args);
+    const contextualInfo = this.getContextualData(state);
     return {
         id: crypto.randomUUID(),
         content: `Generated prompt with ${randomElement} and ${contextualInfo}`,
@@ -457,7 +487,7 @@ generate(args: any): Message {
 }
 
 // ❌ Avoid - Static content
-generate(args: any): Message {
+execute({state, actions}: SessionContextType): Message {
     return {
         id: crypto.randomUUID(),
         content: "Always the same prompt",
@@ -470,15 +500,15 @@ generate(args: any): Message {
 
 ### **4. Error Handling**
 ```typescript
-generate(args: any): Message {
+execute({state, actions}: SessionContextType): Message {
     try {
-        // Your generation logic
-        return this.generatePrompt(args);
+        // Your execution logic
+        return this.generatePrompt(state);
     } catch (error) {
-        console.error('Trigger generation failed:', error);
+        console.error('Trigger execution failed:', error);
         return {
             id: crypto.randomUUID(),
-            content: 'Sorry, I had trouble generating that prompt. Please try again.',
+            content: 'Sorry, I had trouble executing that trigger. Please try again.',
             timestamp: new Date(),
             sender: MessageSender.System,
             prompt: false
@@ -511,8 +541,8 @@ generate(args: any): Message {
 **Issue: "Button appears but doesn't work when clicked"**
 
 ✅ **Solutions:**
-1. Add console.log in your `generate` method to verify it's called
-2. Check that `generate` returns a Message object (not undefined)
+1. Add console.log in your `execute` method to verify it's called
+2. Check that `execute` returns a Message object (not undefined) or void for action-only triggers
 3. Look for JavaScript errors in browser console
 4. Verify your prompt is being added to message history
 
@@ -529,7 +559,8 @@ generate(args: any): Message {
 #### For All Triggers:
 - [ ] Trigger class exported in `triggers/index.ts`
 - [ ] Class implements `Trigger` interface properly
-- [ ] `generate` method returns a Message object
+- [ ] `execute` method returns a Message object or void
+- [ ] `id` property is defined with unique number
 - [ ] Development server restarted after changes
 - [ ] Browser console shows no errors
 - [ ] Registration log appears in console: `"TriggerFactory: Registered trigger..."`
@@ -537,7 +568,7 @@ generate(args: any): Message {
 #### For UI Triggers (Sidebar Buttons):
 - [ ] `icon` property is defined with valid React Icons name
 - [ ] Button appears in left sidebar
-- [ ] Button click triggers `generate` method
+- [ ] Button click triggers `execute` method
 - [ ] Message history updates when button clicked
 - [ ] Icon loads properly (no broken icon display)
 
