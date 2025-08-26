@@ -5,6 +5,24 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-01-15
+
+### ✨ Features
+- **Enhanced Trigger System**: Completely redesigned trigger architecture with new implementations
+  - **ActionTrigger**: Random action generation with intelligent camera positioning
+  - **EmotionTrigger**: Emotion-based interactions for more engaging experiences  
+  - **ZoomIn/ZoomOut Triggers**: Camera zoom controls for dynamic visual experiences
+  - **Improved Integration**: Enhanced service layer and component integration
+  - **Better Architecture**: Renamed methods for clearer semantics (generate → execute)
+
+### 🔧 Refactoring  
+- **Trigger Interface**: Updated method naming from 'generate' to 'execute' for better clarity
+- **Legacy Cleanup**: Removed deprecated CinematicsTrigger and RandomStoryTrigger classes
+- **Service Enhancement**: Updated DynamicIconLoaderService and useUneeq hook for new trigger system
+- **Component Updates**: Improved LeftSideBar integration with enhanced trigger capabilities
+
+---
+
 ## [1.1.0] - 2025-01-15
 
 ### ✨ Features
