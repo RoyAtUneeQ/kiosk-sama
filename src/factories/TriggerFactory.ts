@@ -20,7 +20,7 @@ export function registerTrigger<T extends Trigger>(TriggerClass: new () => T, cl
     const instance = new TriggerClass();
     
     // Verify it implements the Trigger interface
-    if (instance && typeof instance.generate === 'function') {
+    if (instance && typeof instance.execute === 'function') {
       // Generate key from class name (convert PascalCase to camelCase, remove "Trigger" suffix)
       const key = className
         .replace('Trigger', '')
