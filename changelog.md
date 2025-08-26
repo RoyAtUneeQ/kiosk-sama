@@ -5,6 +5,44 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-01-15
+
+### ✨ Features
+- **Generic SettingsPanel Component**: Created reusable settings panel with modern floating UI design
+  - **Modern Design**: Minimal 3-dot trigger instead of gear icon with glassmorphism effects
+  - **Industry Standards**: Positioned in top-right following UX conventions (Gmail, Slack, VS Code)
+  - **Smooth Animations**: Professional slide transitions and micro-interactions
+  - **Accessibility**: Full keyboard navigation and screen reader support
+  - **Responsive**: Optimized for mobile and tablet with touch-friendly targets
+  - **Configurable**: Flexible settings options with callback support
+
+- **Generic StatusPanel Component**: Created reusable status display component
+  - **Multiple Status Types**: Support for ready, not-ready, warning, and info states
+  - **Color-coded Indicators**: Green, red, orange, and blue status visualization
+  - **Interactive Links**: Clickable status items with external navigation
+  - **Layout Options**: Horizontal and vertical orientation support
+  - **Mobile Optimized**: Responsive behavior with mobile-specific hiding
+  - **TypeScript**: Full type safety with proper error handling
+
+- **Component Architecture**: Both components exported from @components/ with TypeScript interfaces
+- **Internationalization**: Added settings panel translations for English, Spanish, and French
+
+### 🔧 Refactoring
+- **KioskStartForm Modernization**: Replaced inline implementations with reusable components
+  - **Code Reduction**: Removed ~130+ lines of duplicate code
+  - **Improved UX**: Settings panel now follows industry standard positioning
+  - **Better Maintainability**: Centralized component logic and styling
+  - **Enhanced Consistency**: Uniform UI/UX across the application
+
+### 🎯 Benefits
+- **Reusability**: Settings and status panels can now be used throughout the application
+- **Professional UI**: Modern design patterns matching premium applications
+- **Better Performance**: Optimized animations and responsive behavior
+- **Developer Experience**: Clean, typed interfaces for easy integration
+- **User Experience**: Improved visual hierarchy and interaction patterns
+
+---
+
 ## [1.0.4] - 2025-01-15
 
 ### 📖 Documentation
