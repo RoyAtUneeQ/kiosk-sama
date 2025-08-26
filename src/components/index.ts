@@ -8,4 +8,8 @@ export { default as GlowBackground } from './glow/GlowBackground';
 export { default as FeedbackLine } from './feedbackLine/FeedbackLine';
 export { default as ErrorBoundary } from './errorBoundary/ErrorBoundary';
 export { default as MessageBubble } from './messageBubble/MessageBubble';
+export { default as SettingsPanel } from './settingsPanel/SettingsPanel';
+export type { SettingsOption, SettingsPanelProps } from './settingsPanel/SettingsPanel';
+export { default as StatusPanel } from './statusPanel/StatusPanel';
+export type { StatusItem, StatusPanelProps } from './statusPanel/StatusPanel';
 
