@@ -73,5 +73,11 @@
     "label": "Captions",
     "on": "on",
     "off": "off"
+  },
+  "settings": {
+    "label": "Settings",
+    "toggleLabel": "Toggle settings panel",
+    "showSettings": "Show settings",
+    "hideSettings": "Hide settings"
   }
 } 

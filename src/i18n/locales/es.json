@@ -73,5 +73,11 @@
     "label": "Subtítulos",
     "on": "sí",
     "off": "no"
+  },
+  "settings": {
+    "label": "Configuración",
+    "toggleLabel": "Alternar panel de configuración",
+    "showSettings": "Mostrar configuración",
+    "hideSettings": "Ocultar configuración"
   }
 } 

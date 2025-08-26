@@ -73,5 +73,11 @@
     "label": "Sous-titres",
     "on": "oui",
     "off": "non"
+  },
+  "settings": {
+    "label": "Paramètres",
+    "toggleLabel": "Basculer le panneau de paramètres",
+    "showSettings": "Afficher les paramètres",
+    "hideSettings": "Masquer les paramètres"
   }
 } 
