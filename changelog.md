@@ -5,6 +5,26 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-01-16
+
+### ✨ Features
+- **Enhanced MediaContainer Component**: Complete UI/UX overhaul for media display
+  - **Visual Polish**: Added frosted glass backdrop filter, semi-transparent borders, and depth shadows
+  - **Loading States**: Implemented animated spinner with smooth fade transitions
+  - **Smart Positioning**: Centered vertically with consistent margins on all sides
+  - **Smooth Transitions**: Added fade in/out animations when switching between media items
+  - **Interactive Feedback**: Subtle hover animations for better user engagement
+  - **Responsive Design**: Device-specific optimizations (desktop, tablet, holobox)
+  - **Enhanced Layout**: Proper aspect ratios (4:3 for images, 16:9 for videos)
+  - **Performance**: Optimized media loading with key-based remounting
+
+### 📝 Documentation
+- **Updated UI Documentation**: Comprehensive MediaContainer documentation with enhanced features
+- **Fixed Usage Examples**: Corrected prop interface examples to match actual implementation
+- **Improved API Reference**: Added detailed props interface and styling architecture documentation
+
+---
+
 ## [1.2.0] - 2025-01-15
 
 ### ✨ Features
