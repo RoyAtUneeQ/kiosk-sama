@@ -5,6 +5,50 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-01-16
+
+### ✨ Features
+- **Memory System**: Lightweight key-value store for component data sharing
+  - **setMemory Action**: Store data in session state for cross-component access
+  - **Decoupled Architecture**: Pass references instead of complex data through speech events
+  - **Performance Benefits**: Avoid redundant API calls between triggers and listeners
+  - **Type-Safe Storage**: Memory interface with flexible key-value structure
+
+- **Pixabay Image Service**: External image fetching with comprehensive filtering
+  - **HD Image Support**: Full HD, 4K quality levels with aspect ratio filtering
+  - **Category-Based Search**: Nature, places, animals, and more predefined categories
+  - **Smart Filtering**: Landscape, portrait, square format options
+  - **Type-Safe API**: Complete TypeScript interfaces for Pixabay responses
+  - **Error Handling**: Robust HTTP client with proper error management
+
+- **Image Trigger**: Landscape story generation with beautiful imagery
+  - **Pixabay Integration**: Fetches HD landscape images for visual storytelling
+  - **Memory Storage**: Stores image URLs for retrieval by MediaCustomListener
+  - **Context-Aware Stories**: Incorporates image metadata and tags into narratives
+  - **Auto-Discovery**: Seamlessly integrates with LeftSideBar trigger system
+  - **Intelligent Camera**: Optimized positioning for storytelling experience
+
+### 🚨 BREAKING CHANGES
+- **Media State Refactoring**: Replaced separate `imageUrl`/`videoUrl` state with unified `media` object
+  - **Removed Actions**: `setImageUrl()`, `setVideoUrl()` no longer available
+  - **New Action**: Use `setMedia(mediaObject)` with Media interface
+  - **Component Updates**: MediaContainer now uses spread operator `{...state.media}`
+  - **Type Safety**: All media handling now uses consistent Media interface
+
+### 🔧 Refactoring
+- **Session Context Enhancement**: Added config integration to session state
+- **Event System Updates**: Updated listeners for new memory and media systems
+- **Type System Improvements**: Enhanced type safety across event listeners and triggers
+- **Component Integration**: Updated components to use unified media state management
+
+### 📝 Documentation
+- **Memory System Guide**: Comprehensive documentation with practical examples
+- **Implementation Patterns**: Trigger to listener data passing strategies
+- **Performance Guidelines**: When and how to use memory vs direct parameters
+- **API Reference**: Complete interface documentation and usage examples
+
+---
+
 ## [1.3.0] - 2025-01-16
 
 ### ✨ Features
