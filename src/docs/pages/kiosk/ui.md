@@ -98,8 +98,7 @@ return (
                 <LeftSideBar />
                 {!state.remoteInfo && <QRCode value={qrCodeUrl} size={160} />}
                 {state.remoteInfo && <RemoteConnectionInfo info={state.remoteInfo} />}
-                {state.imageUrl && <MediaContainer type="image" src={state.imageUrl} />}
-                {state.videoUrl && <MediaContainer type="video" src={state.videoUrl} loop={true} />}
+                {state.media && <MediaContainer {...state.media} />}
             </>
         )}
     </div>
@@ -174,17 +173,49 @@ const handleTriggerClick = async (trigger: TriggerItem) => {
 **Location**: `src/pages/kiosk/components/MediaContainer/`
 
 **Capabilities**:
-- Image display with responsive sizing
-- Video playback with loop option
-- Overlay positioning over avatar
-- Automatic aspect ratio handling
+- Image display with responsive sizing and proper aspect ratios (4:3)
+- Video playback with configurable controls, autoplay, and loop options (16:9)
+- Enhanced visual frame with frosted glass backdrop filter effect
+- Loading spinner with smooth fade transitions
+- Hover animations for interactive feedback
+- Automatic fade in/out transitions between media changes
+- Device-specific optimizations (desktop, tablet, holobox)
+- Centered positioning with consistent margins
+
+**Enhanced Features**:
+- **Loading States**: Shows animated spinner while media loads
+- **Smooth Transitions**: Fade in/out animations when switching between media
+- **Visual Polish**: Semi-transparent borders, depth shadows, and blur effects
+- **Responsive Design**: Adapts to different screen sizes and device types
+- **Interactive Feedback**: Subtle hover animations for better user engagement
+
+**Props Interface**:
+```typescript
+interface Media {
+  type: 'image' | 'video';
+  url: string;
+  autoPlay?: boolean; // Default: true
+  controls?: boolean; // Default: true
+  loop?: boolean;     // Default: false
+  muted?: boolean;    // Default: true
+}
+```
 
 **Usage**:
 ```typescript
-// Conditional rendering based on state
-{state.imageUrl && <MediaContainer type="image" src={state.imageUrl} />}
-{state.videoUrl && <MediaContainer type="video" src={state.videoUrl} loop={true} />}
+// Actual usage in KioskPage - spreads media object from state
+{state.media && <MediaContainer {...state.media} />}
+
+// Legacy examples for reference (deprecated):
+// {state.imageUrl && <MediaContainer type="image" url={state.imageUrl} />}
+// {state.videoUrl && <MediaContainer type="video" url={state.videoUrl} loop={true} />}
 ```
+
+**Styling Architecture**:
+- Positioned as fixed overlay with vertical centering
+- Backdrop filter for glass-like transparency effect
+- Device-specific positioning and sizing rules
+- Smooth CSS transitions for all state changes
 
 #### Connection Components
 

@@ -118,8 +118,7 @@ return (
                 <LeftSideBar />
                 {!state.remoteInfo && <QRCode />}
                 {state.remoteInfo && <RemoteConnectionInfo />}
-                {state.imageUrl && <MediaContainer type="image" />}
-                {state.videoUrl && <MediaContainer type="video" />}
+                {state.media && <MediaContainer {...state.media} />}
             </>
         )}
     </div>
