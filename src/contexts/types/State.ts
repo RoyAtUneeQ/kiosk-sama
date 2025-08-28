@@ -1,19 +1,20 @@
-import type { CameraDistanceAnchor, CameraHorizontalAnchor, Uneeq } from "@/types";
+import type { CameraDistanceAnchor, CameraHorizontalAnchor, Config, Uneeq } from "@/types";
 // Available for configuration: import type { CameraAnchorOptions } from "@/types";
 import type { SessionStatus } from './'; 
 import type { Message, RemoteSessionInfo, WebsocketStatus } from "@/types/transport";
 import type { Event } from "@/types/uneeq/Event";
+import type { Memory, Media } from "@/types/utils";
 
 /**
  * Shape of the session state stored in Zustand.
  */
 export interface State {
+    config: Config;
     status: SessionStatus;
     webSocketState: WebsocketStatus;
     uneeq: Uneeq | null;
     connectionId: string | null;
-    imageUrl: string;
-    videoUrl: string;
+    media: Media | null;
     remoteInfo: RemoteSessionInfo | null;
     awaitingPromptResponse: boolean;
     language: string;
@@ -29,4 +30,9 @@ export interface State {
     // Digital Human Controls
     camera: CameraHorizontalAnchor | CameraDistanceAnchor;
     showClosedCaptions: boolean;
+
+    // Storage - When prompts are sent to the server for execution, associated frontend actions 
+    // may also require parameters. Instead of resending parameters each time, the prompt can be accessed by its ID,
+    // so only the ID is sent rather than all parameters.
+    memory: Memory;
   }

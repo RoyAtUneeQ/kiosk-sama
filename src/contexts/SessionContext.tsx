@@ -1,16 +1,16 @@
 
 import { create } from 'zustand';
-import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor } from '@/types';
+import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media } from '@/types';
 import { type State, SessionStatus } from './types';
 
 const initialState: State = {
+  config: null as unknown as Config,
   status: SessionStatus.IDLE,
   webSocketState: WebsocketStatus.DISCONNECTED,
   connectionId: null,
   uneeq: null,
   uneeqEvents: [],
-  imageUrl: '',
-  videoUrl: '',
+  media: null,
   remoteInfo: null,
   awaitingPromptResponse: false,
   language: 'en',
@@ -23,16 +23,17 @@ const initialState: State = {
   showSuggestions: true,
   camera: CameraHorizontalAnchor.center,
   showClosedCaptions: true,
+  memory: {} as Memory
 };
 
 /**
  * All actions that can mutate the session store. Implemented via Zustand.
  */
 export type SessionActions = {
+  setConfig: (config: Config) => void;
   setSessionStatus: (status: SessionStatus, callback?: () => void) => void;
   setAwaitingPromptResponse: (isAwaitingResponse: boolean) => void;
-  setImageUrl: (url: string) => void;
-  setVideoUrl: (url: string) => void;
+  setMedia: (media: Media | null) => void;
   setRemoteInfo: (info: RemoteSessionInfo | null) => void;
   setLanguage: (language: string) => void;
   setRenderMode: (renderMode: 'cloud' | 'miniprem') => void;
@@ -48,6 +49,7 @@ export type SessionActions = {
   setShowSuggestions: (showSuggestions: boolean) => void;
   setCamera: (camera: CameraHorizontalAnchor | CameraDistanceAnchor) => void;
   setShowClosedCaptions: (showClosedCaptions: boolean) => void;
+  setMemory: (key: string, value: any) => void;
 };      
 
 /**
@@ -66,6 +68,9 @@ type SessionStore = SessionContextType;
 export const useSessionStore = create<SessionStore>((set, get) => ({
   state: initialState,
   actions: {
+    setConfig: (config) => {
+      set((prev) => ({ state: { ...prev.state, config } }));
+    },
     setSessionStatus: (status, callback) => {
       set((prev) => ({ state: { ...prev.state, status } }));
       if (status === SessionStatus.LOADING && callback) {
@@ -75,11 +80,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     setAwaitingPromptResponse: (isAwaitingResponse) => {
       set((prev) => ({ state: { ...prev.state, awaitingPromptResponse: isAwaitingResponse } }));
     },
-    setImageUrl: (url) => {
-      set((prev) => ({ state: { ...prev.state, imageUrl: url } }));
-    },
-    setVideoUrl: (url) => {
-      set((prev) => ({ state: { ...prev.state, videoUrl: url } }));
+    setMedia: (media) => {
+      set((prev) => ({ state: { ...prev.state, media } }));
     },
     setRemoteInfo: (info) => {
       set((prev) => ({ state: { ...prev.state, remoteInfo: info } }));
@@ -130,6 +132,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     setShowClosedCaptions: (showClosedCaptions) => {
       set((prev) => ({ state: { ...prev.state, showClosedCaptions } }));
+    },
+    setMemory: (key, value) => {
+      set((prev) => ({ state: { ...prev.state, memory: { ...prev.state.memory, [key]: value } } }));
     },
   },
 }));
