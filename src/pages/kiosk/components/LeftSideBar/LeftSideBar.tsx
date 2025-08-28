@@ -21,9 +21,9 @@ const LeftSideBar: React.FC = () => {
     [triggerInstances]
   );
 
-  const handleTriggerClick = (trigger: Trigger) => {
+  const handleTriggerClick = async (trigger: Trigger) => {
     // Generate a message from the trigger and add it to the history ortherwise just execute the trigger
-    const message = trigger.execute({state, actions});
+    const message = await trigger.execute({state, actions});
     message && actions.addMessageToHistory(message);
   };
 

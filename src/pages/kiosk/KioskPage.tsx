@@ -15,7 +15,7 @@ function KioskPage() {
   // Track page load performance to measure lazy loading impact
   usePageLoadMonitor('KioskPage');
   
-  const { state } = useSession();
+  const { state, actions } = useSession();
   const actionFactory = createActionFactory();
   
   useUneeq({
@@ -27,8 +27,13 @@ function KioskPage() {
 
   const { config } = useConfig();
 
+  // Set config to session state
+  useEffect(() => {
+    actions.setConfig(config);
+  }, [config]);
+  
   const webSocketUrl = BackendHostUrlFactory.getWebSocketUrl(config);
-  const { websocket } = useWebSocket({
+  const { websocket } = useWebSocket({  
     webSocketUrl
   });
 
@@ -67,8 +72,7 @@ function KioskPage() {
             />
           )}
           {state.remoteInfo && <RemoteConnectionInfo info={state.remoteInfo} />}
-          {state.imageUrl && <MediaContainer type="image" src={state.imageUrl} />}
-          {state.videoUrl && <MediaContainer type="video" src={state.videoUrl} loop={true} />}
+          {state.media && <MediaContainer {...state.media} />}
         </>
       )}
     </div>

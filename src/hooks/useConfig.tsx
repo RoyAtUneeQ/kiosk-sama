@@ -43,7 +43,7 @@ export function useConfig() {
     (language: string): string[] => Object.keys(config?.personas?.[language] || {}), [config]);
 
   return {
-    config: config || null,
+    config: config as Config || null,
     loading,
     error: error as Error | null,
     reload,
