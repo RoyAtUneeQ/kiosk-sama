@@ -24,6 +24,13 @@ personas:
       API: "https://api-eu.uneeq.io"
       id: "d909d65a-e278-432e-b026-b7f7caa031e4"
 
+# This Demo version uses Pixabay API for image search
+apis:
+  pixabay:
+    api_key: "YOUR_PIXABAY_API_KEY"
+    api_url: "https://pixabay.com/api/" 
+
+
 
 # Used for websocket connection and service token retrieval
 backend:
