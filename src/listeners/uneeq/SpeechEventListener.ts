@@ -47,31 +47,26 @@ export class SpeechEventListener implements UneeqEventListener {
   async execute(data: {speechEvent: SpeechEventData}, session: SessionContextType): Promise<void> {
     try {
 
-      // Extract event type from speech event data
-      const parsedData = JSON.parse(data?.speechEvent?.param_value || '{}') as {
-        type: string;
-        data: string;
-      };   
+      console.log("SpeechEventListener: Executing speech event", data.speechEvent);
 
-      if (!parsedData.type) {
-        console.warn('SpeechEventListener: No event type found in data', data);
-        return;
-      }
+
+      const eventType = data.speechEvent.param_value;
 
       // Find matching custom event handler by type
-      const customEvent = this.customEvents.get(parsedData.type);
+      const customEvent = this.customEvents.get(eventType || "");
       
       console.info('customEvent', customEvent);
       console.info('this.customEvents', this.customEvents);
       if (!customEvent) {
-        console.warn(`SpeechEventListener: No handler found for event type "${parsedData.type}"`);
+        console.warn(`SpeechEventListener: No handler found for event type "${eventType}"`);
         return;
       }
 
       // Execute the custom event handler with session actions
-      await customEvent.execute(parsedData.data, session.actions);
+      //TODO: Add data to the custom event
+      await customEvent.execute("", session);
       
-      console.log(`SpeechEventListener: Successfully executed "${parsedData.type}" event`);
+      console.log(`SpeechEventListener: Successfully executed "${eventType}" event`);
     } catch (error) {
       console.error('SpeechEventListener: Error executing speech event', error);
     }

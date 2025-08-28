@@ -15,5 +15,5 @@ export interface Trigger {
      * Produce an instruction string (e.g., a prompt). May be async.
      * @param type - Optional generation variant or hint
      */
-    execute: (args: SessionContextType) => Message | void;
+    execute: (args: SessionContextType) => Message | void | Promise<Message | void>;
 }
