@@ -1,6 +1,7 @@
-import { CameraDistanceAnchor, Emotions, MessageSender, type Message } from "@/types";
+import { CameraDistanceAnchor, Emotions, type Message } from "@/types";
 import type { Trigger } from "./types/Trigger";
 import type { SessionContextType } from "@/contexts/SessionContext";
+import { MessageFactory } from "@/factories";
 
 export class EmotionTrigger implements Trigger {
     id: number = 3; 
@@ -22,12 +23,6 @@ export class EmotionTrigger implements Trigger {
         at the exact moment where the action happens. The story should be engaging and lightly amusing, using a subtle, relatable tone—something clever and entertaining 
         without overdoing the humor or sounding like a joke.`;
 
-        return {
-            id: crypto.randomUUID(),
-            content: prompt,
-            timestamp: new Date(),
-            sender: MessageSender.System,
-            prompt: true
-        };
+        return MessageFactory.createSystemMessage(prompt, true);
     }
 }   

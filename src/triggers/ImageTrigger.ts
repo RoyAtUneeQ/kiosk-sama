@@ -1,5 +1,5 @@
 import type { Message } from "@/types/transport/Message";
-import { MessageSender } from "@/types/transport/MessageSender";
+import { MessageFactory } from "@/factories";
 import type { Trigger } from "./types/Trigger";
 import type { SessionContextType } from "@/contexts/SessionContext";
 import { CameraDistanceAnchor } from "../types";
@@ -26,13 +26,7 @@ export class ImageTrigger implements Trigger {
         const image = await ImageTrigger.pixabayService.getRandomImage();
 
         if (!image) {
-            return {
-                id: crypto.randomUUID(),
-                content: "No image found",
-                timestamp: new Date(),
-                sender: MessageSender.System,
-                prompt: true
-            };
+            return MessageFactory.createSystemMessage("No image found");
         }
 
         // Store the best quality image URL in the memory
@@ -45,13 +39,7 @@ export class ImageTrigger implements Trigger {
                 - The tag must come right after that first word, with no exceptions. 
                 - The rest of the sentence should continue naturally.`;
 
-        return {
-            id: crypto.randomUUID(),
-            content: prompt,
-            timestamp: new Date(),
-            sender: MessageSender.System,
-            prompt: true
-        };
+        return MessageFactory.createSystemMessage(prompt);
     }   
 
 }
