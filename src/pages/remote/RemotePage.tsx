@@ -10,7 +10,7 @@ import { createActionFactory } from '@/factories';
 
 import { RemoteHeader, MessageList, Suggestions, ChatInput } from './components';
 import { GlowBackground } from '@/components';
-import { BackendHostUrlFactory } from '@/factories';
+
 import { MicrophoneStatus } from '@/types/microphone';
 
 function RemotePage() {
@@ -27,7 +27,7 @@ function RemotePage() {
     }
   }, [config, actions]);
 
-  const { websocket } = useWebSocket({ webSocketUrl: BackendHostUrlFactory.getWebSocketUrl(config) });
+  const { websocket } = useWebSocket({ webSocketUrl: config?.backend?.endpoints?.ws! });
   
   // Viewport management for responsive behavior
   const { isLargeScreen } = useViewport();

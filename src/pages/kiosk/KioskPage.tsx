@@ -8,7 +8,7 @@ import { useUneeq } from '@/hooks/useUneeq';
 import type { UneeqOptions } from '@/types/uneeq';
 import { useConfig } from '@/hooks/useConfig';
 import { useEffect } from 'react';
-import { createActionFactory, BackendHostUrlFactory } from '@/factories';
+import { createActionFactory } from '@/factories';
 import { DebugPanel } from '@/components/debugPanel/DebugPanel';
 
 function KioskPage() {
@@ -32,9 +32,8 @@ function KioskPage() {
     actions.setConfig(config);
   }, [config]);
   
-  const webSocketUrl = BackendHostUrlFactory.getWebSocketUrl(config);
-  const { websocket } = useWebSocket({  
-    webSocketUrl
+  const { websocket } = useWebSocket({
+    webSocketUrl: config?.backend?.endpoints?.ws!
   });
 
   // Check remote connection every 1 second

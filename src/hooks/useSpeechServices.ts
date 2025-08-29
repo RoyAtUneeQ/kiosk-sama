@@ -5,7 +5,7 @@ import {
   MicrophoneStreamService,
   SpeechToTextService
 } from '@/services';
-import { BackendHostUrlFactory, MessageFactory } from '@/factories';
+import { MessageFactory } from '@/factories';
 import { MicrophoneStatus } from '@/types/microphone';
 import { FiMic, FiMicOff } from 'react-icons/fi';
 import type { ReactElement } from 'react';
@@ -82,10 +82,10 @@ export function useSpeechServices(): SpeechServicesReturn {
         });
 
         // Initialize STT service
-        if (state.config?.backend?.host && state.config?.backend?.key) {
+        if (state.config?.backend?.endpoints?.http && state.config?.backend?.key) {
           sttServiceRef.current = new SpeechToTextService({
-            apiBaseUrl: BackendHostUrlFactory.getHttpBaseUrl(state.config),
-            apiKey: BackendHostUrlFactory.getApiKey(state.config) || '',
+            apiBaseUrl: state.config.backend.endpoints.http,
+            apiKey: state.config.backend.key,
             onReady: () => {
               console.log('STT service ready');
             },
@@ -117,7 +117,7 @@ export function useSpeechServices(): SpeechServicesReturn {
       streamServiceRef.current?.stop().catch(console.error);
       sttServiceRef.current?.stop().catch(console.error);
     };
-  }, [state.config?.backend?.host, state.config?.backend?.key, actions]);
+  }, [state.config?.backend?.endpoints?.http, state.config?.backend?.key, actions]);
 
   // Handle microphone button click
   const toggleMicrophone = useCallback(async () => {
