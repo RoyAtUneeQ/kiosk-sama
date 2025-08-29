@@ -209,8 +209,8 @@ The new service-based architecture provides comprehensive voice capabilities:
 ```typescript
 // SpeechToTextService configuration
 const sttService = new SpeechToTextService({
-    apiBaseUrl: BackendHostUrlFactory.getHttpBaseUrl(state.config),
-    apiKey: BackendHostUrlFactory.getApiKey(state.config),
+    apiBaseUrl: state.config?.backend?.endpoints?.http!,
+    apiKey: state.config?.backend?.key!,
     provider: 'deepgram',      // Service provider
     model: 'nova-3',          // Latest Deepgram model
     language: 'en-US',        // English US

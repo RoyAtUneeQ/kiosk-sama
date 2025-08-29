@@ -68,10 +68,9 @@ Now edit `src/assets/config.yaml` to configure:
 3. **Backend Connection** (if not using defaults):
    ```yaml
    backend:
-     host: "localhost"  # or your backend server IP/domain
-     ports:
-       http: 3000       # HTTP API port
-       ws: 3001         # WebSocket port
+     endpoints:
+       ws: "ws://localhost:3001"    # WebSocket endpoint
+       http: "http://localhost:3000"  # HTTP API endpoint
    ```
 
 ### Step 4: Install Dependencies

@@ -121,7 +121,7 @@ const [inputText, setInputText] = useState(''); // Input field content
 
 // Shared session state for all interaction state
 const { state, actions } = useSession();
-const { websocket } = useWebSocket({ webSocketUrl: BackendHostUrlFactory.getWebSocketUrl(config) });
+const { websocket } = useWebSocket({ webSocketUrl: config?.backend?.endpoints?.ws! });
 
 // Shared states accessed:
 // - state.history: Message[]             // Complete message history

@@ -44,7 +44,7 @@ Digital human kiosk experience with remote mobile control capabilities. Users in
 cp src/assets/config.sample.yaml src/assets/config.yaml
 
 # Edit the config file to match your environment
-# - Update backend host/ports if different from defaults
+# - Update backend endpoints if different from defaults
 # - Configure Uneeq persona keys and endpoints
 # - Set appropriate environment (development/staging/production)
 ```
@@ -116,10 +116,9 @@ personas:
       key: "your-persona-key"
 
 backend:
-  host: "localhost"
-  ports:
-    http: 3000
-    ws: 3001
+  endpoints:
+    ws: "ws://localhost:3001"
+    http: "http://localhost:3000"
   key: "your-backend-key"
 ```
 

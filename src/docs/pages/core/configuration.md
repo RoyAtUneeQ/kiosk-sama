@@ -89,10 +89,9 @@ apis:
 
 # Backend connection settings
 backend:
-  host: "localhost"
-  ports:
-    http: 3000
-    ws: 3001
+  endpoints:
+    ws: "ws://localhost:3001"
+    http: "http://localhost:3000"
   key: "your-backend-authentication-key"
 ```
 
@@ -384,7 +383,7 @@ function SecureApiComponent() {
   const { config } = useConfig();
   
   const tokenService = new EphemeralTokenService({
-    apiBaseUrl: `https://${config?.backend?.host}:${config?.backend?.ports?.http}`
+    apiBaseUrl: config?.backend?.endpoints?.http
   });
   
   const handleApiCall = async () => {
