@@ -13,19 +13,11 @@ export interface PersonaConfig {
 }
 
 export interface BackendConfig {
-  host?: string;
-  port?: number;
-  httpPort?: number;
-  wsPort?: number;
-  ports?: {
-    http?: number;
-    ws?: number;
+  endpoints: {
+    ws: string;    // Full WebSocket URL (required)
+    http: string;  // Full HTTP URL (required) 
   };
-  endpoints?: {
-    ws?: string;
-    http?: string;
-  };
-  key?: string;
+  key?: string;    // API key for authentication
 }
 
 export interface ApiConfig {
