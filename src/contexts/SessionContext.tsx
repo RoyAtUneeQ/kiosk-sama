@@ -1,29 +1,47 @@
 
 import { create } from 'zustand';
-import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media } from '@/types';
-import { type State, SessionStatus } from './types';
+import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media, type ErrorMessage } from '@/types';
+import { type State, SessionStatus } from './types';                  
+import { MicrophoneStatus } from '@/types/microphone';
 
 const initialState: State = {
+  // Core session configuration
   config: null as unknown as Config,
   status: SessionStatus.IDLE,
   webSocketState: WebsocketStatus.DISCONNECTED,
   connectionId: null,
+  
+  // Uneeq digital human state
   uneeq: null,
   uneeqEvents: [],
   media: null,
+  
+  // Remote session information
   remoteInfo: null,
+  
+  // Conversation state
   awaitingPromptResponse: false,
   language: 'en',
   renderMode: 'cloud',
   history: [],
+  
   // Speech and interaction states
-  isTyping: false,
-  micActive: false,
-  sttReady: false,
   showSuggestions: true,
-  camera: CameraHorizontalAnchor.center,
+  
+  // Digital Human Controls
   showClosedCaptions: true,
-  memory: {} as Memory
+  camera: CameraHorizontalAnchor.center,
+  
+  // Storage - When prompts are sent to the server for execution, associated frontend actions 
+  // may also require parameters. Instead of resending parameters each time, the prompt can be accessed by its ID,
+  // so only the ID is sent rather than all parameters.
+  memory: {} as Memory,
+
+  // Microphone state
+  microphoneStatus: MicrophoneStatus.UNKNOWN,
+
+  // Error message
+  errorMessage: null,
 };
 
 /**
@@ -42,14 +60,12 @@ export type SessionActions = {
   setUneeq: (uneeq: Uneeq) => void;
   setUneeqEvents: (events: Event[]) => void;
   addMessageToHistory: (message: Message) => void;
-  // Speech and interaction actions
-  setIsTyping: (isTyping: boolean) => void;
-  setMicActive: (micActive: boolean) => void;
-  setSttReady: (sttReady: boolean) => void;
   setShowSuggestions: (showSuggestions: boolean) => void;
   setCamera: (camera: CameraHorizontalAnchor | CameraDistanceAnchor) => void;
   setShowClosedCaptions: (showClosedCaptions: boolean) => void;
   setMemory: (key: string, value: any) => void;
+  setMicrophoneStatus: (status: MicrophoneStatus) => void;
+  setErrorMessage: (errorMessage: ErrorMessage | null) => void;
 };      
 
 /**
@@ -115,15 +131,6 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         });
     },
     // Speech and interaction actions
-    setIsTyping: (isTyping) => {
-      set((prev) => ({ state: { ...prev.state, isTyping } }));
-    },
-    setMicActive: (micActive) => {
-      set((prev) => ({ state: { ...prev.state, micActive } }));
-    },
-    setSttReady: (sttReady) => {
-      set((prev) => ({ state: { ...prev.state, sttReady } }));
-    },
     setShowSuggestions: (showSuggestions) => {
       set((prev) => ({ state: { ...prev.state, showSuggestions } }));
     },
@@ -135,8 +142,14 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     setMemory: (key, value) => {
       set((prev) => ({ state: { ...prev.state, memory: { ...prev.state.memory, [key]: value } } }));
+    },    
+    setMicrophoneStatus: (status) => {
+      set((prev) => ({ state: { ...prev.state, microphoneStatus: status } }));
     },
-  },
+    setErrorMessage: (errorMessage) => {
+      set((prev) => ({ state: { ...prev.state, errorMessage } }));
+    },
+  },  
 }));
 
 

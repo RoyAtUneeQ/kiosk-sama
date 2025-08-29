@@ -3,7 +3,8 @@ import type { CameraDistanceAnchor, CameraHorizontalAnchor, Config, Uneeq } from
 import type { SessionStatus } from './'; 
 import type { Message, RemoteSessionInfo, WebsocketStatus } from "@/types/transport";
 import type { Event } from "@/types/uneeq/Event";
-import type { Memory, Media } from "@/types/utils";
+import type { Memory, Media, ErrorMessage } from "@/types/utils";
+import type { MicrophoneStatus } from "@/types/microphone";   
 
 /**
  * Shape of the session state stored in Zustand.
@@ -21,10 +22,12 @@ export interface State {
     renderMode: string;
     history: Message[];
     uneeqEvents: Event[];
+    
+    // Microphone Status
+    microphoneStatus: MicrophoneStatus;
+
     // Speech and interaction states
-    isTyping: boolean;
-    micActive: boolean;
-    sttReady: boolean;
+    isReadySpeechToText: boolean;
     showSuggestions: boolean;
 
     // Digital Human Controls
@@ -35,4 +38,5 @@ export interface State {
     // may also require parameters. Instead of resending parameters each time, the prompt can be accessed by its ID,
     // so only the ID is sent rather than all parameters.
     memory: Memory;
+    errorMessage: ErrorMessage | null;
   }
