@@ -217,7 +217,7 @@ interface RemoteHeaderProps {
         sender={group.sender}
         timestamp={group.lastTimestamp}
         shouldAnimate={group.shouldAnimate}
-        onAnimationStart={() => setShowThinkingIndicator(true)}
+        onAnimationStart={() => setShowThinkingIndicator(false)}
     />
 ))}
 ```
