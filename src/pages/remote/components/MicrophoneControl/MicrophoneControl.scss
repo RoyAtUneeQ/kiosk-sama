@@ -1,0 +1,194 @@
+.microphone-control {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible;
+  margin-left: 10px;
+
+  .mic-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.1em;
+  }
+
+  // READY state - ready to start recording
+  &.ready {
+    background: linear-gradient(135deg, rgba(226, 0, 116, 0.9) 0%, rgba(205, 55, 97, 0.95) 100%);
+    color: white;
+    box-shadow: 0 6px 24px rgba(226, 0, 116, 0.35);
+
+    &:hover:not(:disabled) { 
+      filter: brightness(1.08);
+      transform: scale(1.05);
+    }
+    &:active:not(:disabled) { transform: scale(0.95); }
+  }
+
+  // PERMISSION-NEEDED state - needs microphone permission
+  &.permission-needed {
+    background: linear-gradient(135deg, #666 0%, #444 100%);
+    color: #ccc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    
+    &:hover:not(:disabled) { 
+      background: linear-gradient(135deg, #777 0%, #555 100%);
+      transform: scale(1.05);
+      color: white;
+    }
+    &:active:not(:disabled) { transform: scale(0.95); }
+  }
+
+  // LISTENING state - actively recording (prominent animation)
+  &.listening {
+    background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
+    color: white;
+    box-shadow: 
+      0 0 0 4px rgba(255, 71, 87, 0.3),
+      0 0 0 8px rgba(255, 71, 87, 0.15),
+      0 8px 32px rgba(255, 71, 87, 0.5);
+    animation: listeningPulse 1.5s ease-in-out infinite;
+
+    .mic-icon {
+      font-size: 1.2em;
+      
+      &.listening-animation {
+        animation: micScale 2s ease-in-out infinite;
+      }
+    }
+
+    &:hover:not(:disabled) { 
+      transform: scale(1.02);
+    }
+
+    // Animated ring around the button
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent, rgba(255, 71, 87, 0.5), transparent);
+      animation: ringRotate 3s linear infinite;
+      z-index: -1;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 71, 87, 0.6);
+      animation: ringPulse 2s ease-in-out infinite;
+      z-index: -1;
+    }
+  }
+
+  // PROCESSING state - processing audio/speech
+  &.processing {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
+    
+    .mic-icon {
+      &.processing-animation {
+        animation: processingPulse 1.5s ease-in-out infinite;
+      }
+    }
+
+    &:hover:not(:disabled) { 
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    // Processing indicator dots
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px dotted rgba(59, 130, 246, 0.7);
+      animation: processingRotate 2s linear infinite;
+      z-index: -1;
+    }
+  }
+
+  &:disabled { 
+    cursor: not-allowed; 
+    opacity: 0.6; 
+    box-shadow: none; 
+    &:hover { transform: none !important; }
+  }
+}
+
+// Listening pulse animation
+@keyframes listeningPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 0 0 4px rgba(255, 71, 87, 0.3),
+      0 0 0 8px rgba(255, 71, 87, 0.15),
+      0 8px 32px rgba(255, 71, 87, 0.5);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 
+      0 0 0 6px rgba(255, 71, 87, 0.4),
+      0 0 0 12px rgba(255, 71, 87, 0.2),
+      0 12px 40px rgba(255, 71, 87, 0.6);
+  }
+}
+
+// Microphone icon scaling animation
+@keyframes micScale {
+  0%, 100% { 
+    transform: scale(1);
+  }
+  50% { 
+    transform: scale(1.1);
+  }
+}
+
+// Rotating ring animation
+@keyframes ringRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Ring pulse animation
+@keyframes ringPulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.3;
+  }
+}
+
+// Processing pulse animation for the icon
+@keyframes processingPulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+}
+
+// Processing rotation animation for the dotted border
+@keyframes processingRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
