@@ -5,6 +5,78 @@ All notable changes to the Generic Kiosk Frontend project will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-01-25
+
+### ✨ Features
+- **Comprehensive Microphone & Speech-to-Text System**: Complete implementation of voice interaction capabilities
+  - **MicrophonePermissionsService**: Automatic permission management with state tracking and error handling
+  - **MicrophoneStreamService**: Real-time audio capture with resampling and noise cancellation
+  - **SpeechToTextService**: Integration with Deepgram for accurate voice transcription
+  - **Type-Safe APIs**: Complete TypeScript interfaces for all microphone and STT services
+  - **Service Orchestration**: Coordinated service management through useSpeechServices hook
+
+- **Advanced UI Components for Voice Interaction**: Modern components for speech interface feedback
+  - **ThinkingIndicator**: Animated gradient waves and dots for AI processing visualization
+  - **MicrophoneControl**: Smart microphone button with status-aware icons and animations
+  - **Enhanced MessageBubble**: Improved text animations with gradient effects during typing
+  - **Responsive Design**: Mobile-optimized components with touch-friendly interactions
+  - **Accessibility**: Full ARIA support and keyboard navigation for voice controls
+
+- **Smart Message Management**: Streamlined message creation and handling
+  - **MessageFactory**: Centralized factory for consistent message creation across the application
+  - **Message Type Safety**: Standardized user, assistant, system, and error message patterns
+  - **Auto-ID Generation**: Automatic UUID generation for message tracking
+  - **Timestamp Management**: Consistent timestamp handling across all message types
+
+- **Enhanced Chat Interface**: Integrated voice and text input with visual feedback
+  - **Unified Input System**: Seamless switching between text and voice input modes
+  - **Real-time Feedback**: Visual indicators for microphone status and speech processing
+  - **Smart Suggestions**: Context-aware suggestion system with voice integration
+  - **Processing Animations**: Smooth transitions and loading states during speech processing
+
+- **Viewport Management**: Responsive layout utilities for optimal user experience
+  - **useViewport Hook**: Real-time viewport dimensions and breakpoint detection
+  - **CSS Custom Properties**: Automatic --vh updates for mobile viewport handling
+  - **Breakpoint Helpers**: Mobile, tablet, desktop, and large screen detection
+  - **Orientation Support**: Automatic updates on device orientation changes
+
+### 🔄 Refactoring
+- **Session State Enhancement**: Added microphone status tracking to global state management
+  - **MicrophoneStatus Integration**: Complete status lifecycle from unknown to listening
+  - **State Synchronization**: Coordinated state updates across all voice components
+  - **Error State Management**: Comprehensive error handling and recovery patterns
+
+- **Service Layer Modernization**: Updated existing services for voice integration
+  - **EphemeralTokenService Enhancement**: Improved token management for STT services  
+  - **Trigger System Updates**: Enhanced ActionTrigger, EmotionTrigger, and ImageTrigger for voice
+  - **Event Listener Updates**: Modified PromptResultListener for better voice interaction handling
+
+- **Export System Optimization**: Updated module exports for new architecture
+  - **Component Exports**: Added ThinkingIndicator and MicrophoneControl to component index
+  - **Service Exports**: Integrated all microphone and STT services into service exports
+  - **Hook Exports**: Added useSpeechServices and useViewport to hook exports
+  - **Factory Exports**: Included MessageFactory in factory export system
+
+### 🗑️ Removed
+- **Legacy Microphone Hooks**: Removed deprecated hooks in favor of service-based architecture
+  - **useMicPermissions**: Replaced with MicrophonePermissionsService
+  - **useMicStream**: Replaced with MicrophoneStreamService
+  - **Improved Architecture**: Service-based pattern provides better state management and reusability
+
+### 📝 Configuration & Setup
+- **Enhanced Configuration**: Updated sample config for voice feature configuration
+- **HTML Updates**: Added necessary meta tags and configuration for speech services
+- **Type System Extensions**: New error message utilities and enhanced utility types
+
+### 🎯 Benefits
+- **Voice-First Experience**: Complete hands-free interaction capability with visual feedback
+- **Production Ready**: Robust error handling, state management, and responsive design
+- **Developer Experience**: Type-safe APIs with comprehensive documentation and examples
+- **Performance Optimized**: Efficient audio processing with proper cleanup and memory management
+- **Accessibility Compliant**: Full screen reader support and keyboard navigation for all voice features
+
+---
+
 ## [1.4.0] - 2025-01-16
 
 ### ✨ Features
