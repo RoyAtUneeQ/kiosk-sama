@@ -57,6 +57,7 @@ The system consists of:
 - **Zustand** - Centralized state management with shared interaction states
 - **WebSocket** - Real-time communication with backend
 - **Uneeq SDK** - Digital human avatar integration
+- **Voice Services** - Comprehensive speech-to-text with microphone management
 - **Vite** - Build tool and development server
 - **Performance Monitoring** - Development-time metrics tracking for optimization
 

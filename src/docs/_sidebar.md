@@ -18,6 +18,7 @@
   - [UI Architecture](pages/remote/ui.md)
 
 - How-to Guides
+  - [Voice Services Integration](pages/howto/voice-services.md)
   - [UneeQ Event Listeners](pages/howto/uneeq-events.md)
   - [Custom Uneeq Event Listeners](pages/howto/custom-events.md)
   - [Interactive Triggers](pages/howto/triggers.md)

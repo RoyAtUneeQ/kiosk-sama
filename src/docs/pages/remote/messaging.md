@@ -8,12 +8,13 @@ The Remote messaging system enables real-time communication between mobile users
 graph TB
     subgraph "Remote Device"
         TextInput[📝 Text Input<br/>ChatInput component]
-        VoiceInput[🎤 Voice Input<br/>Microphone + STT]
-        MessageList[💬 Message Display<br/>Chat history]
+        VoiceInput[🎤 Voice Input<br/>MicrophoneControl + Services]
+        MessageList[💬 Message Display<br/>Enhanced chat with ThinkingIndicator]
     end
     
     subgraph "Message Processing"
-        LocalState[📱 Local State<br/>messages: Message array]
+        MessageFactory[🏭 MessageFactory<br/>Consistent message creation]
+        SessionState[📱 Session State<br/>Shared message history]
         WebSocket[🔌 WebSocket<br/>Real-time transport]
     end
     
@@ -27,9 +28,10 @@ graph TB
         Avatar[🤖 Digital Human<br/>Processes & responds]
     end
     
-    TextInput --> LocalState
-    VoiceInput --> LocalState
-    LocalState --> WebSocket
+    TextInput --> MessageFactory
+    VoiceInput --> MessageFactory
+    MessageFactory --> SessionState
+    SessionState --> WebSocket
     WebSocket --> PeerMessage
     PeerMessage --> Backend
     Backend --> PeerListener
@@ -104,121 +106,153 @@ sequenceDiagram
 
 The Remote app integrates Deepgram's real-time speech-to-text for hands-free messaging:
 
-#### STT Service Initialization
+#### STT Service Architecture & Initialization
 ```mermaid
 sequenceDiagram
-    participant RemotePage as RemotePage
+    participant Hook as useSpeechServices
+    participant PermService as MicrophonePermissionsService
+    participant StreamService as MicrophoneStreamService  
+    participant STTService as SpeechToTextService
     participant TokenService as EphemeralTokenService
     participant Deepgram as Deepgram API
-    participant MicStream as useMicStream
     
-    RemotePage->>TokenService: ensure('deepgram', 'stt')
-    TokenService->>RemotePage: Ephemeral token
-    RemotePage->>Deepgram: createStreamClient(DEEPGRAM, config)
-    Deepgram->>RemotePage: StreamClient instance
-    RemotePage->>Deepgram: streamClient.connect()
-    Deepgram->>RemotePage: onOpen() → setSttReady(true)
+    Hook->>PermService: new MicrophonePermissionsService()
+    Hook->>StreamService: new MicrophoneStreamService()
+    Hook->>TokenService: ensure('deepgram', 'stt')
+    TokenService->>STTService: Ephemeral token
+    Hook->>STTService: new SpeechToTextService(config)
+    STTService->>Deepgram: createStreamClient(DEEPGRAM)
+    STTService->>Hook: onReady() → service ready
     
-    Note over RemotePage: STT service ready for voice input
+    Note over Hook: All services orchestrated and ready
 ```
 
-#### Voice Input Processing
+#### Voice Input Processing with Service Architecture
 ```mermaid
 sequenceDiagram
     participant User as Mobile User
-    participant MicButton as Mic Toggle Button
-    participant MicStream as useMicStream Hook
-    participant STTClient as Deepgram StreamClient
-    participant RemotePage as RemotePage
+    participant MicControl as MicrophoneControl
+    participant SpeechHook as useSpeechServices
+    participant StreamService as MicrophoneStreamService
+    participant STTService as SpeechToTextService
+    participant MessageFactory as MessageFactory
+    participant Actions as SessionActions
     
-    User->>MicButton: Taps microphone button
-    MicButton->>RemotePage: toggleMic() → setMicActive(true)
-    RemotePage->>MicStream: mic.start()
-    MicStream->>MicStream: getUserMedia() → AudioContext
-    MicStream->>STTClient: Streaming 16kHz PCM audio
-    STTClient->>RemotePage: onPartial() → setIsTyping(true)
-    STTClient->>RemotePage: onFinal(text) → addMessage(text, 'user')
-    RemotePage->>RemotePage: Send message to kiosk
+    User->>MicControl: Taps microphone button
+    MicControl->>SpeechHook: toggleMicrophone()
+    SpeechHook->>StreamService: start()
+    StreamService->>StreamService: getUserMedia() → AudioContext + resampling
+    StreamService->>STTService: sendAudio(audioChunk)
+    STTService->>SpeechHook: onProcessingStart()
+    STTService->>SpeechHook: onFinal(text)
+    SpeechHook->>MessageFactory: createUserMessage(text)
+    MessageFactory->>Actions: addMessageToHistory(message)
     
     Note over User: Speaks into microphone
-    Note over RemotePage: Real-time transcription → message
+    Note over SpeechHook: Service orchestration handles all complexity
 ```
 
 ### Message State Management
 
 The Remote app uses a hybrid state approach combining local and shared state:
 
-#### Local Message State
+#### Enhanced Message State with MessageFactory
 ```typescript
-// In RemotePage.tsx - Local UI state only
-const [inputText, setInputText] = useState(''); // Keep local - UI specific input
+// In RemotePage.tsx - Simplified with MessageFactory
+const [inputText, setInputText] = useState(''); // Local UI input only
 
-// Message creation and shared state storage
-const addMessage = (content: string, sender: MessageSender) => {
-    const newMessage: Message = {
-        id: crypto.randomUUID(),
-        content,
-        sender,
-        timestamp: new Date(),
-    };
+// Message creation using MessageFactory
+const sendText = useCallback((text: string) => {
+    const message = MessageFactory.createUserMessage(text);
     
-    // Send to kiosk if user message
-    if (sender === MessageSender.User && kioskConnectionId) {
-        websocket?.send(createActionFactory().sendMessage(kioskConnectionId, newMessage));
+    // Send to kiosk via WebSocket
+    if (kioskConnectionId) {
+        websocket?.send(createActionFactory().sendMessage(kioskConnectionId, message));
     }
     
-    // Add to shared message history
-    actions.addMessageToHistory(newMessage);
-};
+    // Add to shared session state
+    actions.addMessageToHistory(message);
+}, [kioskConnectionId, websocket, actions]);
+
+// Voice messages handled automatically by useSpeechServices
+const { isProcessing, status, toggleMicrophone } = useSpeechServices();
 ```
 
-#### Shared State Integration
+#### Shared State Integration with Enhanced Voice Support
 ```typescript
-// All interaction states are now centralized in SessionContext
+// Centralized session state with voice capabilities
 const { state, actions } = useSession();
 
-// Key shared states used:
-// - state.history: Message[]           // Complete message history
-// - state.isTyping: boolean           // Typing/speaking indicator  
-// - state.micActive: boolean          // Microphone status
-// - state.sttReady: boolean           // Speech-to-text readiness
-// - state.showSuggestions: boolean    // Show suggestion cards
-// - state.webSocketState              // Connection status
+// Key shared states for voice interaction:
+// - state.history: Message[]                   // Complete message history
+// - state.awaitingPromptResponse: boolean      // AI processing indicator
+// - state.microphoneStatus: MicrophoneStatus   // Microphone permission & status
+// - state.showSuggestions: boolean            // Show suggestion cards
+// - state.webSocketState                       // Connection status
 
-// Messages are displayed directly from shared history
-<MessageList messages={state.history} isTyping={state.isTyping} />
+// Enhanced message display with thinking indicators
+<MessageList messages={state.history} />
 
-// All state updates go through shared actions
-actions.setIsTyping(true);
-actions.setMicActive(false);
-actions.addMessageToHistory(newMessage);
+// Voice service integration provides complete microphone management
+const { isProcessing, status, toggleMicrophone } = useSpeechServices();
+
+// Simplified state management through centralized actions
+actions.setMicrophoneStatus(MicrophoneStatus.LISTENING);
+actions.setAwaitingPromptResponse(true);
+actions.addMessageToHistory(MessageFactory.createUserMessage(text));
 ```
 
-### Speech-to-Text Configuration
+### Enhanced Speech-to-Text Service Architecture
 
-The STT service is configured for optimal mobile voice input:
+The new service-based architecture provides comprehensive voice capabilities:
 
 ```typescript
-const streamClient = createStreamClient(SpeechToTextProviders.DEEPGRAM, {
-    token,                    // Ephemeral token from backend
-    model: 'nova-3',         // Latest Deepgram model
-    language: 'en-US',       // English US
-    encoding: 'linear16',    // PCM format
-    sampleRate: 16000,       // 16kHz audio
-    channels: 1,             // Mono audio
-    smartFormat: true,       // Auto punctuation/capitalization
+// SpeechToTextService configuration
+const sttService = new SpeechToTextService({
+    apiBaseUrl: BackendHostUrlFactory.getHttpBaseUrl(state.config),
+    apiKey: BackendHostUrlFactory.getApiKey(state.config),
+    provider: 'deepgram',      // Service provider
+    model: 'nova-3',          // Latest Deepgram model
+    language: 'en-US',        // English US
+    encoding: 'linear16',     // PCM format
+    sampleRate: 16000,        // 16kHz audio
+    channels: 1,              // Mono audio
+    smartFormat: true,        // Auto punctuation/capitalization
+    tokenTtl: 60,             // Token refresh interval
     
-    // Real-time callbacks
-    onOpen: () => setSttReady(true),
-    onPartial: () => setIsTyping(true),           // Interim results
-    onFinal: (text: string) => {                  // Final transcription
-        setIsTyping(false);
-        addMessage(text, MessageSender.User);
+    // Service lifecycle callbacks
+    onReady: () => console.log('STT service ready'),
+    onProcessingStart: () => setIsProcessing(true),
+    onProcessingEnd: () => setIsProcessing(false),
+    onFinal: (text: string) => {
+        console.log('STT final text:', text);
+        actions.addMessageToHistory(MessageFactory.createUserMessage(text));
     },
-    onError: (err: any) => console.error('[STT] error:', err),
-    onClose: () => console.info('[STT] closed')
+    onError: (error: any) => console.error('STT service error:', error)
 });
+
+// Automatic service management
+await sttService.start();
 ```
+
+### Service Integration Benefits
+
+**MicrophonePermissionsService**:
+- Automatic permission requests and state tracking
+- Graceful error handling for denied permissions
+- User-friendly permission management UI
+
+**MicrophoneStreamService**:
+- Real-time audio capture with Web Audio API
+- Automatic resampling to target sample rates
+- Echo cancellation and noise suppression
+- Proper resource cleanup and memory management
+
+**SpeechToTextService**:
+- Ephemeral token management with automatic refresh
+- Streaming connection with Deepgram
+- Error recovery and reconnection capabilities
+- State management integration
 
 ### Audio Processing Pipeline
 

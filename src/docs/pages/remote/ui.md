@@ -16,12 +16,15 @@ graph TB
     
     subgraph "Chat Interface"
         RemoteHeader[📋 RemoteHeader<br/>Connection status & info]
-        MessageList[💬 MessageList<br/>Chat history display]
+        MessageList[💬 MessageList<br/>Chat history with thinking indicators]
         Suggestions[💡 Suggestions<br/>Quick action cards]
-        ChatInput[⌨️ ChatInput<br/>Text + voice input]
+        ChatInput[⌨️ ChatInput<br/>Text + voice input with mic control]
+        MicrophoneControl[🎤 MicrophoneControl<br/>Advanced microphone status control]
     end
     
     subgraph "Shared Components"
+        ThinkingIndicator[🧠 ThinkingIndicator<br/>AI processing visualization]
+        MessageBubble[💭 MessageBubble<br/>Enhanced text animations]
         FeedbackLine[📊 FeedbackLine<br/>Audio visualization]
         Button[🔘 Button<br/>Interactive elements]
         ErrorBoundary[🛡️ ErrorBoundary<br/>Error containment & fallback UI]
@@ -34,7 +37,10 @@ graph TB
     RemotePage --> Suggestions
     RemotePage --> ChatInput
     
+    ChatInput --> MicrophoneControl
     ChatInput --> FeedbackLine
+    MessageList --> ThinkingIndicator
+    MessageList --> MessageBubble
     Suggestions --> Button
 ```
 
@@ -118,12 +124,14 @@ const { state, actions } = useSession();
 const { websocket } = useWebSocket({ webSocketUrl: BackendHostUrlFactory.getWebSocketUrl(config) });
 
 // Shared states accessed:
-// - state.history: Message[]        // Complete message history
-// - state.isTyping: boolean         // Typing indicator
-// - state.micActive: boolean        // Microphone status  
-// - state.sttReady: boolean         // STT service readiness
-// - state.showSuggestions: boolean  // Show suggestion cards
-// - state.webSocketState            // Connection status
+// - state.history: Message[]             // Complete message history
+// - state.awaitingPromptResponse: boolean // AI processing indicator
+// - state.microphoneStatus: MicrophoneStatus // Microphone permission & status
+// - state.showSuggestions: boolean       // Show suggestion cards
+// - state.webSocketState                 // Connection status
+
+// Voice service integration
+const { isProcessing, status, toggleMicrophone } = useSpeechServices();
 ```
 
 **Conditional Rendering Logic**:
@@ -148,24 +156,17 @@ return (
                         kioskConnectionId={kioskConnectionId}
                         connectionId={state.connectionId}
                     />
-                    <MessageList messages={state.history} isTyping={state.isTyping} messagesEndRef={messagesEndRef} />
+                    <MessageList messages={state.history} />
                     {state.webSocketState === WebsocketStatus.CONNECTED && state.showSuggestions && (
                         <Suggestions 
                             items={suggestions} 
                             onSelect={(text) => sendText(text)}
-                            disabled={state.isTyping}
+                            disabled={state.awaitingPromptResponse}
                             onClose={() => actions.setShowSuggestions(false)}
                         />
                     )}
                     <ChatInput
-                        inputRef={inputRef}
-                        value={inputText}
-                        onChange={setInputText}
-                        onEnter={handleEnter}
                         disabled={state.webSocketState !== WebsocketStatus.CONNECTED}
-                        micActive={state.micActive}
-                        onToggleMic={toggleMic}
-                        speaking={false}
                     />
                 </div>
             </>
@@ -207,66 +208,141 @@ interface RemoteHeaderProps {
 - Typing indicator with animated dots
 - Timestamp display for each message
 
-**Message Rendering**:
+**Enhanced Message Rendering**:
 ```typescript
-{messages.map((message) => (
-    <div key={message.id} className={`message ${message.sender}-message`}>
-        <div className="message-bubble">
-            <p>{message.content}</p>
-            <span className="message-time">
-                {(typeof message.timestamp === 'string' 
-                    ? new Date(message.timestamp) 
-                    : message.timestamp
-                ).toLocaleTimeString()}
-            </span>
-        </div>
-    </div>
+{messageGroups.map(group => (
+    <MessageBubble
+        key={group.id}
+        content={group.content}
+        sender={group.sender}
+        timestamp={group.lastTimestamp}
+        shouldAnimate={group.shouldAnimate}
+        onAnimationStart={() => setShowThinkingIndicator(true)}
+    />
 ))}
 ```
 
-**Typing Indicator**:
+**AI Processing Indicator**:
 ```typescript
-{isTyping && (
-    <div className="message assistant-message">
-        <div className="message-bubble typing-indicator">
-            <div className="typing-dot"></div>
-            <div className="typing-dot"></div>
-            <div className="typing-dot"></div>
-        </div>
+{showThinkingIndicator && (
+    <div className="thinking-container">
+        <ThinkingIndicator />
     </div>
 )}
 ```
+
+#### ThinkingIndicator (AI Processing Visualization)
+**Location**: `src/components/thinkingIndicator/`
+
+**Features**:
+- Animated gradient waves and dots for AI processing visualization
+- Smooth animations optimized for mobile performance
+- Automatic show/hide integration with message animation lifecycle
+- Modern visual design with accessibility considerations
+
+**Implementation**:
+```typescript
+export const ThinkingIndicator: React.FC = () => {
+    return (
+        <div className="thinking-indicator">
+            <div className="gradient-flow">
+                <div className="gradient-wave gradient-wave-1"></div>
+                <div className="gradient-wave gradient-wave-2"></div>
+                <div className="gradient-wave gradient-wave-3"></div>
+            </div>
+            <div className="thinking-dots">
+                <div className="dot dot-1"></div>
+                <div className="dot dot-2"></div>
+                <div className="dot dot-3"></div>
+            </div>
+        </div>
+    );
+};
+```
+
+#### Enhanced MessageBubble Component
+**Location**: `src/components/messageBubble/`
+
+**New Features**:
+- Enhanced text animations with gradient effects during typing
+- Character-by-character rendering with color transitions  
+- Smooth animation lifecycle management
+- Integration with ThinkingIndicator for seamless AI processing feedback
 
 #### ChatInput (Text + Voice Input)
 **Location**: `src/pages/remote/components/ChatInput/`
 
 **Features**:
 - Text input with Enter key submission
-- Microphone toggle button with active state styling
+- Integrated MicrophoneControl component
 - Send button with disabled state handling
 - Visual feedback line for audio input
+- MessageFactory integration for consistent message creation
 
-**Input Controls**:
+**Updated Implementation**:
 ```typescript
 interface ChatInputProps {
-    inputRef: RefObject<HTMLInputElement>;
-    value: string;
-    onChange: (value: string) => void;
-    onEnter: () => void;
     disabled?: boolean;
-    micActive?: boolean;
-    onToggleMic?: () => void;
-    speaking?: boolean;
 }
+
+// Simplified interface with service integration
+const ChatInput: React.FC<ChatInputProps> = ({ disabled }) => {
+    const { state, actions } = useSession();
+    const [inputText, setInputText] = useState('');
+
+    const handleSendText = useCallback(() => {
+        const trimmed = inputText.trim();
+        if (!trimmed || disabled) return;
+        
+        setInputText('');
+        actions.addMessageToHistory(
+            MessageFactory.createUserMessage(trimmed)
+        );
+    }, [inputText, disabled, actions]);
+
+    return (
+        <>
+            <FeedbackLine listening={state.microphoneStatus === MicrophoneStatus.LISTENING} />
+            <div className="input-container">
+                <input ... />
+                <MicrophoneControl disabled={disabled} />
+                <button onClick={handleSendText}>Send</button>
+            </div>
+        </>
+    );
+};
 ```
 
-**Audio Feedback Integration**:
+#### MicrophoneControl (Advanced Microphone Management)
+**Location**: `src/pages/remote/components/MicrophoneControl/`
+
+**Features**:
+- Status-aware microphone control with service integration
+- Automatic permission handling and visual feedback
+- Processing animations during speech recognition
+- ARIA support for accessibility
+- Seamless integration with useSpeechServices hook
+
+**Service Integration**:
 ```typescript
-<FeedbackLine 
-    listening={!!micActive} 
-    speaking={!!speaking} 
-    thickness={4} 
-/>
+const MicrophoneControl: React.FC<MicrophoneControlProps> = ({ disabled = false }) => {
+    const { isProcessing, status, toggleMicrophone } = useSpeechServices();
+
+    return (
+        <button
+            type="button"
+            onClick={toggleMicrophone}
+            className={`microphone-control ${status?.className}`}
+            aria-label={status?.label}
+            title={status?.title}
+            disabled={disabled}
+        >
+            <span className={`mic-icon ${isProcessing ? 'processing-animation' : ''}`}>
+                {status.icon}
+            </span>
+        </button>
+    );
+};
 ```
 
 #### Suggestions (Quick Actions)

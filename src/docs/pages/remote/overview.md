@@ -64,11 +64,12 @@ graph TB
 - **Remote-specific Usage**: WebSocket connection state, peer messages
 - **Local State**: Chat messages, input text, microphone status, UI flags
 
-#### Microphone Audio Capture
-- **Purpose**: Captures user speech for voice message input
-- **Integration**: `useMicStream` hook with Web Audio API
-- **Processing**: Real-time resampling to 16kHz, streaming to Deepgram
-- **UI Feedback**: Visual indicators and animations during recording
+#### Comprehensive Voice Interaction Services
+- **MicrophonePermissionsService**: Automatic permission management with state tracking
+- **MicrophoneStreamService**: Real-time audio capture with resampling and noise cancellation  
+- **SpeechToTextService**: Deepgram integration with automatic token management
+- **Service Orchestration**: Coordinated through `useSpeechServices` hook
+- **UI Integration**: `MicrophoneControl` component with status-aware visual feedback
 
 ### Connection Flow Overview
 
@@ -105,9 +106,18 @@ src/pages/remote/
 ├── RemotePage.scss             # Page-level styles and animations
 ├── components/
 │   ├── RemoteHeader/           # Connection status and info display
-│   ├── MessageList/            # Chat history with typing indicators
-│   ├── ChatInput/              # Text input with microphone toggle
+│   ├── MessageList/            # Chat history with thinking indicators
+│   ├── ChatInput/              # Text input with integrated voice controls
+│   ├── MicrophoneControl/      # Advanced microphone control with status awareness
 │   └── Suggestions/            # Quick action suggestion cards
+
+src/components/
+├── thinkingIndicator/          # AI processing visual feedback
+│   ├── ThinkingIndicator.tsx   # Animated gradient waves and dots
+│   └── ThinkingIndicator.scss  # Processing animation styles
+└── messageBubble/              # Enhanced message display
+    ├── MessageBubble.tsx       # Improved text animations with gradients
+    └── MessageBubble.scss      # Enhanced typing effects
 ```
 
 ### Technology Stack
@@ -115,8 +125,10 @@ src/pages/remote/
 - **Frontend Framework**: React with TypeScript
 - **State Management**: Zustand (shared) + Local React state
 - **Real-time Communication**: WebSocket with automatic reconnection
-- **Speech Recognition**: Deepgram streaming API
-- **Audio Processing**: Web Audio API with custom resampling
+- **Speech Recognition**: Deepgram streaming API with service architecture
+- **Audio Processing**: Web Audio API with custom resampling and service orchestration
+- **Message Management**: MessageFactory for consistent message creation
+- **Viewport Management**: useViewport hook for responsive layout utilities
 - **Styling**: SCSS with mobile-first responsive design
 - **Icons**: Feather icons via `react-icons/fi`
 
