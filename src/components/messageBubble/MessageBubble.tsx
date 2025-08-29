@@ -1,13 +1,14 @@
 import './MessageBubble.scss';
 import React from 'react';
 import { useAnimatedText } from '@/hooks';
+import { MessageSender } from '@/types/transport';
 
 export interface MessageBubbleProps {
   content?: string;
   sender?: string;
   timestamp?: Date | string;
   shouldAnimate?: boolean;
-  isTyping?: boolean;
+  onAnimationStart?: () => void;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ 
@@ -15,80 +16,62 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   sender = 'assistant',
   timestamp,
   shouldAnimate = false,
-  isTyping = false
+  onAnimationStart
 }) => {
   const { displayedText, startAnimation, isAnimating, currentCharIndex } = useAnimatedText(content, {
     speed: 50,
-    delay: 0,  // Remove delay to avoid empty bubble
-    enabled: shouldAnimate && sender === 'assistant'
+    delay: 0,
+    enabled: shouldAnimate
   });
 
-  const renderAnimatedText = () => {
-    if (!shouldAnimate || sender !== 'assistant' || !isAnimating) {
-      return displayedText;
+  const isAssistantAnimating = shouldAnimate && sender === MessageSender.Assistant && isAnimating;
+  
+  // Start animation when content or animation settings change
+  React.useEffect(() => {
+    if (shouldAnimate) startAnimation();
+  }, [content, shouldAnimate, startAnimation]);
+  
+  // Trigger animation start callback when threshold reached
+  React.useEffect(() => {
+    if (displayedText.length === 6 && shouldAnimate && onAnimationStart) {
+      onAnimationStart();
     }
+  }, [displayedText.length, shouldAnimate, onAnimationStart]);
 
+  // Hide bubble until minimum characters are displayed
+  if (displayedText.length < 6 && currentCharIndex < 6) {
+    return null;
+  }
+
+  // Render message content with animation effects
+  const renderText = () => {
+    if (!isAssistantAnimating) return content;
+    
     return displayedText.split('').map((char, index) => {
       const isCurrentChar = index === currentCharIndex - 1;
       const isInLastThree = index >= currentCharIndex - 4 && index < currentCharIndex - 1;
-      const lastThreePosition = currentCharIndex - 2 - index; // 0 = most recent, 2 = oldest
+      const recentPosition = currentCharIndex - 2 - index; // 0 = most recent, 2 = oldest
       
       let className = '';
       if (isCurrentChar) {
         className = 'typing-char';
-      } else if (isInLastThree && lastThreePosition >= 0) {
-        className = `gradient-char gradient-char-${lastThreePosition}`;
+      } else if (isInLastThree && recentPosition >= 0) {
+        className = `gradient-char gradient-char-${recentPosition}`;
       }
       
-      return (
-        <span 
-          key={index} 
-          className={className}
-        >
-          {char}
-        </span>
-      );
+      return <span key={index} className={className}>{char}</span>;
     });
   };
 
-  React.useEffect(() => {
-    if (shouldAnimate && sender === 'assistant') {
-      startAnimation();
-    }
-  }, [content, shouldAnimate, sender, startAnimation]);
+  // Format timestamp for display
+  const formattedTime = timestamp && 
+    (typeof timestamp === 'string' ? new Date(timestamp) : timestamp).toLocaleTimeString();
 
-  const getTimestamp = (timestamp: Date | string) => 
-    (typeof timestamp === 'string' ? new Date(timestamp) : timestamp);
-
-  // Typing indicator component
-  if (isTyping) {
-    return (
-      <div className="message-bubble assistant-message">
-        <div className="message-bubble-content typing-indicator">
-          <div className="typing-dot"></div>
-          <div className="typing-dot"></div>
-          <div className="typing-dot"></div>
-          <span className="typing-text"></span>
-        </div>
-      </div>
-    );
-  }
-
-  // Only show bubble when animating
-  if (sender === 'assistant' && displayedText.length < 6 && currentCharIndex < 6) {
-    return null;
-  }
-
-  // Regular message component
   return (
     <div className={`message-bubble ${sender}-message`}>
       <div className="message-bubble-content">
-        <p>{shouldAnimate && sender === 'assistant' ? renderAnimatedText() : content}</p>
-        {timestamp && (
-          <span className="message-bubble-time">
-            {getTimestamp(timestamp).toLocaleTimeString()}
-          </span>
-        )}
+        <p>{isAssistantAnimating ? renderText() : content}</p>
+        {formattedTime && <span className="message-bubble-time">{formattedTime}</span>}
       </div>
     </div>
   );

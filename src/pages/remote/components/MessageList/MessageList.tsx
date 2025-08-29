@@ -1,57 +1,72 @@
 import './MessageList.scss';
-import React from 'react';
-import type { RefObject } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Message } from '@/types/transport/Message';
-import { MessageBubble } from '@/components';
+import { MessageSender } from '@/types/transport';
+import { MessageBubble, ThinkingIndicator } from '@/components';
 
 interface MessageListProps {
   messages: Message[];
-  isTyping: boolean;
-  messagesEndRef: RefObject<HTMLDivElement>;
 }
 
+const MessageList: React.FC<MessageListProps> = ({ messages }) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showThinkingIndicator, setShowThinkingIndicator] = useState(false);
+  
+  // Convert timestamp to Date object
+  const parseTimestamp = (timestamp: Date | string) => 
+    typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
 
-
-const MessageList: React.FC<MessageListProps> = ({ messages, isTyping, messagesEndRef }) => {
-  const getTimestamp = (timestamp: Date | string) => 
-    (typeof timestamp === 'string' ? new Date(timestamp) : timestamp);
-
+  // Group and process messages by ID
   const messageGroups = React.useMemo(() => {
     const groups = new Map<string, Message[]>();
-    const seenOrder: string[] = [];
+    const idOrder: string[] = [];
 
+    // Group messages by ID
     messages.forEach(message => {
       if (!groups.has(message.id)) {
         groups.set(message.id, []);
-        seenOrder.push(message.id);
+        idOrder.push(message.id);
       }
       groups.get(message.id)!.push(message);
     });
 
-    // Sort messages within each group by timestamp
+    // Sort messages by timestamp within each group
     groups.forEach(group => {
-      group.sort((a, b) => getTimestamp(a.timestamp).getTime() - getTimestamp(b.timestamp).getTime());
+      group.sort((a, b) => 
+        parseTimestamp(a.timestamp).getTime() - parseTimestamp(b.timestamp).getTime()
+      );
     });
 
-    return seenOrder.map(id => ({
-      id,
-      messages: groups.get(id)!,
-      content: groups.get(id)!.at(-1)!.content, // Use only the last message's content (accumulated)
-      sender: groups.get(id)![0].sender,
-      lastTimestamp: groups.get(id)!.at(-1)!.timestamp
-    }));
+    // Create display groups with only needed data
+    return idOrder.map(id => {
+      const group = groups.get(id)!;
+      const firstMessage = group[0];
+      const lastMessage = group.at(-1)!;
+      
+      return {
+        id,
+        sender: firstMessage.sender,
+        content: lastMessage.content,
+        lastTimestamp: lastMessage.timestamp
+      };
+    });
   }, [messages]);
 
-  // Find the latest assistant message to animate
-  const latestAssistantMessageId = React.useMemo(() => {
-    for (let i = messageGroups.length - 1; i >= 0; i--) {
-      if (messageGroups[i].sender === 'assistant') {
-        return messageGroups[i].id;
-      }
-    }
-    return null;
-  }, [messageGroups]);
+  const lastGroup = messageGroups.at(-1);
+  const isLastMessageFromUser = lastGroup?.sender === MessageSender.User;
+  
+  // Auto-scroll to most recent message
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
+  // Show thinking indicator after user message
+  useEffect(() => { 
+    if (isLastMessageFromUser) {
+      setShowThinkingIndicator(true);
+    }
+  }, [isLastMessageFromUser]);
+    
   return (
     <div className="messages-container">
       {messageGroups.map(group => (
@@ -60,16 +75,18 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isTyping, messagesE
           content={group.content}
           sender={group.sender}
           timestamp={group.lastTimestamp}
-          shouldAnimate={group.id === latestAssistantMessageId}
+          shouldAnimate={group.id === lastGroup?.id}
+          onAnimationStart={() => {
+            if (group.id === lastGroup?.id && group.sender === MessageSender.Assistant) {
+              setShowThinkingIndicator(false);
+            }
+          }}
         />
       ))}
-      {isTyping && (
-        <MessageBubble isTyping={true} />
-      )}
+      {showThinkingIndicator && <ThinkingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );
 };
 
 export default MessageList;
-

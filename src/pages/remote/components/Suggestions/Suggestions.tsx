@@ -1,26 +1,34 @@
 import './Suggestions.scss';
 import React, { useState } from 'react';
-import { FiX } from 'react-icons/fi';
-
-interface SuggestionItem {
-  label: string;
-  text: string;
-  Icon: React.ComponentType<{ size?: number }>;
-}
+import { FiX, FiFeather, FiImage, FiHelpCircle, FiPower } from 'react-icons/fi';
+import { useSession } from '@/contexts/SessionContext';
+import { MessageFactory } from '@/factories';
+  
 
 interface SuggestionsProps {
-  items: SuggestionItem[];
-  onSelect: (text: string) => void;
   disabled?: boolean;
   onClose?: () => void;
   autoHideOnSelect?: boolean;
 }
 
-const Suggestions: React.FC<SuggestionsProps> = ({ items, onSelect, disabled, onClose, autoHideOnSelect = true }) => {
-  if (!items?.length) return null;
+const Suggestions: React.FC<SuggestionsProps> = ({ disabled, onClose, autoHideOnSelect = true }) => {
+  const { actions } = useSession();
+  const items = [
+    { label: 'Unique and Fun Birthday Surprise Ideas', text: 'Unique and Fun Birthday Surprise Ideas', Icon: FiFeather },
+    { label: 'Create an image', text: 'Please create an image of a sunny beach at golden hour', Icon: FiImage },
+    { label: 'How can you help me?', text: 'How can you help me?', Icon: FiHelpCircle },
+    { label: 'End session', text: 'End session', Icon: FiPower },
+  ];
+
   const [fading, setFading] = useState<Record<string, boolean>>({});
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [hideRow, setHideRow] = useState(false);
+
+  React.useEffect(() => {
+    if (dismissed.size === items.length) {
+      onClose?.();
+    }
+  }, [dismissed.size]);
 
   return (
     <div className="suggestions-block" aria-label="Suggestions block">
@@ -47,7 +55,9 @@ const Suggestions: React.FC<SuggestionsProps> = ({ items, onSelect, disabled, on
             key={label}
             className={`suggestion-card${fading[label] ? ' fade-out' : ''}`}
             onClick={() => {
-              onSelect(text);
+              actions.addMessageToHistory(
+                MessageFactory.createUserMessage(text, true)
+              );
               if (autoHideOnSelect) {
                 setFading(prev => ({ ...prev, [label]: true }));
                 window.setTimeout(() => {
