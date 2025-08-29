@@ -4,3 +4,6 @@ export * from './EphemeralTokenServiceTypes';
 export * from './UneeqEventsServiceTypes';
 export * from './UserInspectServiceTypes';
 export * from './DynamicIconServiceTypes';
+export * from './SpeechToTextServiceTypes';
+export * from './MicrophonePermissionsServiceTypes';
+export * from './MicrophoneStreamServiceTypes';

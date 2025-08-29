@@ -49,14 +49,9 @@ export class EphemeralTokenService {
       return cached;
     }
 
-    try {
-      const tokenResponse = await this.fetchToken(provider, service, ttlSeconds);
-      this.cacheToken(key, tokenResponse);
-      return tokenResponse.value;
-    } catch (error) {
-      this.handleError('ensure', error);
-      throw new Error(`Token request failed: ${error instanceof Error ? error.message : String(error)}`);
-    }
+    const tokenResponse = await this.fetchToken(provider, service, ttlSeconds);
+    this.cacheToken(key, tokenResponse);
+    return tokenResponse.value;
   }
 
   /**
@@ -103,13 +98,7 @@ export class EphemeralTokenService {
       throw new Error('No API base URL configured');
     }
 
-    console.log('[EphemeralTokenService] baseUrl:', baseUrl);
-    const baseUrlObj = new URL(baseUrl);
-    baseUrlObj.pathname = baseUrlObj.pathname.endsWith('/') 
-      ? baseUrlObj.pathname + 'service-token' 
-      : baseUrlObj.pathname + '/service-token';
-    const url = baseUrlObj;
-    console.log('[EphemeralTokenService] constructed URL:', url.toString());
+    const url = new URL('service-token', baseUrl);
     url.searchParams.set('provider', provider);
     url.searchParams.set('service', service);
     url.searchParams.set('ttl', String(ttlSeconds));
@@ -117,17 +106,19 @@ export class EphemeralTokenService {
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
-        ...(this.apiKey ? { 'X-Api-Key': this.apiKey } : {}),
+        ...(this.apiKey ? { 'x-api-key': this.apiKey } : {}),
       },
     });
 
     if (!response.ok) {
+      const errorBody = await response.text().catch(() => 'Unable to read error response');
+      console.error(`[EphemeralTokenService] HTTP ${response.status}: ${response.statusText}`, errorBody);
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const body = await response.json();
     const token = body?.token || body?.value;
-    const expiresAtMs: number = Number(body?.expiresAtMs) || 0;
+    const expiresAtMs = Number(body?.expiresAtMs) || 0;
 
     if (!token || !Number.isFinite(expiresAtMs)) {
       throw new Error('Invalid token response format');
@@ -140,22 +131,10 @@ export class EphemeralTokenService {
    * Derive an HTTP base URL from the browser window location.
    */
   private deriveHttpFromWindow(): string {
-    try {
-      if (typeof window === 'undefined') {
-        return '';
-      }
-      return `${window.location.protocol}//${window.location.host}`;
-    } catch (error) {
-      this.handleError('deriveHttpFromWindow', error);
+    if (typeof window === 'undefined') {
       return '';
     }
-  }
-
-  /**
-   * Log errors with method context.
-   */
-  private handleError(method: string, error: unknown): void {
-    console.error(`[EphemeralTokenService] ${method} failed:`, error);
+    return `${window.location.protocol}//${window.location.host}`;
   }
 }
 
