@@ -13,13 +13,17 @@ export interface PersonaConfig {
 }
 
 export interface BackendConfig {
-  host: string;
+  host?: string;
   port?: number;
   httpPort?: number;
   wsPort?: number;
   ports?: {
     http?: number;
     ws?: number;
+  };
+  endpoints?: {
+    ws?: string;
+    http?: string;
   };
   key?: string;
 }
@@ -34,6 +38,7 @@ export interface ApiConfig {
 export interface AppConfig {
   name: string;
   environment: 'development' | 'staging' | 'production';
+  autoStartMic: boolean;
 }
 
 export interface Config {
