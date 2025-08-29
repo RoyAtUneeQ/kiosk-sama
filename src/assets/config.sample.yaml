@@ -34,13 +34,12 @@ apis:
 
 # Used for websocket connection and service token retrieval
 backend:
-  host: "localhost"
-  ports:
-    http: 3000
-    ws: 3001
+  endpoints:
+    ws: "ws://localhost:3001"
+    http: "http://localhost:3000"
   key: "7d2eb1df09f9b54875e2e601d6192ec3333a0784d4c487ec1dc8937a2f97a04d"
-
-
+  
+# Production example:
 #   endpoints:
 #     ws: "wss://ak119kjenl.execute-api.eu-central-1.amazonaws.com/dev"
 #     http: "https://kf9xhxg0o5.execute-api.eu-central-1.amazonaws.com/dev"
