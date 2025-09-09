@@ -37,3 +37,7 @@ sonar-project.properties
 
 # Claude Code configuration
 commits.mdc
+
+.claude/
+
+CLAUDE.md
