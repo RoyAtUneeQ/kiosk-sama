@@ -198,7 +198,7 @@
 .kiosk-input:focus {
   outline: none;
   border-color: var(--theme-primary-main, #3A5F8A);
-  box-shadow: 0 0 0 2px var(--theme-primary-glow-alpha-30, rgba(58, 95, 138, 0.3));
+  box-shadow: 0 0 0 2px rgba(32, 42, 76, 0.2);
 }
 
 /* Styles for the new select dropdown */
@@ -222,7 +222,7 @@
 .kiosk-select:focus {
   outline: none;
   border-color: var(--theme-primary-main, #3A5F8A);
-  box-shadow: 0 0 0 2px var(--theme-primary-glow-alpha-30, rgba(58, 95, 138, 0.3));
+  box-shadow: 0 0 0 2px rgba(32, 42, 76, 0.2);
 }
 
 /* Language selector styles */
@@ -259,6 +259,7 @@ button.kiosk-start-button {
   padding: 1.5rem 2.5rem;
   font-size: 1.5rem;
   font-weight: 600;
+  border: 1px solid #ffffff33;
   cursor: pointer;
   background: var(--theme-primary-gradient, linear-gradient(135deg, var(--theme-primary-light) 0%, var(--theme-primary-main) 100%));
   position: relative;
@@ -304,7 +305,7 @@ button.kiosk-start-button::after {
   bottom: 30%;
   opacity: 0.3;
   filter: blur(1px);
-  box-shadow: 0 0 15px 1px var(--theme-neutral-lighter);
+  box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.2);
   transition: all 0.5s ease;
 }
 
@@ -320,7 +321,7 @@ button.kiosk-start-button:hover::after {
   opacity: 0.6;
   transform: scaleX(1.1);
   filter: blur(2px);
-  box-shadow: 0 0 20px 2px var(--theme-neutral-white);
+  box-shadow: 0 0 30px 3px rgba(255, 255, 255, 0.3);
 }
 
 button.kiosk-start-button .buttonText {
@@ -421,9 +422,10 @@ button.kiosk-start-button:disabled .buttonText::before {
 }
 
 /* Custom styling for the kiosk settings panel */
-.kiosk-settings {
-  /* Any kiosk-specific overrides can go here */
-}
+/* .kiosk-settings {
+  Any kiosk-specific overrides can go here
+  Currently no specific overrides needed
+} */
 
 /* Render Mode Selector Styles */
 .render-mode-selector {
@@ -514,14 +516,77 @@ button.kiosk-start-button:disabled .buttonText::before {
 // SMARTPHONE (mobile)
 @include smartphone {
   .kiosk-form-slot {
-    gap: 4rem;
+    gap: 0;
+    padding: 1rem;
+    min-height: 100vh;
+    justify-content: center;
+    position: relative;
   }
 
-  .kiosk-welcome-message{
-    font-size: 2rem;
+  .kiosk-language-selector {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 0;
+    gap: 0.25rem;
+  }
+
+  .language-option {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .kiosk-content {
+    gap: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .kiosk-welcome-message {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .kiosk-description {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    max-width: 320px;
+  }
+
+  .kiosk-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  button.kiosk-start-button {
+    min-width: 240px;
+    padding: 1.2rem 2rem;
+    font-size: 1.3rem;
+    width: 100%;
+    max-width: 280px;
   }
   
   .kiosk-status-panel {
-    margin-top: 1rem;
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    margin-top: 0;
+  }
+
+  .kiosk-config-container {
+    position: absolute;
+    bottom: 4rem;
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+    margin-top: 0;
   }
 }

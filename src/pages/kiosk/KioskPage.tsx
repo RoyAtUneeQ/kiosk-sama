@@ -1,6 +1,6 @@
 import { UneeqContainer, RemoteConnectionInfo, KioskStartForm, LeftSideBar, MediaContainer } from './components';
 import { SessionStatus } from '@/contexts/types';
-import { QRCode } from '@/components';  
+import { QRCode, TopProgressBar } from '@/components';  
 import { useSession } from '@/contexts/SessionContext';
 import { defaultUneeqOptions } from '@/types';
 import { useUneeqEvents, useWebSocket, usePageLoadMonitor } from '@/hooks';
@@ -20,7 +20,10 @@ function KioskPage() {
   
   useUneeq({
     ...defaultUneeqOptions,
-    showClosedCaptions: state.showClosedCaptions
+    showClosedCaptions: state.showClosedCaptions,
+    welcomePrompt: `Introduce yourself to the user in a friendly and engaging manner. Use your knowledge base to spark a conversation and guide the interaction. 
+    Follow up with a specific, focused question that directs the next step in the conversation, avoiding open-ended questions.`,
+    enableMicrophone: true
   } as UneeqOptions);
   useUneeqEvents();
   
@@ -39,7 +42,7 @@ function KioskPage() {
   // Check remote connection every 1 second
   useEffect(() => {
     const interval = setInterval(() => {
-      if (state.remoteInfo && state.remoteInfo.connectionId) {
+      if (state.remoteInfo?.connectionId) {
         websocket?.send(actionFactory.checkPeerConnection(state.remoteInfo.connectionId));
       }
     }, 1000);
@@ -60,6 +63,12 @@ function KioskPage() {
 
   return (
     <div>
+      {/* Top progress bar for awaiting response */}
+      <TopProgressBar 
+        isVisible={state.awaitingPromptResponse}
+        height={0.5}
+        animationSpeed={6}
+      />
       <UneeqContainer uneeqContainerId={defaultUneeqOptions.containedElementIdName} />
       {state.status === SessionStatus.LIVE && (
         <>

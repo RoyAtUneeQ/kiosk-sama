@@ -1,7 +1,6 @@
 import './LeftSideBar.scss';
 import { useSession } from '@/contexts';
-import { CircleButton } from '@/components';
-import { BsHourglassSplit } from "react-icons/bs";
+import { CircleButton, Tooltip } from '@/components';
 import { getAllTriggers, useIconFactory } from '@/factories';
 // Available for customization: import type { TriggerItem } from '@/factories';
 import { useMemo } from 'react';  
@@ -13,12 +12,18 @@ const LeftSideBar: React.FC = () => {
   // Get all registered triggers from the factory - memoized to prevent re-renders
   const triggerInstances = useMemo(() => getAllTriggers(), []);
 
+  // Sort triggers by ID for consistent ordering
+  const sortedTriggers = useMemo(() => {
+    const sorted = [...triggerInstances].sort((a, b) => a.instance.id - b.instance.id);
+    console.log('Sorted triggers:', sorted.map(t => ({ key: t.key, id: t.instance.id, icon: t.instance.icon, special: t.instance.special })));
+    return sorted;
+  }, [triggerInstances]);
+
   const iconNames = useMemo(() => 
-    triggerInstances
-      .sort((a, b) => a.instance.id - b.instance.id)
+    sortedTriggers
       .map(trigger => trigger.instance.icon)
       .filter(Boolean),
-    [triggerInstances]
+    [sortedTriggers]
   );
 
   const handleTriggerClick = async (trigger: Trigger) => {
@@ -31,26 +36,27 @@ const LeftSideBar: React.FC = () => {
 
   return (
     <div className="left-side-bar-buttons-container">
-      {/* Display awaiting prompt response indicator */}
-      <CircleButton 
-        className="highlight"
-        style={{ visibility: state.awaitingPromptResponse ? "visible" : "hidden" }}
-        icon={<BsHourglassSplit />}  
-        draggable={false}
-      />
       {/* Generate buttons from auto-discovered trigger instances */}
-      {triggerInstances
+      {sortedTriggers
         .map(trigger => {
           const iconComponent = trigger.instance.icon ? getIconComponent(trigger.instance.icon) : null;
           
           return (
-            <CircleButton 
+            <Tooltip
               key={trigger.key}
-              icon={iconComponent}
-              draggable={false}   
-              onClick={() => handleTriggerClick(trigger.instance)}
-              title={`Execute ${trigger.key} trigger`}
-            />
+              content={trigger.instance.description || `Execute ${trigger.key} trigger`}
+              position="right"
+              special={trigger.instance.special || false}
+              showDelay={200}
+              hideDelay={100}
+            >
+              <CircleButton 
+                icon={iconComponent}
+                draggable={false}   
+                onClick={() => handleTriggerClick(trigger.instance)}
+                className={trigger.instance.special ? 'special' : ''}
+              />
+            </Tooltip>
           );
         })
         .filter(Boolean)}
