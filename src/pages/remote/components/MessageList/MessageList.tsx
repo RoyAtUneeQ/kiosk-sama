@@ -1,8 +1,7 @@
 import './MessageList.scss';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import type { Message } from '@/types/transport/Message';
-import { MessageSender } from '@/types/transport';
-import { MessageBubble, ThinkingIndicator } from '@/components';
+import { MessageBubble } from '@/components';
 
 interface MessageListProps {
   messages: Message[];
@@ -10,7 +9,6 @@ interface MessageListProps {
 
 const MessageList: React.FC<MessageListProps> = ({ messages }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [showThinkingIndicator, setShowThinkingIndicator] = useState(false);
   
   // Convert timestamp to Date object
   const parseTimestamp = (timestamp: Date | string) => 
@@ -53,19 +51,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
   }, [messages]);
 
   const lastGroup = messageGroups.at(-1);
-  const isLastMessageFromUser = lastGroup?.sender === MessageSender.User;
   
   // Auto-scroll to most recent message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Show thinking indicator after user message
-  useEffect(() => { 
-    if (isLastMessageFromUser) {
-      setShowThinkingIndicator(true);
-    }
-  }, [isLastMessageFromUser]);
     
   return (
     <div className="messages-container">
@@ -77,13 +68,10 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
           timestamp={group.lastTimestamp}
           shouldAnimate={group.id === lastGroup?.id}
           onAnimationStart={() => {
-            if (group.id === lastGroup?.id && group.sender === MessageSender.Assistant) {
-              setShowThinkingIndicator(false);
-            }
+            // Animation started callback
           }}
         />
       ))}
-      {showThinkingIndicator && <ThinkingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );

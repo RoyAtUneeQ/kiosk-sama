@@ -10,7 +10,7 @@
   z-index: 10;
   background: linear-gradient(180deg, rgba(70, 86, 134, 0.4) 0%, rgba(34, 41, 62, 0.35) 100%);
   backdrop-filter: blur(12px) saturate(110%);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   margin-bottom: 0;
 
   .header-title {
@@ -25,7 +25,7 @@
     font-size: clamp(1rem, 2.8vw, 2rem);
 
     /* Animated glow gradient fill (reuses GlowBackground.scss palette) */
-    background: linear-gradient(259.53deg, #ffffff 6.53%, #464647   97%);
+    background: linear-gradient(259.53deg, #1A4B7D 6.53%, #B0653B 97%);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     background-size: 200% 200%;
     background-position: 0% 51%;
@@ -86,8 +86,8 @@
       background: rgba(17, 20, 32, 0.95);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #e6e9f3;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
       opacity: 0;
       transform: translateY(-4px);
       pointer-events: none;
@@ -103,9 +103,9 @@
         padding: 0.25rem 0;
 
         .label { opacity: 0.75; }
-        .value.connected { color: #22c55e; }
-        .value.connecting { color: #f59e0b; }
-        .value.disconnected { color: #ef4444; }
+        .value.connected { color: #397551; }
+        .value.connecting { color: #B0653B; }
+        .value.disconnected { color: #A32F34; }
         .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
       }
     }
