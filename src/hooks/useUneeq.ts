@@ -2,10 +2,9 @@ import { useEffect, useCallback } from "react";
 import useScript from "react-script-hook";
 import { useConfig } from "@/hooks/useConfig";
 import type { Uneeq, UneeqOptions, Event } from "@/types";
+import { MessageSender, CameraHorizontalAnchor, CameraDistanceAnchor } from "@/types";
 import { useSession } from "@/contexts/SessionContext";
-import { MessageSender } from "@/types";
 import { usePerformanceMonitor } from "@/hooks/usePerformanceMonitor";
-import { CameraHorizontalAnchor, CameraDistanceAnchor } from "@/types";
 
 declare const Uneeq: any;
 
@@ -48,8 +47,8 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
   // Create stable event handler using useCallback
   const handleUneeqMessage = useCallback((e: CustomEvent) => {
     console.log(`[AddedUneeq Event] %c ${e.detail.uneeqMessageType}`, 'color:rgb(255, 62, 142);');
-    actions.setUneeqEvents([...state.uneeqEvents, e.detail as Event]);
-  }, []);
+    actions.setUneeqEvents([e.detail as Event]);
+  }, [actions]);
 
   // Initialize Uneeq when script is ready (simple singleton pattern)
   useEffect(() => {
@@ -57,7 +56,7 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
 
     // Skip if already initialized for this session
     if (window.uneeqSessionKey === sessionKey && window.uneeq) {
-      actions.setUneeq(window.uneeq as Uneeq);
+      actions.setUneeq(window.uneeq);
       return;
     }
     
@@ -98,11 +97,6 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
     return () => {
       window.removeEventListener('UneeqMessage', handleUneeqMessage as EventListener);
     };
-
-    //Set camera to close_up
-    actions.setCamera(options.cameraAnchorDistance as CameraDistanceAnchor);
-    actions.setCamera(options.cameraAnchorHorizontal as CameraHorizontalAnchor);
-
   }, [scriptLoading, scriptError, connectionUrl, personaId, loading, sessionKey, handleUneeqMessage]);
 
   //Send last history message to Uneeq  
@@ -112,11 +106,34 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
     console.dir(lastMessage);
     // Only send non-User messages to Uneeq to prevent loops
     if (lastMessage && state.uneeq && lastMessage.sender !== MessageSender.Assistant) {
-      window.uneeq?.[lastMessage.prompt ? 'chatPrompt' : 'speak'](lastMessage.content as string);
+      window.uneeq?.[lastMessage.prompt ? 'chatPrompt' : 'speak'](lastMessage.content);
       console.log("[useUneeq] message sent to Uneeq");
     }
 
   }, [state.history]);        
+
+  // Update VAD state when session changes
+  useEffect(() => {
+    console.log(`[useUneeq] 🎤 VAD state changed to: ${state.vadEnabled ? 'ENABLED' : 'DISABLED'}`);
+    if(!window.uneeq) {
+      console.error('Uneeq is not initialized. Cannot update VAD state.');
+      return;
+    }
+    
+    try {
+      if (state.vadEnabled) {
+        console.log("[useUneeq] 🎤 Resuming speech recognition...");
+        window.uneeq.resumeSpeechRecognition();
+        console.log("[useUneeq] ✅ Speech recognition resumed");
+      } else {
+        console.log("[useUneeq] 🎤 Pausing speech recognition...");
+        window.uneeq.pauseSpeechRecognition();
+        console.log("[useUneeq] ✅ Speech recognition paused");
+      }
+    } catch (error) {
+      console.error("[useUneeq] ❌ Error updating VAD state:", error);
+    }
+  }, [state.vadEnabled]);
 
 
   useEffect(() => {

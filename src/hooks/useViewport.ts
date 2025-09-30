@@ -23,15 +23,23 @@ export function useViewport(): UseViewportResult {
   );
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
     const handleResize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      // Clear any pending resize handler
+      clearTimeout(timeoutId);
       
-      setViewportWidth(width);
-      setViewportHeight(height);
-      
-      // Set CSS custom property for viewport height (fallback for browsers without dvh support)
-      document.documentElement.style.setProperty('--vh', `${height * 0.01}px`);
+      // Throttle resize events to prevent blocking the browser
+      timeoutId = setTimeout(() => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        setViewportWidth(width);
+        setViewportHeight(height);
+        
+        // Set CSS custom property for viewport height (fallback for browsers without dvh support)
+        document.documentElement.style.setProperty('--vh', `${height * 0.01}px`);
+      }, 16); // ~60fps throttling
     };
     
     // Initial call
@@ -42,6 +50,7 @@ export function useViewport(): UseViewportResult {
     window.addEventListener('orientationchange', handleResize, { passive: true });
     
     return () => {
+      clearTimeout(timeoutId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
