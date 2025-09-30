@@ -340,18 +340,19 @@ run_build_analysis() {
 deploy_stack() {
     log_info "Deploying CloudFormation stack..."
     
-    # Prepare parameters
-    PARAMS="ParameterKey=BucketName,ParameterValue=$BUCKET_NAME"
-    PARAMS="$PARAMS ParameterKey=S3Region,ParameterValue=$S3_REGION"
-    PARAMS="$PARAMS ParameterKey=BucketPrefix,ParameterValue=$BUCKET_PREFIX"
-    PARAMS="$PARAMS ParameterKey=UseExistingBucket,ParameterValue=$USES_EXISTING_BUCKET"
+    # Prepare parameters as an array
+    PARAMS=()
+    PARAMS+=("ParameterKey=BucketName,ParameterValue=$BUCKET_NAME")
+    PARAMS+=("ParameterKey=S3Region,ParameterValue=$S3_REGION")
+    PARAMS+=("ParameterKey=BucketPrefix,ParameterValue=$BUCKET_PREFIX")
+    PARAMS+=("ParameterKey=UseExistingBucket,ParameterValue=$USES_EXISTING_BUCKET")
     
     if [ -n "$DOMAIN_NAME" ]; then
-        PARAMS="$PARAMS ParameterKey=DomainName,ParameterValue=$DOMAIN_NAME"
+        PARAMS+=("ParameterKey=DomainName,ParameterValue=$DOMAIN_NAME")
     fi
     
     if [ -n "$SSL_CERT_ARN" ]; then
-        PARAMS="$PARAMS ParameterKey=SSLCertificateArn,ParameterValue=$SSL_CERT_ARN"
+        PARAMS+=("ParameterKey=SSLCertificateArn,ParameterValue=$SSL_CERT_ARN")
     fi
     
     # Deploy CloudFormation stack to S3 region (not CF region)
@@ -365,7 +366,7 @@ deploy_stack() {
         if update_output=$(aws cloudformation update-stack \
             --stack-name "$STACK_NAME" \
             --template-body file://cloudformation-template.yaml \
-            --parameters $PARAMS \
+            --parameters "${PARAMS[@]}" \
             --region "$S3_REGION" \
             --capabilities CAPABILITY_IAM 2>&1); then
             # Update succeeded, monitor it
@@ -385,7 +386,7 @@ deploy_stack() {
         aws cloudformation create-stack \
             --stack-name "$STACK_NAME" \
             --template-body file://cloudformation-template.yaml \
-            --parameters $PARAMS \
+            --parameters "${PARAMS[@]}" \
             --region "$S3_REGION" \
             --capabilities CAPABILITY_IAM
         
