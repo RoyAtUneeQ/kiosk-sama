@@ -80,7 +80,7 @@
   margin: -0.1rem -0.25rem;
   
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--theme-primary-contrast, 255, 255, 255, 0.05));
     transform: translateY(-1px);
     
     .status-value {
@@ -89,7 +89,7 @@
   }
   
   &:focus-visible {
-    outline: 2px solid var(--theme-primary-main, #3A5F8A);
+    outline: 2px solid var(--theme-primary-contrast, #3A5F8A);
     outline-offset: 2px;
   }
 }
@@ -97,6 +97,7 @@
 /* Special styling for connection ID */
 .status-item.connection-id {
   .status-value {
+    color: var(--theme-primary-contrast, #3A5F8A);
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     font-size: 0.75em;
     background: rgba(255, 255, 255, 0.08);

@@ -21,9 +21,9 @@
   width: calc(150% * var(--size));
 
   /* Fallback sRGB gradient */
-  background: linear-gradient(259.53deg, #0A3FFF 6.53%, #F55F0A 95.34%);
+  background: linear-gradient(259.53deg, #1A4B7D 6.53%, #B0653B 95.34%);
   /* Higher-fidelity interpolation in perceptual color space where supported */
-  background: linear-gradient(in oklch, oklch(66% 0.22 260) 6.53%, oklch(72% 0.20 40) 95.34%);
+  background: linear-gradient(in oklch, oklch(45% 0.15 240) 6.53%, oklch(55% 0.12 30) 95.34%);
   filter: blur(10vw);
 
   /* Start with an irregular blob-like radius; will morph over time */

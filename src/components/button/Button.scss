@@ -734,3 +734,247 @@
         transform: scale(1);
     }
 }
+
+// Special Trigger Button - Premium Gold with Reflection
+.circleButton.special {
+    background: linear-gradient(135deg, 
+        #ffd700 0%, 
+        #ffed4e 25%, 
+        #fbbf24 50%, 
+        #f59e0b 75%, 
+        #d97706 100%);
+    background-size: 200% 200%;
+    animation: special-gold-shimmer 2s ease-in-out infinite;
+    box-shadow: 
+        0 0 25px rgba(255, 215, 0, 0.8),
+        0 0 50px rgba(255, 237, 78, 0.6),
+        0 0 75px rgba(251, 191, 36, 0.4),
+        0 0 100px rgba(245, 158, 11, 0.3),
+        0 0 0 4px rgba(255, 255, 255, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    position: relative;
+    overflow: visible;
+    
+    .circleIcon {
+        color: #ffffff;
+        font-weight: bold;
+        text-shadow: 
+            0 0 10px rgba(255, 255, 255, 0.9),
+            0 0 20px rgba(255, 215, 0, 0.7),
+            0 0 30px rgba(255, 215, 0, 0.5);
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+    
+    .pulse {
+        background: radial-gradient(circle, 
+            rgba(255, 215, 0, 0.8) 0%, 
+            rgba(255, 237, 78, 0.6) 30%, 
+            rgba(251, 191, 36, 0.4) 60%, 
+            transparent 80%);
+        animation: special-gold-pulse 2.5s infinite cubic-bezier(0.4,0,0.2,1);
+        opacity: 0.9;
+    }
+}
+
+// Premium gold reflection effects
+.circleButton.special::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    height: 50%;
+    border-radius: 50% 50% 50% 50% / 100% 100% 0% 0%;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.6) 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 100%);
+    z-index: 1;
+    pointer-events: none;
+    animation: special-reflection-shine 3s ease-in-out infinite;
+}
+
+.circleButton.special::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        rgba(255, 215, 0, 0.8) 0deg,
+        rgba(255, 237, 78, 0.6) 60deg,
+        rgba(251, 191, 36, 0.8) 120deg,
+        rgba(245, 158, 11, 0.6) 180deg,
+        rgba(217, 119, 6, 0.8) 240deg,
+        rgba(255, 215, 0, 0.8) 300deg,
+        rgba(255, 215, 0, 0.8) 360deg
+    );
+    z-index: -1;
+    opacity: 0.8;
+    animation: special-gold-aura 4s linear infinite;
+    filter: blur(3px);
+}
+
+.circleButton.special:hover {
+    transform: scale(1.2) rotate(-5deg);
+    box-shadow: 
+        0 0 35px rgba(255, 215, 0, 1),
+        0 0 70px rgba(255, 237, 78, 0.8),
+        0 0 105px rgba(251, 191, 36, 0.6),
+        0 0 140px rgba(245, 158, 11, 0.4),
+        0 0 0 6px rgba(255, 255, 255, 0.6),
+        inset 0 3px 6px rgba(255, 255, 255, 0.6),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.3);
+    
+    .circleIcon {
+        animation: special-gold-icon-intense 1.5s ease-in-out infinite;
+        transform: scale(1.1);
+        text-shadow: 
+            0 0 15px rgba(255, 255, 255, 1),
+            0 0 30px rgba(255, 215, 0, 0.9),
+            0 0 45px rgba(255, 215, 0, 0.7);
+    }
+    
+    .pulse {
+        animation: special-gold-pulse-intense 1.8s infinite cubic-bezier(0.4,0,0.2,1);
+        opacity: 1;
+    }
+    
+    &::before {
+        animation: special-reflection-shine 1.5s ease-in-out infinite;
+        opacity: 1;
+    }
+    
+    &::after {
+        animation: special-gold-aura 2s linear infinite;
+        opacity: 1;
+    }
+}
+
+.circleButton.special:active {
+    transform: scale(1.1) rotate(-2deg);
+    box-shadow: 
+        0 0 30px rgba(255, 215, 0, 1),
+        0 0 60px rgba(255, 237, 78, 0.8),
+        0 0 90px rgba(251, 191, 36, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+}
+
+// Special Button Keyframe Animations - Premium Gold Theme
+@keyframes special-gold-shimmer {
+    0% {
+        background-position: 0% 50%;
+        box-shadow: 
+            0 0 25px rgba(255, 215, 0, 0.8),
+            0 0 50px rgba(255, 237, 78, 0.6),
+            0 0 75px rgba(251, 191, 36, 0.4),
+            0 0 100px rgba(245, 158, 11, 0.3);
+    }
+    50% {
+        background-position: 100% 50%;
+        box-shadow: 
+            0 0 35px rgba(255, 215, 0, 1),
+            0 0 70px rgba(255, 237, 78, 0.8),
+            0 0 105px rgba(251, 191, 36, 0.6),
+            0 0 140px rgba(245, 158, 11, 0.4);
+    }
+    100% {
+        background-position: 0% 50%;
+        box-shadow: 
+            0 0 25px rgba(255, 215, 0, 0.8),
+            0 0 50px rgba(255, 237, 78, 0.6),
+            0 0 75px rgba(251, 191, 36, 0.4),
+            0 0 100px rgba(245, 158, 11, 0.3);
+    }
+}
+
+@keyframes special-gold-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.9;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.3;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.9;
+    }
+}
+
+@keyframes special-gold-pulse-intense {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes special-gold-icon-intense {
+    0% {
+        text-shadow: 
+            0 0 15px rgba(255, 255, 255, 1),
+            0 0 30px rgba(255, 215, 0, 0.9),
+            0 0 45px rgba(255, 215, 0, 0.7);
+        transform: scale(1.1);
+    }
+    50% {
+        text-shadow: 
+            0 0 25px rgba(255, 255, 255, 1),
+            0 0 50px rgba(255, 215, 0, 1),
+            0 0 75px rgba(255, 215, 0, 0.9),
+            0 0 100px rgba(255, 237, 78, 0.7);
+        transform: scale(1.2);
+    }
+    100% {
+        text-shadow: 
+            0 0 15px rgba(255, 255, 255, 1),
+            0 0 30px rgba(255, 215, 0, 0.9),
+            0 0 45px rgba(255, 215, 0, 0.7);
+        transform: scale(1.1);
+    }
+}
+
+@keyframes special-reflection-shine {
+    0% {
+        opacity: 0.6;
+        transform: translateX(-2px) translateY(-2px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(2px) translateY(2px);
+    }
+    100% {
+        opacity: 0.6;
+        transform: translateX(-2px) translateY(-2px);
+    }
+}
+
+@keyframes special-gold-aura {
+    0% {
+        transform: rotate(0deg);
+        opacity: 0.8;
+    }
+    50% {
+        transform: rotate(180deg);
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(360deg);
+        opacity: 0.8;
+    }
+}

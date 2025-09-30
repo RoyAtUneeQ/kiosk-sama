@@ -15,7 +15,7 @@
   max-width: 85%;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
-  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 6px 25px rgba(0, 0, 0, 0.05));
 
   &.user-message {
     align-self: flex-end;
@@ -48,10 +48,10 @@
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.12),
-      0 2px 8px rgba(0, 0, 0, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 
   p {
@@ -84,16 +84,16 @@
 
 .user-message .message-bubble-content {
   background: linear-gradient(135deg, 
-    rgba(20, 80, 153, 0.25) 0%, 
-    rgba(50, 97, 152, 0.35) 50%,
-    rgba(52, 103, 136, 0.4) 100%
+    rgba(26, 75, 125, 0.25) 0%, 
+    rgba(32, 42, 76, 0.35) 50%,
+    rgba(176, 101, 59, 0.4) 100%
   );
   color: rgba(255, 255, 255, 0.75);
   border-bottom-right-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 
-    0 4px 16px rgba(139, 69, 19, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 6px 20px rgba(176, 101, 59, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 
   &::before {
     background: linear-gradient(90deg, 
@@ -107,16 +107,16 @@
 
 .assistant-message .message-bubble-content {
   background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.25) 0%, 
-    rgba(255, 255, 255, 0.15) 50%,
-    rgba(255, 255, 255, 0.2) 100%
+    rgba(32, 42, 76, 0.25) 0%, 
+    rgba(26, 75, 125, 0.15) 50%,
+    rgba(57, 117, 81, 0.2) 100%
   );
   color: rgba(255, 255, 255, 0.7);
   border-bottom-left-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 
-    0 4px 16px rgba(123, 31, 162, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 6px 20px rgba(57, 117, 81, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
   &::before {
     background: linear-gradient(90deg, 
