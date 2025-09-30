@@ -6,3 +6,6 @@ export * from './PromptResultListener';
 export * from './SpeechEventListener';
 export * from './AvatarStoppedSpeakingListener';
 export * from './CustomMetadataUpdated';
+export * from './WaitingInQueueListener';
+export * from './AvatarStartedSpeakingListener';
+export * from './SpeechTranscriptionListener';
