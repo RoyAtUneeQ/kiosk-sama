@@ -98,10 +98,18 @@ export class EphemeralTokenService {
       throw new Error('No API base URL configured');
     }
 
-    const url = new URL('service-token', baseUrl);
+    // Debug logging
+    console.log('[EphemeralTokenService] Using baseUrl:', baseUrl);
+    console.log('[EphemeralTokenService] this.apiBaseUrl:', this.apiBaseUrl);
+
+    // Ensure baseUrl ends with / to properly append the path
+    const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+    const url = new URL('service-token', normalizedBaseUrl);
     url.searchParams.set('provider', provider);
     url.searchParams.set('service', service);
     url.searchParams.set('ttl', String(ttlSeconds));
+    
+    console.log('[EphemeralTokenService] Final URL:', url.toString());
 
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -134,6 +142,13 @@ export class EphemeralTokenService {
     if (typeof window === 'undefined') {
       return '';
     }
+    
+    // For development, use the production API URL as fallback
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      console.warn('[EphemeralTokenService] Using production API URL for localhost development');
+      return 'https://kf9xhxg0o5.execute-api.eu-central-1.amazonaws.com/dev';
+    }
+    
     return `${window.location.protocol}//${window.location.host}`;
   }
 }

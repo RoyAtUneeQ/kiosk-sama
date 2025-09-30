@@ -37,7 +37,7 @@ export class DynamicIconLoaderService {
     Di: import('react-icons/di'),
     Fc: import('react-icons/fc'),
     Gr: import('react-icons/gr'),
-    Cg: import('react-icons/cg'),
+    Cg: import('react-icons/cg')
   };
 
   private cache: Map<string, IconType> = new Map();
