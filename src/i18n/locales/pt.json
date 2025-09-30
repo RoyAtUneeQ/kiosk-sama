@@ -44,6 +44,19 @@
         "níveis de bondade aumentando"
       ]
     },
+    "processing": {
+      "phrases": [
+        "Segure firme! Estou tecendo sua resposta na realidade.",
+        "Um pouco de magia digital está em progresso…",
+        "Estou nisso! Só carregando meu super cérebro…",
+        "Transformando sua solicitação em genialidade… um byte por vez.",
+        "Aperte o cinto—dados chegando!",
+        "Estou cozinhando a resposta perfeita para você…",
+        "Escaneando o universo das informações… quase lá!",
+        "Colocando meu chapéu de pensar....",
+        "Seu desejo é minha ordem… só um segundo!"
+      ]
+    },
     "errors": {
       "microphonePermission": "Permissão do microfone negada",
       "connectionFailed": "Falha na conexão",
@@ -61,5 +74,53 @@
       "stadium": "Mostrar informações do estádio",
       "schedule": "Mostrar cronograma da cidade",
       "culture": "Mostrar cultura da cidade"
+    },
+    "micButton": {
+      "startListening": "Começar a escutar",
+      "listening": "Escutando...",
+      "stopListening": "Parar de escutar",
+      "requestPermission": "Permitir microfone",
+      "permissionDenied": "Acesso ao microfone negado"
+    },
+    "captions": {
+      "label": "Legendas",
+      "on": "ligado",
+      "off": "desligado"
+    },
+    "settings": {
+      "label": "Configurações",
+      "toggleLabel": "Alternar painel de configurações",
+      "showSettings": "Mostrar configurações",
+      "hideSettings": "Ocultar configurações"
+    },
+    "suggestions": {
+      "hideButton": "Ocultar",
+      "items": [
+        {
+          "label": "Leve-me em um tour da cidade",
+          "text": "Gostaria de fazer um tour virtual de Lee's Summit",
+          "icon": "FaStar"
+        },
+        {
+          "label": "Mostre-me o vídeo da Copa do Mundo FIFA 2026",
+          "text": "Gostaria de ver o vídeo da Copa do Mundo FIFA 2026",
+          "icon": "MdSportsSoccer"
+        },
+        {
+          "label": "Conte-me sobre as atrações de Lee's Summit",
+          "text": "Quais são as melhores atrações e atividades em Lee's Summit?",
+          "icon": "MdLocalActivity"
+        },
+        {
+          "label": "Mostre-me o Arrowhead Stadium",
+          "text": "Você pode me mostrar o Arrowhead Stadium onde os jogos da Copa serão disputados?",
+          "icon": "MdStadium"
+        },
+        {
+          "label": "Encontre-me um hotel",
+          "text": "Preciso de ajuda para encontrar hospedagem em Lee's Summit para a Copa do Mundo",
+          "icon": "BsBuilding"
+        }
+      ]
     }
   } 

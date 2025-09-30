@@ -44,6 +44,19 @@
       "Freundlichkeitslevel steigen"
     ]
   },
+  "processing": {
+    "phrases": [
+      "Festhalten! Ich webe Ihre Antwort in die Realität.",
+      "Ein wenig digitale Magie ist im Gange…",
+      "Ich bin dran! Lade gerade mein Super-Gehirn…",
+      "Verwandle Ihre Anfrage in Großartigkeit… ein Byte nach dem anderen.",
+      "Anschnallen—Daten kommen rein!",
+      "Ich koche die perfekte Antwort für Sie…",
+      "Scanne das Universum der Infos… fast da!",
+      "Setze meinen Denkhut auf....",
+      "Ihr Wunsch ist mein Befehl… nur eine Sekunde!"
+    ]
+  },
   "errors": {
     "microphonePermission": "Mikrofon-Berechtigung verweigert",
     "connectionFailed": "Verbindung fehlgeschlagen",
@@ -61,5 +74,53 @@
     "stadium": "Stadion-Informationen anzeigen",
     "schedule": "Stadtplan anzeigen",
     "culture": "Stadtkultur anzeigen"
+  },
+  "micButton": {
+    "startListening": "Zuhören beginnen",
+    "listening": "Höre zu...",
+    "stopListening": "Zuhören beenden",
+    "requestPermission": "Mikrofon erlauben",
+    "permissionDenied": "Mikrofon-Zugriff verweigert"
+  },
+  "captions": {
+    "label": "Untertitel",
+    "on": "ein",
+    "off": "aus"
+  },
+  "settings": {
+    "label": "Einstellungen",
+    "toggleLabel": "Einstellungsbereich umschalten",
+    "showSettings": "Einstellungen anzeigen",
+    "hideSettings": "Einstellungen ausblenden"
+  },
+  "suggestions": {
+    "hideButton": "Ausblenden",
+    "items": [
+      {
+        "label": "Nehmen Sie mich mit auf eine Stadttour",
+        "text": "Ich würde gerne eine virtuelle Tour durch Lee's Summit machen",
+        "icon": "FaStar"
+      },
+      {
+        "label": "Zeigen Sie mir das FIFA WM 2026 Video",
+        "text": "Ich würde gerne das FIFA WM 2026 Video sehen",
+        "icon": "MdSportsSoccer"
+      },
+      {
+        "label": "Erzählen Sie mir von Lee's Summit Sehenswürdigkeiten",
+        "text": "Was sind die besten Sehenswürdigkeiten und Aktivitäten in Lee's Summit?",
+        "icon": "MdLocalActivity"
+      },
+      {
+        "label": "Zeigen Sie mir das Arrowhead Stadium",
+        "text": "Können Sie mir das Arrowhead Stadium zeigen, wo die WM-Spiele stattfinden werden?",
+        "icon": "MdStadium"
+      },
+      {
+        "label": "Finden Sie mir ein Hotel",
+        "text": "Ich brauche Hilfe bei der Suche nach Unterkünften in Lee's Summit für die WM",
+        "icon": "BsBuilding"
+      }
+    ]
   }
 } 

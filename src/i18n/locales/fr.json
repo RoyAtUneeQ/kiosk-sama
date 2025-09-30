@@ -44,6 +44,19 @@
       "les niveaux de bienveillance augmentent"
     ]
   },
+  "processing": {
+    "phrases": [
+      "Accrochez-vous ! Je tisse votre réponse dans la réalité.",
+      "Un peu de magie numérique est en cours…",
+      "J'y suis ! Je charge juste mon super cerveau…",
+      "Je transforme votre demande en génialité… un octet à la fois.",
+      "Attachez votre ceinture—les données arrivent !",
+      "Je cuisine la réponse parfaite pour vous…",
+      "Je scanne l'univers des infos… presque là !",
+      "Je mets mon chapeau de réflexion....",
+      "Votre souhait est mon commandement… juste une seconde !"
+    ]
+  },
   "errors": {
     "microphonePermission": "Permission du microphone refusée",
     "connectionFailed": "Échec de la connexion",
@@ -79,5 +92,35 @@
     "toggleLabel": "Basculer le panneau de paramètres",
     "showSettings": "Afficher les paramètres",
     "hideSettings": "Masquer les paramètres"
+  },
+  "suggestions": {
+    "hideButton": "Masquer",
+    "items": [
+      {
+        "label": "Faites-moi visiter la ville",
+        "text": "J'aimerais faire une visite virtuelle de Lee's Summit",
+        "icon": "FaStar"
+      },
+      {
+        "label": "Montrez-moi la vidéo de la Coupe du Monde FIFA 2026",
+        "text": "J'aimerais voir la vidéo de la Coupe du Monde FIFA 2026",
+        "icon": "MdSportsSoccer"
+      },
+      {
+        "label": "Parlez-moi des attractions de Lee's Summit",
+        "text": "Quelles sont les meilleures attractions et activités à Lee's Summit ?",
+        "icon": "MdLocalActivity"
+      },
+      {
+        "label": "Montrez-moi l'Arrowhead Stadium",
+        "text": "Pouvez-vous me montrer l'Arrowhead Stadium où se joueront les matchs de la Coupe du Monde ?",
+        "icon": "MdStadium"
+      },
+      {
+        "label": "Trouvez-moi un hôtel",
+        "text": "J'ai besoin d'aide pour trouver un hébergement à Lee's Summit pour la Coupe du Monde",
+        "icon": "BsBuilding"
+      }
+    ]
   }
 } 

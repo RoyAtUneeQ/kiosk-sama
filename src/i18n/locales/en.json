@@ -44,6 +44,19 @@
       "kindness levels rising"
     ]
   },
+  "processing": {
+    "phrases": [
+      "Hold tight! I'm weaving your answer into reality.",
+      "A little digital magic is in progress…",
+      "I'm on it! Just loading my super brain…",
+      "Turning your request into awesomeness… one byte at a time.",
+      "Fasten your seatbelt—data incoming!",
+      "I'm cooking up the perfect response for you…",
+      "Scanning the universe of info… almost there!",
+      "Putting on my thinking cap....",
+      "Your wish is my command… just one second!"
+    ]
+  },
   "errors": {
     "microphonePermission": "Microphone permission denied",
     "connectionFailed": "Connection failed",
@@ -79,5 +92,35 @@
     "toggleLabel": "Toggle settings panel",
     "showSettings": "Show settings",
     "hideSettings": "Hide settings"
+  },
+  "suggestions": {
+    "hideButton": "Hide",
+    "items": [
+      {
+        "label": "Take me on a city tour",
+        "text": "I'd love to take a virtual tour of Lee's Summit",
+        "icon": "FaStar"
+      },
+      {
+        "label": "Show me FIFA World Cup 2026 video",
+        "text": "I'd love to see the FIFA World Cup 2026 video",
+        "icon": "MdSportsSoccer"
+      },
+      {
+        "label": "Tell me about Lee's Summit attractions",
+        "text": "What are the best attractions and things to do in Lee's Summit?",
+        "icon": "MdLocalActivity"
+      },
+      {
+        "label": "Show me Arrowhead Stadium",
+        "text": "Can you show me Arrowhead Stadium where the World Cup matches will be played?",
+        "icon": "MdStadium"
+      },
+      {
+        "label": "Find me a hotel",
+        "text": "I need help finding accommodation in Lee's Summit for the World Cup",
+        "icon": "BsBuilding"
+      }
+    ]
   }
 } 
