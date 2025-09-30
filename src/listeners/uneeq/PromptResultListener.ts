@@ -7,9 +7,14 @@ export class PromptResultListener implements UneeqEventListener {
   eventType = EventType.PromptResult;
 
   execute(data: any, session: SessionContextType): void {
-    session.actions.setAwaitingPromptResponse(false);
     console.log('PromptResultListener');
     console.dir(data);
+
+    // set awaiting prompt response to false after 300ms to wait speech starts
+    setTimeout(() => {
+      session.actions.setAwaitingPromptResponse(false);
+    }, 1300);
+    
     session.actions.addMessageToHistory(
       MessageFactory.createAssistantMessage(
         data.promptResult.response.text,

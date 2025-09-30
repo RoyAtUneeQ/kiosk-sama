@@ -8,7 +8,10 @@ export class RegisterRemoteListener implements WebSocketEventListener {
    * Store remote info received from backend after successful registration.
    */
   execute(data: any, session: SessionContextType): void {
+    console.log("[RegisterRemoteListener] 🎤 Disabling VAD for remote session");
+    session.actions.setVadEnabled(false);
     session.actions.setRemoteInfo(data.remoteInfo);
+    console.log("[RegisterRemoteListener] ✅ VAD disabled, remote info set");
   }
 }     
 

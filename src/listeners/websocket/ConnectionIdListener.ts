@@ -9,9 +9,6 @@ export class ConnectionIdListener implements WebSocketEventListener {
    */
   execute(data: any, session: SessionContextType): void {
     console.info('ConnectionIdListener', data);
-    console.info(session);
     session.actions.setConnectionId(data.connectionId);
   }
 }
-
-

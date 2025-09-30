@@ -1,4 +1,4 @@
-import { CameraHorizontalAnchor, EventType } from "@/types";
+import { EventType } from "@/types";
 import type { UneeqEventListener } from '../types/UneeqEventListener';
 import type { SessionContextType } from "@/contexts/SessionContext";
 
@@ -7,7 +7,5 @@ export class AvatarStoppedSpeakingListener implements UneeqEventListener {
   execute(_: any, session: SessionContextType): void {
     console.log('[AvatarStoppedSpeakingListener] AvatarStoppedSpeaking');
     session.actions.setAwaitingPromptResponse(false);
-    session.actions.setMedia(null);
-    session.actions.setCamera(CameraHorizontalAnchor.center); 
   }
 }   

@@ -8,7 +8,10 @@ export class PeerDisconnectedListener implements WebSocketEventListener {
    * Clear any remote session info upon peer disconnection.
    */
   execute(_data: any, session: SessionContextType): void {
+    console.log("[PeerDisconnectedListener] 🎤 Re-enabling VAD after peer disconnect");
+    session.actions.setVadEnabled(true);
     session.actions.setRemoteInfo(null);
+    console.log("[PeerDisconnectedListener] ✅ VAD re-enabled, remote info cleared");
   }
 }
 

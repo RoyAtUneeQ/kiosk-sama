@@ -11,7 +11,7 @@ export class SpeechEventListener implements UneeqEventListener {
   /**
    * Registry of custom event handlers indexed by their type
    */
-  private customEvents: Map<string, CustomEventListener>;
+  private readonly customEvents: Map<string, CustomEventListener>;
 
   constructor() {
     // Initialize custom event registry by dynamically loading all custom events
@@ -44,31 +44,60 @@ export class SpeechEventListener implements UneeqEventListener {
    * @param data - Speech event data containing event type and parameters
    * @param session - Session context providing actions and state management
    */
-  async execute(data: {speechEvent: SpeechEventData}, session: SessionContextType): Promise<void> {
+  execute(data: {speechEvent: SpeechEventData}, session: SessionContextType): void {
     try {
-
       console.log("SpeechEventListener: Executing speech event", data.speechEvent);
 
+      const { eventType, eventValue } = this.parseEventData(data.speechEvent);
 
-      const eventType = data.speechEvent.param_value;
-
-      // Find matching custom event handler by type
-      const customEvent = this.customEvents.get(eventType || "");
+      console.log("SpeechEventListener: Event type and value", { eventType, eventValue });
       
-      console.info('customEvent', customEvent);
-      console.info('this.customEvents', this.customEvents);
+      if (!eventType || !eventValue) {
+        console.warn("SpeechEventListener: Missing event type or value", { eventType, eventValue });
+        return;
+      }
+
+      const customEvent = this.customEvents.get(eventType);
+      
       if (!customEvent) {
         console.warn(`SpeechEventListener: No handler found for event type "${eventType}"`);
         return;
       }
 
       // Execute the custom event handler with session actions
-      //TODO: Add data to the custom event
-      await customEvent.execute("", session);
+      customEvent.execute(eventValue, session).catch(error => {
+        console.error(`SpeechEventListener: Error in ${eventType} handler:`, error);
+      });
       
       console.log(`SpeechEventListener: Successfully executed "${eventType}" event`);
     } catch (error) {
       console.error('SpeechEventListener: Error executing speech event', error);
     }
+  }
+
+  /**
+   * Parses speech event data to extract event type and value
+   * Handles both formats: "type_id" and just "type"
+   * 
+   * @param speechEvent - The speech event data
+   * @returns Object containing eventType and eventValue
+   */
+  private parseEventData(speechEvent: SpeechEventData): { eventType: string; eventValue: string } {
+    const paramValue = speechEvent.param_value;
+
+    // Legacy support: parse param_value for "type_id" format
+    if (paramValue?.includes("_")) {
+      const [type, value] = paramValue.split("_", 2);
+      return {
+        eventType: type,
+        eventValue: value
+      };
+    }
+
+    // Fallback: use param_value as both type and value
+    return {
+      eventType: paramValue || "",
+      eventValue: paramValue || ""
+    };
   }
 }   
