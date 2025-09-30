@@ -20,6 +20,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
     "@types/qrcode": "^1.5.5",
+    "@types/video.js": "^7.3.58",
     "@uidotdev/usehooks": "^2.4.1",
     "gsap": "^3.13.0",
     "i18next": "^25.2.1",
@@ -44,6 +45,7 @@
     "tsparticles-engine": "^2.12.0",
     "usehooks-ts": "^3.1.1",
     "uuid": "^11.1.0",
+    "video.js": "^8.23.4",
     "zod": "^3.25.48",
     "zustand": "^4.5.5"
   },
