@@ -39,4 +39,7 @@ export interface State {
     // so only the ID is sent rather than all parameters.
     memory: Memory;
     errorMessage: ErrorMessage | null;
+
+    // VAD state
+    vadEnabled: boolean;
   }

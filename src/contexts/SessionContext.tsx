@@ -26,10 +26,11 @@ const initialState: State = {
   history: [],
   
   // Speech and interaction states
+  isReadySpeechToText: false,
   showSuggestions: true,
   
   // Digital Human Controls
-  showClosedCaptions: true,
+  showClosedCaptions: false,
   camera: CameraHorizontalAnchor.center,
   
   // Storage - When prompts are sent to the server for execution, associated frontend actions 
@@ -42,6 +43,10 @@ const initialState: State = {
 
   // Error message
   errorMessage: null,
+
+  // VAD state
+  vadEnabled: true,
+
 };
 
 /**
@@ -60,12 +65,14 @@ export type SessionActions = {
   setUneeq: (uneeq: Uneeq) => void;
   setUneeqEvents: (events: Event[]) => void;
   addMessageToHistory: (message: Message) => void;
+  setIsReadySpeechToText: (isReady: boolean) => void;
   setShowSuggestions: (showSuggestions: boolean) => void;
   setCamera: (camera: CameraHorizontalAnchor | CameraDistanceAnchor) => void;
   setShowClosedCaptions: (showClosedCaptions: boolean) => void;
   setMemory: (key: string, value: any) => void;
   setMicrophoneStatus: (status: MicrophoneStatus) => void;
   setErrorMessage: (errorMessage: ErrorMessage | null) => void;
+  setVadEnabled: (vadEnabled: boolean) => void;
 };      
 
 /**
@@ -127,10 +134,15 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     addMessageToHistory: (message: Message) => {
         set((prev) => {
-          return { state: { ...prev.state, history: [...prev.state.history, message] } };
+          // Use functional update to avoid stale closure issues
+          const newHistory = [...prev.state.history, message];
+          return { state: { ...prev.state, history: newHistory } };
         });
     },
     // Speech and interaction actions
+    setIsReadySpeechToText: (isReady) => {
+      set((prev) => ({ state: { ...prev.state, isReadySpeechToText: isReady } }));
+    },
     setShowSuggestions: (showSuggestions) => {
       set((prev) => ({ state: { ...prev.state, showSuggestions } }));
     },
@@ -148,6 +160,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     setErrorMessage: (errorMessage) => {
       set((prev) => ({ state: { ...prev.state, errorMessage } }));
+    },
+    setVadEnabled: (vadEnabled) => {
+      console.log(`[SessionContext] 🎤 VAD state changing from ${get().state.vadEnabled} to ${vadEnabled}`);
+      set((prev) => ({ state: { ...prev.state, vadEnabled } }));
+      console.log(`[SessionContext] ✅ VAD state updated to ${vadEnabled}`);
     },
   },  
 }));
