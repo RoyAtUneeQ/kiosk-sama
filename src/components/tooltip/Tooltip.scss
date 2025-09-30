@@ -1,0 +1,462 @@
+@use "@/styles/breakpoints" as *;
+
+/*
+ * Premium Tooltip Component
+ * 
+ * Features:
+ * - Glassmorphism design matching Button.scss aesthetic
+ * - Smooth animations with organic movement
+ * - Multiple positioning options
+ * - Premium gold accent for special elements
+ * - Responsive design with mobile optimization
+ * - Accessibility support with reduced motion
+ */
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 1001;
+  padding: 0.875rem 1.125rem;
+  background: var(--theme-gradients-glass);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid transparent;
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  max-width: 380px;
+  min-width: 220px;
+  word-wrap: break-word;
+  white-space: normal;
+  box-shadow: var(--theme-effects-glass-shadow);
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  will-change: opacity, transform;
+  overflow: hidden;
+  
+  /* Theme-based gradient border effect */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 17px;
+    background: var(--theme-gradients-primary);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+  
+  /* Theme-based inner glass effect */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: 
+      radial-gradient(ellipse 60% 80% at 70% 30%, var(--theme-neutral-lightest-alpha-15) 0%, transparent 80%),
+      linear-gradient(120deg, var(--theme-neutral-lightest-alpha-15) 0%, transparent 100%);
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  
+  /* Tooltip arrow - using a separate element */
+  .tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    z-index: 1002;
+  }
+  
+  /* Show tooltip */
+  &.tooltip-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  
+  /* Special tooltip for special buttons */
+  &.tooltip-special {
+    border: 0px;
+    margin-left: 30px;
+    background: linear-gradient(135deg, 
+      rgba(255, 215, 0, 0.15) 0%, 
+      rgba(255, 193, 7, 0.12) 25%, 
+      rgba(255, 152, 0, 0.08) 50%, 
+      rgba(255, 87, 34, 0.06) 75%, 
+      rgba(255, 215, 0, 0.1) 100%);
+    backdrop-filter: blur(25px) saturate(180%) brightness(110%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%) brightness(110%);
+    box-shadow: 
+      0 8px 32px rgba(255, 215, 0, 0.2),
+      0 4px 16px rgba(255, 193, 7, 0.15),
+      0 0 0 1px rgba(255, 215, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 193, 7, 0.1);
+    animation: specialGlow 3s ease-in-out infinite;
+
+    &::before { 
+      background: linear-gradient(135deg, 
+        #FFD700 0%, 
+        #FFA500 25%, 
+        #FF6B35 50%, 
+        #FF8C00 75%, 
+        #FFD700 100%);
+      opacity: 0.8;
+      animation: gradientShift 4s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, 
+          transparent 30%, 
+          rgba(255, 255, 255, 0.3) 50%, 
+          transparent 70%);
+        animation: shimmer 2.5s ease-in-out infinite;
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      pointer-events: none;
+      background: 
+        radial-gradient(ellipse 80% 60% at 30% 20%, rgba(255, 255, 255, 0.25) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 80% at 70% 80%, rgba(255, 193, 7, 0.15) 0%, transparent 60%),
+        linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 193, 7, 0.08) 100%);
+      opacity: 0.9;
+    }
+  }
+
+  //hover
+  &:hover {
+    &::before {
+      filter: blur(2px);
+      opacity: 0.4;
+    }
+  }
+
+  /* Special tooltip hover effects */
+  &.tooltip-special:hover {
+    transform: translateY(0) scale(1.02);
+    backdrop-filter: blur(30px) saturate(200%) brightness(120%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%) brightness(120%);
+    animation: specialGlow 1.5s ease-in-out infinite, specialHover 0.6s ease-out;
+    
+    &::before {
+      opacity: 1;
+      animation: gradientShift 2s ease-in-out infinite;
+    }
+    
+    &::after {
+      opacity: 1;
+    }
+  }
+
+}
+
+/* Positioning variants */
+.tooltip-top {
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px) scale(0.95);
+  
+  &.tooltip-visible {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  
+  &::after {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top-color: var(--theme-primary-main);
+    border-bottom: none;
+    filter: drop-shadow(0 2px 4px var(--theme-primary-glow-alpha-30));
+  }
+  
+  &.tooltip-special::after {
+    border-top-color: var(--theme-secondary-main);
+    filter: drop-shadow(0 2px 8px var(--theme-secondary-glow));
+    border-width: 10px;
+  }
+}
+
+.tooltip-bottom {
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px) scale(0.95);
+  
+  &.tooltip-visible {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  
+  &::after {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom-color: var(--theme-primary-main);
+    border-top: none;
+    filter: drop-shadow(0 -2px 4px var(--theme-primary-glow-alpha-30));
+  }
+  
+  &.tooltip-special::after {
+    border-bottom-color: var(--theme-secondary-main);
+    filter: drop-shadow(0 -2px 8px var(--theme-secondary-glow));
+    border-width: 10px;
+  }
+}
+
+.tooltip-left {
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(8px) scale(0.95);
+  
+  &.tooltip-visible {
+    transform: translateY(-50%) translateX(0) scale(1);
+  }
+  
+  &::after {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left-color: var(--theme-primary-main);
+    border-right: none;
+    filter: drop-shadow(2px 0 4px var(--theme-primary-glow-alpha-30));
+  }
+  
+  &.tooltip-special::after {
+    border-left-color: var(--theme-secondary-main);
+    filter: drop-shadow(2px 0 8px var(--theme-secondary-glow));
+    border-width: 10px;
+  }
+}
+
+.tooltip-right {
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-8px) scale(0.95);
+  
+  &.tooltip-visible {
+    transform: translateY(-50%) translateX(0) scale(1);
+  }
+  
+  &::after {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-right-color: var(--theme-primary-main);
+    border-left: none;
+    filter: drop-shadow(-2px 0 4px var(--theme-primary-glow-alpha-30));
+  }
+  
+  &.tooltip-special::after {
+    border-right-color: var(--theme-secondary-main);
+    filter: drop-shadow(-2px 0 8px var(--theme-secondary-glow));
+    border-width: 10px;
+  }
+}
+
+/* Hover effects */
+.tooltip-container:hover .tooltip {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.tooltip-container:hover .tooltip-top {
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.tooltip-container:hover .tooltip-bottom {
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.tooltip-container:hover .tooltip-left {
+  transform: translateY(-50%) translateX(0) scale(1);
+}
+
+.tooltip-container:hover .tooltip-right {
+  transform: translateY(-50%) translateX(0) scale(1);
+}
+
+/* Subtle animation keyframes */
+@keyframes subtleGlow {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Special tooltip animations */
+@keyframes specialGlow {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(255, 215, 0, 0.2),
+      0 4px 16px rgba(255, 193, 7, 0.15),
+      0 0 0 1px rgba(255, 215, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 193, 7, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 12px 40px rgba(255, 215, 0, 0.3),
+      0 6px 20px rgba(255, 193, 7, 0.25),
+      0 0 0 1px rgba(255, 215, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -1px 0 rgba(255, 193, 7, 0.15);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background: linear-gradient(135deg, 
+      #FFD700 0%, 
+      #FFA500 25%, 
+      #FF6B35 50%, 
+      #FF8C00 75%, 
+      #FFD700 100%);
+  }
+  25% {
+    background: linear-gradient(135deg, 
+      #FFA500 0%, 
+      #FF6B35 25%, 
+      #FF8C00 50%, 
+      #FFD700 75%, 
+      #FFA500 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, 
+      #FF6B35 0%, 
+      #FF8C00 25%, 
+      #FFD700 50%, 
+      #FFA500 75%, 
+      #FF6B35 100%);
+  }
+  75% {
+    background: linear-gradient(135deg, 
+      #FF8C00 0%, 
+      #FFD700 25%, 
+      #FFA500 50%, 
+      #FF6B35 75%, 
+      #FF8C00 100%);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes specialHover {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1.02);
+  }
+}
+
+/* Mobile responsive */
+@include smartphone {
+  .tooltip {
+    font-size: 0.9rem;
+    padding: 1rem 1.25rem;
+    max-width: 280px;
+    min-width: 180px;
+    border-radius: 16px;
+  }
+  
+  .tooltip-top {
+    bottom: calc(100% + 10px);
+  }
+  
+  .tooltip-bottom {
+    top: calc(100% + 10px);
+  }
+  
+  .tooltip-left {
+    right: calc(100% + 10px);
+  }
+  
+  .tooltip-right {
+    left: calc(100% + 10px);
+  }
+}
+
+/* Tablet responsive */
+@include tablet {
+  .tooltip {
+    font-size: 0.85rem;
+    padding: 0.7rem 0.9rem;
+  }
+}
+
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition: opacity 0.2s ease;
+    animation: none !important;
+  }
+  
+  .tooltip::before {
+    animation: none !important;
+  }
+  
+  .tooltip::after {
+    display: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .tooltip {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 1);
+  }
+  
+  .tooltip-special {
+    background: linear-gradient(135deg, 
+      rgba(255, 215, 0, 0.9) 0%, 
+      rgba(255, 193, 7, 0.85) 25%, 
+      rgba(255, 152, 0, 0.8) 50%, 
+      rgba(255, 87, 34, 0.75) 75%, 
+      rgba(255, 215, 0, 0.9) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.95);
+    color: rgba(40, 30, 0, 0.95);
+    box-shadow: 
+      0 8px 32px rgba(255, 215, 0, 0.4),
+      0 4px 16px rgba(255, 193, 7, 0.3),
+      0 0 0 2px rgba(255, 255, 255, 0.2) inset,
+      0 0 0 4px rgba(255, 215, 0, 0.1) inset;
+    animation: specialGlow 2s ease-in-out infinite;
+  }
+}
