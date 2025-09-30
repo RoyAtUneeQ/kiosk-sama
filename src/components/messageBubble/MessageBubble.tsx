@@ -5,7 +5,7 @@ import { MessageSender } from '@/types/transport';
 
 export interface MessageBubbleProps {
   content?: string;
-  sender?: string;
+  sender?: MessageSender;
   timestamp?: Date | string;
   shouldAnimate?: boolean;
   onAnimationStart?: () => void;
@@ -13,7 +13,7 @@ export interface MessageBubbleProps {
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ 
   content = '',
-  sender = 'assistant',
+  sender = MessageSender.Assistant,
   timestamp,
   shouldAnimate = false,
   onAnimationStart
@@ -38,8 +38,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     }
   }, [displayedText.length, shouldAnimate, onAnimationStart]);
 
-  // Hide bubble until minimum characters are displayed
-  if (displayedText.length < 6 && currentCharIndex < 6) {
+  // Hide bubble until minimum characters are displayed (only for assistant messages)
+  if (sender === MessageSender.Assistant && displayedText.length < 6 && currentCharIndex < 6) {
     return null;
   }
 

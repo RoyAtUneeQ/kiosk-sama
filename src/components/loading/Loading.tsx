@@ -59,7 +59,7 @@ const Loading: React.FC<LoadingProps> = ({
   const particleOptions = useMemo<ParticlesOptions>(() => ({
     preset: 'floating',
     background: 'transparent',
-    color: '#cd3761',
+    color: '#16aeff',
     count: 50,
     size: { min: 2, max: 4 },
     speed: 2,
