@@ -1,27 +1,27 @@
 @import url('./reset.scss');
 
 :root {
-  /* Deep Indigo Palette - Primary Colors */
-  --theme-primary-main: #202A4C;
-  --theme-primary-light: #25aaf1;
-  --theme-primary-dark: #202A4C;
+  /* Qatar Airways Brand Colors - Primary (Burgundy/Maroon) */
+  --theme-primary-main: #660033;
+  --theme-primary-light: #8B1553;
+  --theme-primary-dark: #5C0632;
   --theme-primary-contrast: #FFFFFF;
-  --theme-primary-gradient: linear-gradient(135deg, #202A4C 0%, #1A4B7D 100%);
-  --theme-primary-glow: 0 0 15px #202A4C90;
+  --theme-primary-gradient: linear-gradient(135deg, #660033 0%, #5C0632 100%);
+  --theme-primary-glow: 0 0 15px #66003390;
 
-  /* Darker Ochre - Secondary Colors */
-  --theme-secondary-main: #B0653B;
-  --theme-secondary-light: #C47A4F;
-  --theme-secondary-dark: #8B4A2A;
+  /* Qatar Airways Brand Colors - Secondary (Grey) */
+  --theme-secondary-main: #666666;
+  --theme-secondary-light: #747F8A;
+  --theme-secondary-dark: #4A4A4A;
   --theme-secondary-contrast: #FFFFFF;
-  --theme-secondary-gradient: linear-gradient(135deg, #C47A4F 0%, #B0653B 100%);
-  --theme-secondary-glow: 0 0 15px #B0653B70;
+  --theme-secondary-gradient: linear-gradient(135deg, #747F8A 0%, #666666 100%);
+  --theme-secondary-glow: 0 0 15px #66666670;
 
-  /* Status Colors using Burgundy Red and Forest Green */
+  /* Status Colors */
   --theme-status-success: #3afe88;
   --theme-status-error: #A32F34;
-  --theme-status-warning: #B0653B;
-  --theme-status-info: #1A4B7D;
+  --theme-status-warning: #8B1553;
+  --theme-status-info: #747F8A;
 
   --theme-neutral-darkest: #000000;
   --theme-neutral-dark: #4A4A4A;
@@ -39,23 +39,23 @@
   --theme-neutral-medium-alpha-25: rgba(209, 209, 209, 0.25);
   --theme-neutral-dark-alpha-40: rgba(74, 74, 74, 0.40);
 
-  --theme-background-default: #202A4C;
-  --theme-background-paper: #1A4B7D;
-  --theme-background-elevated: #B0653B;
+  --theme-background-default: #660033;
+  --theme-background-paper: #5C0632;
+  --theme-background-elevated: #8B1553;
 
-  --theme-gradients-primary: linear-gradient(135deg, #202A4C 0%, #1A4B7D 100%);
-  --theme-gradients-secondary: linear-gradient(135deg, #B0653B 0%, #8B4A2A 100%);
-  --theme-gradients-accent: linear-gradient(135deg, #1A4B7D 0%, #B0653B 100%);
-  --theme-gradients-glass: linear-gradient(135deg, rgba(32, 42, 76, 0.1) 0%, rgba(26, 75, 125, 0.05) 100%);
+  --theme-gradients-primary: linear-gradient(135deg, #660033 0%, #5C0632 100%);
+  --theme-gradients-secondary: linear-gradient(135deg, #747F8A 0%, #666666 100%);
+  --theme-gradients-accent: linear-gradient(135deg, #5C0632 0%, #747F8A 100%);
+  --theme-gradients-glass: linear-gradient(135deg, rgba(102, 0, 51, 0.1) 0%, rgba(92, 6, 50, 0.05) 100%);
 
   /* Attention-grabbing gradient with opacity and glow */
-  --theme-attention-gradient: linear-gradient(135deg, rgba(26, 75, 125, 0.5) 0%, rgba(163, 47, 52, 0.5) 100%);
-  --theme-attention-glow: 0 0 25px rgba(163, 47, 52, 0.4);
+  --theme-attention-gradient: linear-gradient(135deg, rgba(139, 21, 83, 0.5) 0%, rgba(116, 127, 138, 0.5) 100%);
+  --theme-attention-glow: 0 0 25px rgba(102, 0, 51, 0.4);
 
-  --theme-effects-primary-glow: 0 0 20px rgba(32, 42, 76, 0.4);
-  --theme-effects-secondary-glow: 0 0 20px rgba(176, 101, 59, 0.3);
-  --theme-effects-subtle-glow: 0 0 15px rgba(26, 75, 125, 0.2);
-  --theme-effects-glass-shadow: 0 12px 40px 0 rgba(32, 42, 76, 0.15);
+  --theme-effects-primary-glow: 0 0 20px rgba(102, 0, 51, 0.4);
+  --theme-effects-secondary-glow: 0 0 20px rgba(102, 102, 102, 0.3);
+  --theme-effects-subtle-glow: 0 0 15px rgba(116, 127, 138, 0.2);
+  --theme-effects-glass-shadow: 0 12px 40px 0 rgba(92, 6, 50, 0.15);
 
   /* ---- Spacing ---- */
   --theme-spacing-xs: 4px;
@@ -94,18 +94,18 @@
   --theme-font-weight-bold: 700;
 
   /* ---- Alpha Colors for specific uses ---- */
-  --theme-background-paper-alpha-10: rgba(26, 75, 125, 0.1);
+  --theme-background-paper-alpha-10: rgba(92, 6, 50, 0.1);
   --theme-neutral-darkest-alpha-50: rgba(0, 0, 0, 0.5);
-  --theme-primary-glow-alpha-30: rgba(32, 42, 76, 0.3);
-  --main-color: #202A4C;
+  --theme-primary-glow-alpha-30: rgba(102, 0, 51, 0.3);
+  --main-color: #660033;
 
   /* ---- Shadow Gradients ---- */
-  --theme-shadow-gradient-primary: 0 8px 25px -5px rgba(32, 42, 76, 0.25), 
-                                   0 4px 12px -3px rgba(176, 101, 59, 0.15);
-  --theme-shadow-gradient-secondary: 0 8px 25px -5px rgba(176, 101, 59, 0.2), 
-                                     0 4px 12px -3px rgba(26, 75, 125, 0.15);
-  --theme-shadow-gradient-accent: 0 12px 35px -8px rgba(32, 42, 76, 0.2),
-                                  0 6px 15px -5px rgba(176, 101, 59, 0.15);
+  --theme-shadow-gradient-primary: 0 8px 25px -5px rgba(102, 0, 51, 0.25),
+                                   0 4px 12px -3px rgba(102, 102, 102, 0.15);
+  --theme-shadow-gradient-secondary: 0 8px 25px -5px rgba(102, 102, 102, 0.2),
+                                     0 4px 12px -3px rgba(92, 6, 50, 0.15);
+  --theme-shadow-gradient-accent: 0 12px 35px -8px rgba(102, 0, 51, 0.2),
+                                  0 6px 15px -5px rgba(116, 127, 138, 0.15);
 }
 
 html, body, #root {
@@ -118,13 +118,46 @@ html, body, #root {
 }
 
 body {
-  background: linear-gradient(120deg, #202A4C 0%, #1A4B7D 100%);
+  background: linear-gradient(135deg,
+    #0a0e1a 0%,
+    #151b2e 25%,
+    #1a2332 50%,
+    #0f1520 75%,
+    #060914 100%
+  );
+  background-size: 200% 200%;
+  animation: subtleGradientShift 20s ease infinite;
   height: 100vh;
   margin: 0;
   padding-bottom: env(safe-area-inset-bottom);
   padding-top: env(safe-area-inset-top);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  position: relative;
+
+  /* Glass effect overlay */
+  &::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0.01) 50%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+@keyframes subtleGradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 #root {
@@ -147,9 +180,11 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(var(--theme-neutral-lightest-alpha-15) 1px, transparent 1px);
-  background-size: 40px 40px;
-  opacity: 0.5;
+  background-image: radial-gradient(circle at 20% 80%, rgba(139, 21, 83, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(92, 6, 50, 0.12) 0%, transparent 50%),
+                    radial-gradient(var(--theme-neutral-lightest-alpha-15) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 40px 40px;
+  opacity: 0.6;
   z-index: -1;
 }
 

@@ -25,7 +25,7 @@ const ParticlesComponent: React.FC<ParticlesComponentProps> = ({
   const {
     // Only floating circles are supported now
     background = 'transparent',
-    color = '#1A4B7D',
+    color = '#660033',
     count = 80,
     size = { min: 1, max: 5 },
     speed = 2,
