@@ -20,10 +20,10 @@
   aspect-ratio: 1;
   width: calc(150% * var(--size));
 
-  /* Fallback sRGB gradient */
-  background: linear-gradient(259.53deg, #1A4B7D 6.53%, #B0653B 95.34%);
+  /* Fallback sRGB gradient - Qatar Airways colors */
+  background: linear-gradient(259.53deg, #660033 6.53%, #747F8A 95.34%);
   /* Higher-fidelity interpolation in perceptual color space where supported */
-  background: linear-gradient(in oklch, oklch(45% 0.15 240) 6.53%, oklch(55% 0.12 30) 95.34%);
+  background: linear-gradient(in oklch, oklch(30% 0.12 340) 6.53%, oklch(50% 0.02 250) 95.34%);
   filter: blur(10vw);
 
   /* Start with an irregular blob-like radius; will morph over time */

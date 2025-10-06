@@ -23,9 +23,9 @@
 
   // READY state - ready to start recording
   &.ready {
-    background: linear-gradient(135deg, rgba(26, 75, 125, 0.9) 0%, rgba(32, 42, 76, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(102, 102, 102, 0.9) 0%, rgba(116, 127, 138, 0.95) 100%);
     color: white;
-    box-shadow: 0 8px 25px rgba(26, 75, 125, 0.2);
+    box-shadow: 0 8px 25px rgba(102, 102, 102, 0.2);
 
     &:hover:not(:disabled) { 
       filter: brightness(1.08);
@@ -36,12 +36,12 @@
 
   // PERMISSION-NEEDED state - needs microphone permission
   &.permission-needed {
-    background: linear-gradient(135deg, #8B4A2A 0%, #6B3A1F 100%);
+    background: linear-gradient(135deg, #8B1553 0%, #660033 100%);
     color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 6px 15px rgba(139, 74, 42, 0.15);
-    
-    &:hover:not(:disabled) { 
-      background: linear-gradient(135deg, #A55A35 0%, #7B4A2F 100%);
+    box-shadow: 0 6px 15px rgba(139, 21, 83, 0.15);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #A32F34 0%, #8B1553 100%);
       transform: scale(1.05);
       color: white;
     }
@@ -94,17 +94,17 @@
 
   // PROCESSING state - processing audio/speech
   &.processing {
-    background: linear-gradient(135deg, #1A4B7D 0%, #0F3A5F 100%);
+    background: linear-gradient(135deg, #666666 0%, #4A4A4A 100%);
     color: white;
-    box-shadow: 0 6px 24px rgba(26, 75, 125, 0.4);
-    
+    box-shadow: 0 6px 24px rgba(102, 102, 102, 0.4);
+
     .mic-icon {
       &.processing-animation {
         animation: processingPulse 1.5s ease-in-out infinite;
       }
     }
 
-    &:hover:not(:disabled) { 
+    &:hover:not(:disabled) {
       cursor: not-allowed;
       transform: none;
     }
@@ -115,7 +115,7 @@
       position: absolute;
       inset: -6px;
       border-radius: 50%;
-      border: 2px dotted rgba(26, 75, 125, 0.7);
+      border: 2px dotted rgba(102, 102, 102, 0.7);
       animation: processingRotate 2s linear infinite;
       z-index: -1;
     }
