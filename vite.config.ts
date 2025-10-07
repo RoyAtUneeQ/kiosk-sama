@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
+import json from '@rollup/plugin-json'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -8,7 +9,10 @@ const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    json()
+  ],
   resolve: {
     alias: {
       '@/components': path.resolve(__dirname, './src/components'),
@@ -27,4 +31,40 @@ export default defineConfig({
       '@/listeners': path.resolve(__dirname, './src/listeners'),
     },  
   },
-})
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/tests/setup.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/src/tests/**',
+        '**/*.d.ts',
+        '**/src/types/**',
+        '**/src/assets/**',
+      ],
+    },
+  },
+  esbuild: {
+    tsconfigRaw: {
+      compilerOptions: {
+        experimentalDecorators: true,
+      }
+    }
+  },
+  optimizeDeps: {
+    include: ['@testing-library/react', 'vitest', '@rollup/plugin-json']
+  },
+  server: {
+    fs: {
+      allow: ['.']
+    }
+  },
+  json: {
+    stringify: true
+  }
+});
