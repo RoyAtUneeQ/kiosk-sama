@@ -26,10 +26,13 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
   // Performance monitoring for UneeQ operations
   const { startTiming, endTiming } = usePerformanceMonitor('useUneeq');
 
-  // Get config values
-  const scriptUrl = config?.personas?.[language]?.[type]?.CDN || '';
-  const connectionUrl = config?.personas?.[language]?.[type]?.API || '';
-  const personaId = config?.personas?.[language]?.[type]?.id || '';
+  // Get config values with fallback to available render mode
+  const personaConfig = config?.personas?.[language];
+  const availableType = personaConfig?.[type] ? type : Object.keys(personaConfig || {})[0] as 'cloud' | 'miniprem';
+
+  const scriptUrl = personaConfig?.[availableType]?.CDN || '';
+  const connectionUrl = personaConfig?.[availableType]?.API || '';
+  const personaId = personaConfig?.[availableType]?.id || '';
   const sessionKey = `${connectionUrl}-${personaId}`;
 
   // Load script using external library
