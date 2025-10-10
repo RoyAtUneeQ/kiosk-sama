@@ -516,17 +516,23 @@ monitor_stack_deployment() {
 # Get stack outputs
 get_stack_outputs() {
     log_info "Retrieving stack outputs..."
-    
+
     STACK_OUTPUTS=$(aws cloudformation describe-stacks \
         --stack-name "$STACK_NAME" \
         --region "$S3_REGION" \
         --query 'Stacks[0].Outputs' \
         --output json)
-    
+
     BUCKET_NAME=$(echo "$STACK_OUTPUTS" | jq -r '.[] | select(.OutputKey=="BucketName") | .OutputValue')
     DISTRIBUTION_ID=$(echo "$STACK_OUTPUTS" | jq -r '.[] | select(.OutputKey=="DistributionId") | .OutputValue')
+    DISTRIBUTION_DOMAIN=$(echo "$STACK_OUTPUTS" | jq -r '.[] | select(.OutputKey=="DistributionDomainName") | .OutputValue')
     WEBSITE_URL=$(echo "$STACK_OUTPUTS" | jq -r '.[] | select(.OutputKey=="WebsiteURL") | .OutputValue')
-    
+
+    # Fallback: Get distribution domain if not in stack outputs
+    if [ -z "$DISTRIBUTION_DOMAIN" ]; then
+        DISTRIBUTION_DOMAIN=$(aws cloudfront get-distribution --id "$DISTRIBUTION_ID" --query 'Distribution.DomainName' --output text 2>/dev/null)
+    fi
+
     log_success "Stack outputs retrieved"
 }
 
@@ -590,6 +596,158 @@ invalidate_cache() {
     log_success "Cache invalidation completed"
 }
 
+# Configure DNS if using Route53
+configure_dns() {
+    if [ -z "$DOMAIN_NAME" ]; then
+        log_info "No custom domain specified, skipping DNS configuration"
+        return 0
+    fi
+
+    log_info "Checking DNS configuration for $DOMAIN_NAME..."
+
+    # Get CloudFront distribution domain name
+    DISTRIBUTION_DOMAIN=$(aws cloudfront get-distribution --id "$DISTRIBUTION_ID" --query 'Distribution.DomainName' --output text)
+
+    # Extract the base domain (e.g., services.uneeq.io from sama-cargo.services.uneeq.io)
+    local base_domain=$(echo "$DOMAIN_NAME" | rev | cut -d. -f1,2 | rev)
+    local parent_domain="$base_domain"
+
+    # Check for three-level domains (e.g., services.uneeq.io)
+    local domain_parts=$(echo "$DOMAIN_NAME" | tr '.' ' ' | wc -w)
+    if [ "$domain_parts" -gt 2 ]; then
+        parent_domain=$(echo "$DOMAIN_NAME" | cut -d. -f2-)
+    fi
+
+    # Check if Route53 manages this domain
+    local hosted_zone_id=$(aws route53 list-hosted-zones --query "HostedZones[?contains(Name, '$parent_domain.')].Id" --output text | head -1)
+
+    if [ -z "$hosted_zone_id" ]; then
+        log_warning "Route53 hosted zone not found for $parent_domain"
+        echo
+        echo "DNS Configuration Required:"
+        echo "=========================="
+        echo "Please add the following CNAME record to your DNS provider:"
+        echo
+        echo "  Name: $DOMAIN_NAME"
+        echo "  Type: CNAME"
+        echo "  Value: $DISTRIBUTION_DOMAIN"
+        echo
+        echo "Note: DNS propagation may take up to 48 hours"
+        return 0
+    fi
+
+    # Extract just the zone ID
+    hosted_zone_id=$(echo "$hosted_zone_id" | sed 's|/hostedzone/||')
+
+    log_info "Found Route53 hosted zone: $hosted_zone_id for $parent_domain"
+
+    # Check if record already exists
+    local existing_record=$(aws route53 list-resource-record-sets \
+        --hosted-zone-id "$hosted_zone_id" \
+        --query "ResourceRecordSets[?Name=='$DOMAIN_NAME.'].ResourceRecords[0].Value" \
+        --output text)
+
+    if [ -n "$existing_record" ]; then
+        if [ "$existing_record" = "$DISTRIBUTION_DOMAIN" ]; then
+            log_success "DNS record already configured correctly"
+            return 0
+        else
+            log_warning "DNS record exists but points to: $existing_record"
+            read -p "Update to point to CloudFront distribution? (Y/n): " update_dns
+            if [[ $update_dns =~ ^[Nn]$ ]]; then
+                return 0
+            fi
+        fi
+    fi
+
+    # Create/update DNS record
+    log_info "Creating/updating DNS CNAME record..."
+
+    cat > /tmp/dns-change-batch.json <<EOF
+{
+  "Comment": "Auto-created by deployment script for CloudFront distribution",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "$DOMAIN_NAME",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "$DISTRIBUTION_DOMAIN"
+          }
+        ]
+      }
+    }
+  ]
+}
+EOF
+
+    local change_id=$(aws route53 change-resource-record-sets \
+        --hosted-zone-id "$hosted_zone_id" \
+        --change-batch file:///tmp/dns-change-batch.json \
+        --query 'ChangeInfo.Id' \
+        --output text)
+
+    if [ $? -eq 0 ]; then
+        log_info "DNS record created/updated. Change ID: $change_id"
+        log_info "Waiting for DNS change to complete..."
+
+        # Wait for the change to complete
+        aws route53 wait resource-record-sets-changed --id "$change_id" 2>/dev/null || true
+
+        log_success "DNS configuration completed successfully"
+
+        # Clean up temp file
+        rm -f /tmp/dns-change-batch.json
+    else
+        log_error "Failed to create DNS record"
+        echo "Please manually add CNAME record: $DOMAIN_NAME → $DISTRIBUTION_DOMAIN"
+    fi
+}
+
+# Verify deployment accessibility
+verify_deployment() {
+    log_info "Verifying deployment accessibility..."
+    echo
+
+    # Test CloudFront distribution
+    log_info "Testing CloudFront distribution..."
+    local cf_status=$(curl -sI "https://$DISTRIBUTION_DOMAIN" | head -1 | cut -d' ' -f2)
+
+    if [ "$cf_status" = "200" ] || [ "$cf_status" = "304" ]; then
+        log_success "✅ CloudFront accessible: https://$DISTRIBUTION_DOMAIN"
+    else
+        log_warning "⚠️  CloudFront returned status: $cf_status"
+        echo "   This may be due to missing S3 bucket policy or OAC configuration"
+        echo "   Check CloudFormation stack events for details"
+    fi
+
+    # Test custom domain if configured
+    if [ -n "$DOMAIN_NAME" ]; then
+        log_info "Testing custom domain (may take time for DNS propagation)..."
+
+        # Check if DNS resolves
+        if host "$DOMAIN_NAME" > /dev/null 2>&1; then
+            local domain_status=$(curl -sI "https://$DOMAIN_NAME" 2>/dev/null | head -1 | cut -d' ' -f2)
+
+            if [ "$domain_status" = "200" ] || [ "$domain_status" = "304" ]; then
+                log_success "✅ Custom domain accessible: https://$DOMAIN_NAME"
+            else
+                log_warning "⚠️  Custom domain returned status: $domain_status"
+                echo "   DNS has propagated but site may need more time"
+            fi
+        else
+            log_warning "⚠️  DNS not yet propagated for $DOMAIN_NAME"
+            echo "   This is normal - DNS propagation can take 5-30 minutes"
+            echo "   You can test with: curl https://$DOMAIN_NAME --resolve $DOMAIN_NAME:443:$(dig +short $DISTRIBUTION_DOMAIN | head -1)"
+        fi
+    fi
+
+    echo
+}
+
 # Update deployment configuration
 update_config() {
     cat > "$CONFIG_FILE" <<EOF
@@ -601,6 +759,7 @@ update_config() {
   "bucketPrefix": "$BUCKET_PREFIX",
   "usesExistingBucket": $USES_EXISTING_BUCKET,
   "distributionId": "$DISTRIBUTION_ID",
+  "distributionDomain": "$DISTRIBUTION_DOMAIN",
   "websiteUrl": "$WEBSITE_URL",
   "domainName": "$DOMAIN_NAME",
   "sslCertificateArn": "$SSL_CERT_ARN",
@@ -684,6 +843,8 @@ main() {
     get_stack_outputs
     upload_to_s3
     invalidate_cache
+    configure_dns
+    verify_deployment
     update_config
     show_summary
 }
