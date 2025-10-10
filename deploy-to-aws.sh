@@ -336,10 +336,53 @@ run_build_analysis() {
     echo
 }
 
+# Check and handle existing bucket policy
+check_bucket_policy() {
+    local bucket_name="$1"
+
+    log_info "Checking for existing bucket policy on '$bucket_name'..."
+
+    # Check if bucket policy exists
+    if aws s3api get-bucket-policy --bucket "$bucket_name" --region "$S3_REGION" &>/dev/null; then
+        log_warning "Bucket policy already exists on '$bucket_name'"
+
+        # Check if this is a CloudFormation-managed stack update
+        if aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$S3_REGION" &>/dev/null; then
+            # Stack exists - check if it manages the bucket policy
+            local stack_resources=$(aws cloudformation list-stack-resources \
+                --stack-name "$STACK_NAME" \
+                --region "$S3_REGION" \
+                --query 'StackResourceSummaries[?ResourceType==`AWS::S3::BucketPolicy`].LogicalResourceId' \
+                --output text 2>/dev/null)
+
+            if [ -z "$stack_resources" ]; then
+                # Stack exists but doesn't manage bucket policy - need to remove it
+                log_info "Removing existing bucket policy to allow CloudFormation management..."
+                aws s3api delete-bucket-policy --bucket "$bucket_name" --region "$S3_REGION"
+                log_success "Bucket policy removed - CloudFormation will manage it"
+            else
+                log_info "Bucket policy is already managed by CloudFormation"
+            fi
+        else
+            # New stack deployment - remove existing policy
+            log_info "Removing existing bucket policy for initial CloudFormation deployment..."
+            aws s3api delete-bucket-policy --bucket "$bucket_name" --region "$S3_REGION"
+            log_success "Bucket policy removed - CloudFormation will manage it"
+        fi
+    else
+        log_info "No existing bucket policy found - CloudFormation will create it"
+    fi
+}
+
 # Deploy CloudFormation stack
 deploy_stack() {
     log_info "Deploying CloudFormation stack..."
-    
+
+    # Check and handle existing bucket policy before deployment
+    if [ "$USES_EXISTING_BUCKET" = true ]; then
+        check_bucket_policy "$BUCKET_NAME"
+    fi
+
     # Prepare parameters as an array
     PARAMS=()
     PARAMS+=("ParameterKey=BucketName,ParameterValue=$BUCKET_NAME")
