@@ -4,7 +4,7 @@ import Button from "@/components/button/Button";
 import Panel from "@/components/panel/Panel";
 import { SettingsPanel, StatusPanel } from "@/components";
 import type { SettingsOption, StatusItem } from "@/components";
-import splashImage from "@/assets/splash.png";
+import splashImage from "@/assets/splash.svg";
 import { useConfig, useTranslation } from "@/hooks";  
 import { useSession } from "@/contexts/SessionContext";
 import { WebsocketStatus } from "@/types";

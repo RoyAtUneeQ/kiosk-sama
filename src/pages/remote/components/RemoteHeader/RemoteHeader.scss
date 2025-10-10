@@ -24,8 +24,8 @@
     line-height: 1.2;
     font-size: clamp(1rem, 2.8vw, 2rem);
 
-    /* Animated glow gradient fill (reuses GlowBackground.scss palette) */
-    background: linear-gradient(259.53deg, #1A4B7D 6.53%, #B0653B 97%);
+    /* Animated glow gradient fill - Qatar Airways colors */
+    background: linear-gradient(259.53deg, #660033 6.53%, #747F8A 97%);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     background-size: 200% 200%;
     background-position: 0% 51%;
@@ -104,7 +104,7 @@
 
         .label { opacity: 0.75; }
         .value.connected { color: #397551; }
-        .value.connecting { color: #B0653B; }
+        .value.connecting { color: #8B1553; }
         .value.disconnected { color: #A32F34; }
         .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
       }

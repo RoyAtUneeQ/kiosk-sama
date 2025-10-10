@@ -71,8 +71,32 @@ Resources:
             AllowedOrigins: ['*']
             MaxAge: 3600
 
-  # Note: S3 bucket policy removed - CloudFront OAC handles permissions automatically
-  # This respects existing customer bucket policies and follows AWS security best practices
+  # S3 Bucket Policy for CloudFront OAC access
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !If
+        - CreateNewBucket
+        - !Ref S3Bucket
+        - !Ref BucketName
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !If
+              - HasBucketPrefix
+              - !Sub
+                - 'arn:aws:s3:::${BucketName}/${BucketPrefix}/*'
+                - BucketName: !If [CreateNewBucket, !Ref S3Bucket, !Ref BucketName]
+              - !Sub
+                - 'arn:aws:s3:::${BucketName}/*'
+                - BucketName: !If [CreateNewBucket, !Ref S3Bucket, !Ref BucketName]
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
 
   # CloudFront Origin Access Control
   OriginAccessControl:

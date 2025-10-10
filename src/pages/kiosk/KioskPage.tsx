@@ -21,10 +21,10 @@ function KioskPage() {
   useUneeq({
     ...defaultUneeqOptions,
     showClosedCaptions: state.showClosedCaptions,
-    welcomePrompt: `Introduce yourself to the user in a friendly and engaging manner. Use your knowledge base to spark a conversation and guide the interaction. 
+    welcomePrompt: `Introduce yourself to the user in a friendly and engaging manner. Use your knowledge base to spark a conversation and guide the interaction.
     Follow up with a specific, focused question that directs the next step in the conversation, avoiding open-ended questions.`,
-    enableMicrophone: true
-  } as UneeqOptions);
+    showUserInputInterface: false
+  } as UneeqOptions, state.language, state.renderMode as 'cloud' | 'miniprem');
   useUneeqEvents();
   
 
