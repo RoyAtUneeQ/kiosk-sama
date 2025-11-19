@@ -25,7 +25,9 @@
       "@/i18n/*": ["src/i18n/*"],
       "@/i18n": ["src/i18n"],
       "@/listeners/*": ["src/listeners/*"],
-      "@/listeners": ["src/listeners"]
+      "@/listeners": ["src/listeners"],
+      "uneeq-state-manager": ["../../Uneeq/State Manager/State Manager - SDK/src"],
+      "uneeq-state-manager/*": ["../../Uneeq/State Manager/State Manager - SDK/src/*"]
     },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
@@ -49,5 +51,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "../../Uneeq/State Manager/State Manager - SDK/src/**/*"
+  ]
 }

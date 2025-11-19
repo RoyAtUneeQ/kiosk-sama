@@ -3,7 +3,7 @@ import { SessionStatus } from '@/contexts/types';
 import { QRCode, TopProgressBar } from '@/components';  
 import { useSession } from '@/contexts/SessionContext';
 import { defaultUneeqOptions } from '@/types';
-import { useUneeqEvents, useWebSocket, usePageLoadMonitor } from '@/hooks';
+import { useUneeqEvents, useWebSocket, usePageLoadMonitor, useStateManager } from '@/hooks';
 import { useUneeq } from '@/hooks/useUneeq';
 import type { UneeqOptions } from '@/types/uneeq';
 import { useConfig } from '@/hooks/useConfig';
@@ -26,7 +26,7 @@ function KioskPage() {
     showUserInputInterface: false
   } as UneeqOptions, state.language, state.renderMode as 'cloud' | 'miniprem');
   useUneeqEvents();
-  
+  useStateManager();
 
   const { config } = useConfig();
 
@@ -46,10 +46,43 @@ function KioskPage() {
         websocket?.send(actionFactory.checkPeerConnection(state.remoteInfo.connectionId));
       }
     }, 1000);
-    
+
     return () => clearInterval(interval);
   }, [state.remoteInfo?.connectionId, websocket])
-  
+
+  // Auto-persist language preference when State Manager becomes available
+  useEffect(() => {
+    console.log('[StateManagerSDK] KioskPage useEffect triggered for persist/language');
+    console.log('[StateManagerSDK] Current state:', {
+      hasPersist: !!state.persist,
+      language: state.language,
+      sessionStatus: state.status,
+      hasUneeq: !!state.uneeq,
+      sessionId: state.uneeq?.options?.sessionId
+    });
+
+    if (state.persist && state.language) {
+      console.log('[StateManagerSDK] 💾 Attempting to persist language:', state.language);
+
+      state.persist.set('preferredLanguage', state.language)
+        .then(() => {
+          console.log('[StateManagerSDK] ✅ Language persisted successfully in KioskPage');
+        })
+        .catch((err) => {
+          console.error('[StateManagerSDK] ❌ Failed to persist language in KioskPage:', err);
+          console.error('[StateManagerSDK] Error details:', {
+            message: err instanceof Error ? err.message : 'Unknown error',
+            stack: err instanceof Error ? err.stack : undefined
+          });
+        });
+    } else {
+      console.log('[StateManagerSDK] ⏳ Waiting for state.persist or language:', {
+        hasPersist: !!state.persist,
+        language: state.language
+      });
+    }
+  }, [state.persist, state.language]);
+
   // No token state logging; tokens are fetched on-demand over HTTP
 
   if (state.status === SessionStatus.IDLE || state.status === SessionStatus.READY)

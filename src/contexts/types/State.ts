@@ -1,10 +1,11 @@
 import type { CameraDistanceAnchor, CameraHorizontalAnchor, Config, Uneeq } from "@/types";
 // Available for configuration: import type { CameraAnchorOptions } from "@/types";
-import type { SessionStatus } from './'; 
+import type { SessionStatus } from './';
 import type { Message, RemoteSessionInfo, WebsocketStatus } from "@/types/transport";
 import type { Event } from "@/types/uneeq/Event";
 import type { Memory, Media, ErrorMessage } from "@/types/utils";
-import type { MicrophoneStatus } from "@/types/microphone";   
+import type { MicrophoneStatus } from "@/types/microphone";
+import type { PersistentStateWrapper } from "@/types/stateManager";   
 
 /**
  * Shape of the session state stored in Zustand.
@@ -42,4 +43,7 @@ export interface State {
 
     // VAD state
     vadEnabled: boolean;
+
+    // Persistent state manager (server-backed session state)
+    persist: PersistentStateWrapper | null;
   }

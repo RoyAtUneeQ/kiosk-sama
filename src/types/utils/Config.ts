@@ -1,3 +1,5 @@
+import type { StateManagerConfig } from '@/types/stateManager';
+
 // Configuration interfaces (re-export from utils if needed)
 export interface PersonaConfig {
   cloud: {
@@ -15,7 +17,7 @@ export interface PersonaConfig {
 export interface BackendConfig {
   endpoints: {
     ws: string;    // Full WebSocket URL (required)
-    http: string;  // Full HTTP URL (required) 
+    http: string;  // Full HTTP URL (required)
   };
   key?: string;    // API key for authentication
 }
@@ -38,4 +40,5 @@ export interface Config {
   personas: Record<string, PersonaConfig>;
   apis: ApiConfig;
   backend?: BackendConfig;
+  stateManager?: StateManagerConfig;
 }

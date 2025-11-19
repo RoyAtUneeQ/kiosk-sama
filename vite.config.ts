@@ -27,7 +27,11 @@ export default defineConfig({
       '@/i18n': path.resolve(__dirname, './src/i18n'),
       '@/config': path.resolve(__dirname, './src/config'),
       '@/listeners': path.resolve(__dirname, './src/listeners'),
-    },  
+      // Link local State Manager SDK for hot reload during development
+      'uneeq-state-manager': path.resolve(__dirname, '../../Uneeq/State Manager/State Manager - SDK/src'),
+    },
+    // Dedupe React to avoid duplicate instances when importing SDK
+    dedupe: ['react', 'react-dom', 'zustand'],
   },
   test: {
     globals: true,
@@ -59,7 +63,8 @@ export default defineConfig({
   },
   server: {
     fs: {
-      allow: ['.']
+      // Allow serving files from SDK directory
+      allow: ['.', '../../Uneeq/State Manager/State Manager - SDK']
     }
   },
   json: {

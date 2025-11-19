@@ -9,4 +9,5 @@ export * from './useDynamicIcons';
 export * from './usePerformanceMonitor';
 export * from './useViewport';
 export * from './useSpeechServices';
+export * from './useStateManager';
 export { usePageLoadMonitor } from './usePerformanceMonitor';

@@ -4,7 +4,7 @@ import Button from "@/components/button/Button";
 import Panel from "@/components/panel/Panel";
 import { SettingsPanel, StatusPanel } from "@/components";
 import type { SettingsOption, StatusItem } from "@/components";
-import splashImage from "@/assets/splash.svg";
+import splashImage from "@/assets/splash.png";
 import { useConfig, useTranslation } from "@/hooks";  
 import { useSession } from "@/contexts/SessionContext";
 import { WebsocketStatus } from "@/types";
@@ -112,12 +112,10 @@ const KioskStartForm: React.FC = () => {
                 <button
                   key={option}
                   className={`language-option ${state.language === option ? 'active' : ''}`}
-                  onClick={() => 
-                    {
-                      changeLanguage(option)
-                      actions.setLanguage(option)
-                    }
-                  }
+                  onClick={() => {
+                    changeLanguage(option);
+                    actions.setLanguage(option);
+                  }}
                 >
                   {option.toUpperCase()}
                 </button>

@@ -1,8 +1,9 @@
 
 import { create } from 'zustand';
 import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media, type ErrorMessage } from '@/types';
-import { type State, SessionStatus } from './types';                  
+import { type State, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
+import type { PersistentStateWrapper } from '@/types/stateManager';
 
 const initialState: State = {
   // Core session configuration
@@ -47,6 +48,9 @@ const initialState: State = {
   // VAD state
   vadEnabled: true,
 
+  // Persistent state manager
+  persist: null,
+
 };
 
 /**
@@ -73,6 +77,7 @@ export type SessionActions = {
   setMicrophoneStatus: (status: MicrophoneStatus) => void;
   setErrorMessage: (errorMessage: ErrorMessage | null) => void;
   setVadEnabled: (vadEnabled: boolean) => void;
+  setPersist: (wrapper: PersistentStateWrapper | null) => void;
 };      
 
 /**
@@ -166,7 +171,10 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       set((prev) => ({ state: { ...prev.state, vadEnabled } }));
       console.log(`[SessionContext] ✅ VAD state updated to ${vadEnabled}`);
     },
-  },  
+    setPersist: (wrapper) => {
+      set((prev) => ({ state: { ...prev.state, persist: wrapper } }));
+    },
+  },
 }));
 
 

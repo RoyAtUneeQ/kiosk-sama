@@ -84,6 +84,12 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
       const uneeq = window.uneeq as Uneeq;
       actions.setUneeq(uneeq);
 
+      // Log UneeQ object structure for debugging State Manager
+      console.log('[useUneeq] 🔍 UneeQ object created');
+      console.log('[useUneeq] UneeQ keys:', Object.keys(uneeq));
+      console.log('[useUneeq] UneeQ.options:', uneeq.options);
+      console.log('[useUneeq] Looking for sessionId at uneeq.options?.sessionId:', uneeq.options?.sessionId);
+
       uneeq.setWebRtcStatsEnabled(false, false);
       
       // Add event listener with stable callback reference
