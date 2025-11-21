@@ -24,9 +24,9 @@ import './i18n'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { LanguageProvider } from './i18n/LanguageProvider'
 
-import { ConfigLoader } from './components/configLoader/ConfigLoader'
-import { ErrorBoundary } from './components/errorBoundary/ErrorBoundary'
-import { LoadingFallback } from './components/loadingFallback/LoadingFallback'
+import { ConfigLoader } from './components/shared/configLoader/ConfigLoader'
+import { ErrorBoundary } from './components/shared/errorBoundary/ErrorBoundary'
+import { LoadingFallback } from './components/shared/loadingFallback/LoadingFallback'
 import { PerformanceMonitor } from './services'
 
 // Performance monitoring will be initialized by ConfigLoader after config is loaded

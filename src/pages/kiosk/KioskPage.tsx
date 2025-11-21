@@ -1,6 +1,6 @@
 import { UneeqContainer, RemoteConnectionInfo, KioskStartForm, LeftSideBar, MediaContainer } from './components';
 import { SessionStatus } from '@/contexts/types';
-import { QRCode, TopProgressBar } from '@/components';  
+import { QRCode, TopProgressBar, Card, FlightSearchDetail, DebugPanel } from '@/components';
 import { useSession } from '@/contexts/SessionContext';
 import { defaultUneeqOptions } from '@/types';
 import { useUneeqEvents, useWebSocket, usePageLoadMonitor, useStateManager } from '@/hooks';
@@ -9,7 +9,7 @@ import type { UneeqOptions } from '@/types/uneeq';
 import { useConfig } from '@/hooks/useConfig';
 import { useEffect } from 'react';
 import { createActionFactory } from '@/factories';
-import { DebugPanel } from '@/components/debugPanel/DebugPanel';
+import { CardContainer } from './components/CardContainer/CardContainer';
 
 function KioskPage() {
   // Track page load performance to measure lazy loading impact
@@ -88,12 +88,14 @@ function KioskPage() {
   if (state.status === SessionStatus.IDLE || state.status === SessionStatus.READY)
       return (
         <>
+          <CardContainer>
+            <FlightSearchDetail /> 
+          </CardContainer>
           <KioskStartForm />
           {/* Development DebugPanel - shows based on config.app.environment */}
           <DebugPanel show={config?.app?.environment === 'development' } />
         </>
       );
-
   return (
     <div>
       {/* Top progress bar for awaiting response */}

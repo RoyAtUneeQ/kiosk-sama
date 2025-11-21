@@ -1,0 +1,12 @@
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: var(--theme-neutral-darkest-alpha-50);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--theme-neutral-darkest-alpha-10);
+    margin: 1rem;
+}

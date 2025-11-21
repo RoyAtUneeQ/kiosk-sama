@@ -27,6 +27,7 @@ export default defineConfig({
       '@/i18n': path.resolve(__dirname, './src/i18n'),
       '@/config': path.resolve(__dirname, './src/config'),
       '@/listeners': path.resolve(__dirname, './src/listeners'),
+      '@/features': path.resolve(__dirname, './src/features'),
       // Link local State Manager SDK for hot reload during development
       'uneeq-state-manager': path.resolve(__dirname, '../../Uneeq/State Manager/State Manager - SDK/src'),
     },

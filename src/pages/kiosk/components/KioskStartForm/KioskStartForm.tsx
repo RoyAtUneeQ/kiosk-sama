@@ -1,7 +1,7 @@
 import "./KioskStartForm.scss";
 import React, { useCallback, useEffect, useMemo } from 'react';
-import Button from "@/components/button/Button";
-import Panel from "@/components/panel/Panel";
+import Button from "@/components/shared/button/Button";
+import Panel from "@/components/shared/panel/Panel";
 import { SettingsPanel, StatusPanel } from "@/components";
 import type { SettingsOption, StatusItem } from "@/components";
 import splashImage from "@/assets/splash.png";

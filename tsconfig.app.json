@@ -26,6 +26,8 @@
       "@/i18n": ["src/i18n"],
       "@/listeners/*": ["src/listeners/*"],
       "@/listeners": ["src/listeners"],
+      "@/features/*": ["src/features/*"],
+      "@/features": ["src/features"],
       "uneeq-state-manager": ["../../Uneeq/State Manager/State Manager - SDK/src"],
       "uneeq-state-manager/*": ["../../Uneeq/State Manager/State Manager - SDK/src/*"]
     },
