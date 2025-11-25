@@ -29,7 +29,7 @@ export default defineConfig({
       '@/listeners': path.resolve(__dirname, './src/listeners'),
       '@/features': path.resolve(__dirname, './src/features'),
       // Link local State Manager SDK for hot reload during development
-      'uneeq-state-manager': path.resolve(__dirname, '../../Uneeq/State Manager/State Manager - SDK/src'),
+      // 'uneeq-state-manager': path.resolve(__dirname, '../../Uneeq/State Manager/State Manager - SDK/src'),
     },
     // Dedupe React to avoid duplicate instances when importing SDK
     dedupe: ['react', 'react-dom', 'zustand'],
