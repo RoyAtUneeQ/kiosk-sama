@@ -1,6 +1,6 @@
 import { UneeqContainer, RemoteConnectionInfo, KioskStartForm, LeftSideBar, MediaContainer } from './components';
 import { SessionStatus } from '@/contexts/types';
-import { QRCode, TopProgressBar, Card, FlightSearchDetail, DebugPanel } from '@/components';
+import { QRCode, TopProgressBar, Card, FlightSearchDetail, FareOfferDetails, DebugPanel } from '@/components';
 import { useSession } from '@/contexts/SessionContext';
 import { defaultUneeqOptions } from '@/types';
 import { useUneeqEvents, useWebSocket, usePageLoadMonitor, useStateManager } from '@/hooks';
@@ -89,7 +89,8 @@ function KioskPage() {
       return (
         <>
           <CardContainer>
-            <FlightSearchDetail /> 
+            <FlightSearchDetail />
+            <FareOfferDetails />
           </CardContainer>
           <KioskStartForm />
           {/* Development DebugPanel - shows based on config.app.environment */}
