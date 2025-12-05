@@ -5,7 +5,8 @@ import type { Message, RemoteSessionInfo, WebsocketStatus } from "@/types/transp
 import type { Event } from "@/types/uneeq/Event";
 import type { Memory, Media, ErrorMessage } from "@/types/utils";
 import type { MicrophoneStatus } from "@/types/microphone";
-import type { PersistentStateWrapper } from "@/types/stateManager";   
+import type { PersistentStateWrapper } from "@/types/stateManager";
+import type { BookingData } from "@/types/booking";   
 
 /**
  * Shape of the session state stored in Zustand.
@@ -46,4 +47,10 @@ export interface State {
 
     // Persistent state manager (server-backed session state)
     persist: PersistentStateWrapper | null;
+
+    // Booking data for displaying flight cards
+    bookingData: BookingData | null;
+
+    // Websocket message
+    remoteMessageQueue: any[];
   }

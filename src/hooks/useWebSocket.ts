@@ -63,6 +63,19 @@ export const useWebSocket = (props: UseWebSocketProps) => {
     };
   }, [webSocketUrl]);
 
+  useEffect(() => {
+    if (session.state.remoteInfo?.connectionId && session.state.remoteMessageQueue.length > 0) {
+      const queueToProcess = [...session.state.remoteMessageQueue];
+      
+      queueToProcess.forEach((data) => {
+        console.log('[useWebSocket] send remote message to peer', data);
+        websocketRef.current!.send(actionFactory.sendMessage(session.state.remoteInfo!.connectionId, data));
+      });
+      
+      session.actions.clearRemoteMessageQueue();
+    }
+  }, [session.state.remoteInfo?.connectionId, session.state.remoteMessageQueue.length]);
+
   //Send last history message to peer
   useEffect(() => {
     const lastMessage = session.state.history[session.state.history.length - 1];
@@ -74,7 +87,6 @@ export const useWebSocket = (props: UseWebSocketProps) => {
 
   return {
     websocket: websocketRef.current!,
-    sendAction: (action: any) => websocketRef.current!.send(action),
   };
 };
 

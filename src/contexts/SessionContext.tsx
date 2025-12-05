@@ -4,6 +4,7 @@ import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type M
 import { type State, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
 import type { PersistentStateWrapper } from '@/types/stateManager';
+import type { BookingData } from '@/types/booking';
 
 const initialState: State = {
   // Core session configuration
@@ -51,6 +52,11 @@ const initialState: State = {
   // Persistent state manager
   persist: null,
 
+  // Booking data for displaying flight cards
+  bookingData: null,
+
+  // Remote message queue
+  remoteMessageQueue: [],
 };
 
 /**
@@ -78,6 +84,9 @@ export type SessionActions = {
   setErrorMessage: (errorMessage: ErrorMessage | null) => void;
   setVadEnabled: (vadEnabled: boolean) => void;
   setPersist: (wrapper: PersistentStateWrapper | null) => void;
+  setBookingData: (bookingData: BookingData | null) => void;
+  sendRemoteMessage: (data: any) => void;
+  clearRemoteMessageQueue: () => void;
 };      
 
 /**
@@ -173,6 +182,15 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     setPersist: (wrapper) => {
       set((prev) => ({ state: { ...prev.state, persist: wrapper } }));
+    },
+    setBookingData: (bookingData) => {
+      set((prev) => ({ state: { ...prev.state, bookingData } }));
+    },
+    sendRemoteMessage: (data: any) => {
+      set((prev) => ({ state: { ...prev.state, remoteMessageQueue: [...prev.state.remoteMessageQueue, data] } }));
+    },
+    clearRemoteMessageQueue: () => {
+      set((prev) => ({ state: { ...prev.state, remoteMessageQueue: [] } }));
     },
   },
 }));
