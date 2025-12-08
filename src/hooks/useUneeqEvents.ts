@@ -18,7 +18,8 @@ export const useUneeqEvents = (): void => {
 
   const processEvent = async (event: any) => {
     console.info(`[Uneeq Event] %c${event.uneeqMessageType}`, 'color:rgb(217, 64, 255);');
-    session.state.persist?.set(`uneeq_event_${event.uneeqMessageType.toLowerCase()}`, event);
+    // Remove for now to avoid state manager overflow
+    // session.state.persist?.set(`uneeq_event_${event.uneeqMessageType.toLowerCase()}`, event);
     console.log('[Uneeq Event] Event Object:');
     console.log(event);
 

@@ -97,29 +97,9 @@
     "hideButton": "Hide",
     "items": [
       {
-        "label": "Take me on a city tour",
-        "text": "I'd love to take a virtual tour of Lee's Summit",
+        "label": "Trip from Doha to London",
+        "text": "I would like to flight from Doha to London, next week, 1 adult",
         "icon": "FaStar"
-      },
-      {
-        "label": "Show me FIFA World Cup 2026 video",
-        "text": "I'd love to see the FIFA World Cup 2026 video",
-        "icon": "MdSportsSoccer"
-      },
-      {
-        "label": "Tell me about Lee's Summit attractions",
-        "text": "What are the best attractions and things to do in Lee's Summit?",
-        "icon": "MdLocalActivity"
-      },
-      {
-        "label": "Show me Arrowhead Stadium",
-        "text": "Can you show me Arrowhead Stadium where the World Cup matches will be played?",
-        "icon": "MdStadium"
-      },
-      {
-        "label": "Find me a hotel",
-        "text": "I need help finding accommodation in Lee's Summit for the World Cup",
-        "icon": "BsBuilding"
       }
     ]
   }

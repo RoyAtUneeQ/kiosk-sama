@@ -9,6 +9,7 @@ import { useSession } from '@/contexts';
 import { createActionFactory } from '@/factories';
 
 import { RemoteHeader, MessageList, Suggestions, ChatInput } from './components';
+import { MessageCards } from './components/MessageCards';
 import { GlowBackground } from '@/components';
 
 import { MicrophoneStatus } from '@/types/microphone';
@@ -83,7 +84,16 @@ function RemotePage() {
               connectionId={state.connectionId}
             />
 
-            <MessageList messages={state.history} />
+            <MessageList 
+              messages={state.history} 
+              renderCardsForMessage={(message, isLastAssistantMessage) => (
+                <MessageCards 
+                  message={message} 
+                  bookingData={state.bookingData} 
+                  isLastAssistantMessage={isLastAssistantMessage}
+                />
+              )}
+            />
             {state.webSocketState === WebsocketStatus.CONNECTED && state.showSuggestions && (
               <Suggestions disabled={state.microphoneStatus === MicrophoneStatus.LISTENING} 
                 onClose={() => actions.setShowSuggestions(false)}

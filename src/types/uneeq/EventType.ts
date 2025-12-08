@@ -31,5 +31,6 @@ export enum EventType {
   SessionDisconnected = 'SessionDisconnected',
   SpeechEvent = 'SpeechEvent',
   WaitingInQueue = 'WaitingInQueue',
-  WebRtcStats = 'WebRtcStats'
+  WebRtcStats = 'WebRtcStats',
+  CardResponse = 'CardResponse'
 }
