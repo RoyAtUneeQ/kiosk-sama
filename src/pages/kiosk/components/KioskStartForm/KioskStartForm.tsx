@@ -33,7 +33,7 @@ const KioskStartForm: React.FC = () => {
           label: option,
           active: state.renderMode === option
         })),
-        onSelect: (value) => actions.setRenderMode(value as "cloud" | "miniprem")
+        onSelect: (value: string | boolean) => actions.setRenderMode(value as "cloud" | "miniprem")
       });
     }
     
@@ -53,7 +53,7 @@ const KioskStartForm: React.FC = () => {
           active: !state.showClosedCaptions
         }
       ],
-      onSelect: (value) => actions.setShowClosedCaptions(value as boolean)
+      onSelect: (value: string | boolean) => actions.setShowClosedCaptions(value as boolean)
     });
     
     return options;

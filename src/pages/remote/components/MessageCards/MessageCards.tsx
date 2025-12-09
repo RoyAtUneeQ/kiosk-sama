@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Message } from '@/types/transport/Message';
 import { MessageSender } from '@/types';
 import type { BookingData } from '@/types/booking';
