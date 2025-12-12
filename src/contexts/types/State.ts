@@ -6,7 +6,9 @@ import type { Event } from "@/types/uneeq/Event";
 import type { Memory, Media, ErrorMessage } from "@/types/utils";
 import type { MicrophoneStatus } from "@/types/microphone";
 import type { PersistentStateWrapper } from "@/types/stateManager";
-import type { BookingData } from "@/types/booking";   
+import type { FlightsSearchData } from "@/types/flight";
+import type { FareSelectionData } from "@/types/fare";
+import type { BookingSummaryData } from "@/types/booking";   
 
 /**
  * Shape of the session state stored in Zustand.
@@ -48,8 +50,18 @@ export interface State {
     // Persistent state manager (server-backed session state)
     persist: PersistentStateWrapper | null;
 
-    // Booking data for displaying flight cards
-    bookingData: BookingData | null;
+    // Flights search data for displaying flight cards
+    flightsSearchData: FlightsSearchData | null;
+
+    // Fare selection data for displaying fare cards
+    fareSelectionData: FareSelectionData | null;
+
+    // Booking summary data for displaying booking summary
+    bookingSummaryData: BookingSummaryData | null;
+
+    // Map of message IDs to their associated card data
+    // This allows cards to stay with specific messages even when new messages arrive
+    messageCards: Record<string, FlightsSearchData | FareSelectionData | BookingSummaryData | null>;
 
     // Websocket message
     remoteMessageQueue: any[];

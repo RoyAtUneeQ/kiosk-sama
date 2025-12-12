@@ -1,4 +1,5 @@
 import { UneeqContainer, RemoteConnectionInfo, KioskStartForm, LeftSideBar, MediaContainer } from './components';
+import { CardContainer } from './components/CardContainer/CardContainer';
 import { SessionStatus } from '@/contexts/types';
 import { QRCode, TopProgressBar, DebugPanel } from '@/components';
 import { useSession } from '@/contexts/SessionContext';
@@ -9,6 +10,12 @@ import type { UneeqOptions } from '@/types/uneeq';
 import { useConfig } from '@/hooks/useConfig';
 import { useEffect } from 'react';
 import { createActionFactory } from '@/factories';
+import MessageCards from '@/pages/remote/components/MessageCards/MessageCards';
+import { MessageSender } from '@/types';
+import type { Message } from '@/types/transport/Message';
+import type { FlightsSearchData } from '@/types/flight';
+import type { FareSelectionData } from '@/types/fare';
+import type { BookingSummaryData } from '@/types/booking';
 
 function KioskPage() {
   // Track page load performance to measure lazy loading impact
@@ -82,6 +89,50 @@ function KioskPage() {
     }
   }, [state.persist, state.language]);
 
+  useEffect(() => {
+    if (Array.isArray(state.flightsSearchData)) {
+      console.log('[KioskPage] Normalizing flightsSearchData from array to object format');
+      actions.setFlightsSearchData({ data: state.flightsSearchData });
+    }
+    if (Array.isArray(state.fareSelectionData)) {
+      console.log('[KioskPage] Normalizing fareSelectionData from array to object format');
+      actions.setFareSelectionData({ data: state.fareSelectionData });
+    }
+  }, [state.flightsSearchData, state.fareSelectionData, actions]);
+
+  // Compute card data directly from state (Zustand will trigger re-renders when state changes)
+  // Check global state for the latest cards (these are updated when cards are set)
+  let cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | null = null;
+  
+  if (state.bookingSummaryData) {
+    cardData = state.bookingSummaryData;
+  } else if (state.fareSelectionData && state.fareSelectionData.data && Array.isArray(state.fareSelectionData.data) && state.fareSelectionData.data.length > 0) {
+    cardData = state.fareSelectionData;
+  } else if (state.flightsSearchData && state.flightsSearchData.data && Array.isArray(state.flightsSearchData.data) && state.flightsSearchData.data.length > 0) {
+    cardData = state.flightsSearchData;
+  }
+
+  // Find the last assistant message to use with MessageCards
+  let lastAssistantMessage: Message | null = null;
+  for (let i = state.history.length - 1; i >= 0; i--) {
+    const message = state.history[i];
+    if (message.sender === MessageSender.Assistant) {
+      lastAssistantMessage = message;
+      break;
+    }
+  }
+
+  // Check if there's at least one set of cards
+  const hasCards = cardData !== null && lastAssistantMessage !== null;
+
+  console.log('[KioskPage] Card state:', {
+    cardData,
+    lastAssistantMessage,
+    hasCards,
+    flightsSearchData: state.flightsSearchData,
+    fareSelectionData: state.fareSelectionData,
+    bookingSummaryData: state.bookingSummaryData
+  });
   // No token state logging; tokens are fetched on-demand over HTTP
 
   if (state.status === SessionStatus.IDLE || state.status === SessionStatus.READY)
@@ -112,6 +163,14 @@ function KioskPage() {
           )}
           {state.remoteInfo && <RemoteConnectionInfo info={state.remoteInfo} />}
           {state.media && <MediaContainer {...state.media} />}
+          {hasCards && lastAssistantMessage && cardData && (
+            <CardContainer>
+              <MessageCards 
+                message={lastAssistantMessage} 
+                cardData={cardData}
+              />
+            </CardContainer>
+          )}
         </>
       )}
     </div>

@@ -15,6 +15,7 @@ export { default as DebugPanel } from './debugPanel/DebugPanel';
 export { default as Tooltip } from './tooltip/Tooltip';
 export { default as TopProgressBar } from './topProgressBar/TopProgressBar';
 export { default as StatusPanel } from './statusPanel/StatusPanel';
+export { default as ThreeDotsLoader } from './threeDotsLoader/ThreeDotsLoader';
 export type { TooltipProps, TooltipPosition } from './tooltip/Tooltip';
 export type { SettingsOption, SettingsPanelProps } from './settingsPanel/SettingsPanel';
 export type { StatusItem, StatusPanelProps } from './statusPanel/StatusPanel';

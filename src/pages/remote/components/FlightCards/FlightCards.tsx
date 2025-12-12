@@ -2,19 +2,23 @@ import { useSession } from '@/contexts';
 import FlightSearchDetail from '@/components/features/booking/flight_search/FlightSearchDetail';
 import './FlightCards.scss';
 
+interface FlightCardsProps {
+  onFlightNumberClick?: (flightNumber: string) => void;
+}
+
 /**
  * FlightCards component displays flight search results as cards
  * on the Remote page when booking data is available.
  */
-export default function FlightCards() {
+export default function FlightCards({ onFlightNumberClick }: FlightCardsProps) {
   const { state } = useSession();
 
-  // Don't render if no booking data
-  if (!state.bookingData || !state.bookingData.data || state.bookingData.data.length === 0) {
+  // Don't render if no flights search data
+  if (!state.flightsSearchData || !state.flightsSearchData.data || state.flightsSearchData.data.length === 0) {
     return null;
   }
 
-  const flights = state.bookingData.data;
+  const flights = state.flightsSearchData.data;
 
   return (
     <div className="flight-cards-container">
@@ -24,7 +28,11 @@ export default function FlightCards() {
       </div>
       <div className="flight-cards-list">
         {flights.map((flight, index) => (
-          <FlightSearchDetail key={`${flight.flightNumber}-${index}`} flight={flight} />
+          <FlightSearchDetail 
+            key={`${flight.flightNumber}-${index}`} 
+            flight={flight}
+            onFlightNumberClick={onFlightNumberClick}
+          />
         ))}
       </div>
     </div>

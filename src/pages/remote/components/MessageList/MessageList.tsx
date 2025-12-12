@@ -1,15 +1,19 @@
 import './MessageList.scss';
 import React, { useEffect, useRef } from 'react';
 import type { Message } from '@/types/transport/Message';
-import { MessageBubble } from '@/components';
-import { MessageSender } from '@/types';
+import { MessageBubble, ThreeDotsLoader } from '@/components';
+import type { FlightsSearchData } from '@/types/flight';
+import type { FareSelectionData } from '@/types/fare';
+import type { BookingSummaryData } from '@/types/booking';
 
 interface MessageListProps {
   messages: Message[];
-  renderCardsForMessage?: (message: Message, isLastAssistantMessage: boolean) => React.ReactNode;
+  messageCards: Record<string, FlightsSearchData | FareSelectionData | BookingSummaryData | null>;
+  renderCardsForMessage?: (message: Message, cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | null) => React.ReactNode;
+  awaitingPromptResponse?: boolean;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, renderCardsForMessage }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, messageCards, renderCardsForMessage, awaitingPromptResponse = false }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Convert timestamp to Date object
@@ -55,30 +59,21 @@ const MessageList: React.FC<MessageListProps> = ({ messages, renderCardsForMessa
 
   const lastGroup = messageGroups.at(-1);
   
-  // Find the last assistant message to determine where to show cards
-  const lastAssistantMessageId = React.useMemo(() => {
-    // Find the last message group that is from the assistant
-    for (let i = messageGroups.length - 1; i >= 0; i--) {
-      if (messageGroups[i].sender === MessageSender.Assistant) {
-        return messageGroups[i].id;
-      }
-    }
-    return null;
-  }, [messageGroups]);
-  
-  // Auto-scroll to most recent message
+  // Auto-scroll to most recent message or loader
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, awaitingPromptResponse]);
 
     
   return (
     <div className="messages-container">
       {messageGroups.map((group) => {
-        const isLastAssistantMessage = group.id === lastAssistantMessageId;
+        // Look up card data for this specific message ID
+        // Cards are stored per message ID, so they stay with the message that originally triggered them
+        const cardData = messageCards[group.id] || null;
         // Determine if cards should be shown for this message
         const cards = renderCardsForMessage 
-          ? renderCardsForMessage(group.message, isLastAssistantMessage)
+          ? renderCardsForMessage(group.message, cardData)
           : null;
         
         return (
@@ -96,6 +91,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, renderCardsForMessa
           </React.Fragment>
         );
       })}
+      {awaitingPromptResponse && <ThreeDotsLoader />}
       <div ref={messagesEndRef} />
     </div>
   );

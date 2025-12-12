@@ -1,12 +1,12 @@
 import './RemotePage.scss';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useWebSocket, useUserInspect, usePageLoadMonitor, useViewport } from '@/hooks';
 import { WebsocketStatus } from '@/types/transport/WebsocketStatus';
 import { useParams } from 'react-router-dom';
 import { MessageSender } from '@/types';
 import { useConfig } from '@/hooks/useConfig';
 import { useSession } from '@/contexts';
-import { createActionFactory } from '@/factories';
+import { createActionFactory, MessageFactory } from '@/factories';
 
 import { RemoteHeader, MessageList, Suggestions, ChatInput } from './components';
 import { MessageCards } from './components/MessageCards';
@@ -56,9 +56,30 @@ function RemotePage() {
     // Send user messages to kiosk
     if (lastMessage.sender === MessageSender.User && kioskConnectionId) {
       console.log('Sending user message to kiosk:', lastMessage);
+      // Set awaiting response to true when sending a user message
+      actions.setAwaitingPromptResponse(true);
       websocket?.send(createActionFactory().sendMessage(kioskConnectionId, lastMessage));
     }
   }, [state.history, kioskConnectionId, websocket, actions]);
+
+  // Function to send a value via WebSocket without adding to chat history
+  // Used for flight numbers, boundIds, and other card selections
+  const handleCardValueClick = useCallback((value: string) => {
+    if (!kioskConnectionId || !websocket) {
+      console.warn('[RemotePage] Cannot send card value: missing kioskConnectionId or websocket');
+      return;
+    }
+
+    // Set awaiting response to true when clicking on a card
+    actions.setAwaitingPromptResponse(true);
+
+    // Create a user message with the value (silent=true means it won't appear in chat)
+    const message = MessageFactory.createUserMessage(value, true);
+    
+    // Send directly via WebSocket without adding to chat history
+    console.log('[RemotePage] Sending card value to kiosk via WebSocket:', value);
+    websocket.send(createActionFactory().sendMessage(kioskConnectionId, message));
+  }, [kioskConnectionId, websocket, actions]);
 
   return (
     <div className="chat-container">
@@ -85,12 +106,15 @@ function RemotePage() {
             />
 
             <MessageList 
-              messages={state.history} 
-              renderCardsForMessage={(message, isLastAssistantMessage) => (
+              messages={state.history}
+              messageCards={state.messageCards}
+              awaitingPromptResponse={state.awaitingPromptResponse}
+              renderCardsForMessage={(message, cardData) => (
                 <MessageCards 
                   message={message} 
-                  bookingData={state.bookingData} 
-                  isLastAssistantMessage={isLastAssistantMessage}
+                  cardData={cardData}
+                  onFlightNumberClick={handleCardValueClick}
+                  onBoundIdClick={handleCardValueClick}
                 />
               )}
             />
