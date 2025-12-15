@@ -4,9 +4,7 @@ import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type M
 import { type State, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
 import type { PersistentStateWrapper } from '@/types/stateManager';
-import type { FlightsSearchData } from '@/types/flight';
-import type { FareSelectionData } from '@/types/fare';
-import type { BookingSummaryData } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData } from '@/types/booking';
 
 const initialState: State = {
   // Core session configuration

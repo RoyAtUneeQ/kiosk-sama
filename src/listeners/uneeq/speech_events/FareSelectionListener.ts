@@ -1,6 +1,6 @@
 import { type SessionContextType } from "@/contexts/SessionContext";
 import { type CustomEventListener } from "@/listeners/types/CustomEventListener";
-import type { FareSelectionData } from "@/types/fare";
+import type { FareSelectionData } from "@/types/booking";
 
 /**
  * Handle the FareSelection event.

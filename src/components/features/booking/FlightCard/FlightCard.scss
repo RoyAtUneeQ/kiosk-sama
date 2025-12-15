@@ -1,4 +1,4 @@
-.flight-search-detail {
+.flight-card {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -129,7 +129,7 @@
   .total-label {
     color: #fff;
     font-size: 0.8rem;
-		font-weight: 400;
+    font-weight: 400;
   }
 
   .price-column {
@@ -141,17 +141,17 @@
 
   .price-strikethrough {
     font-size: 0.8rem;
-		font-weight: 400;
+    font-weight: 400;
     text-decoration: line-through;
   }
 
   .price-current {
     font-size: 0.9rem;
-		font-weight: 300;
+    font-weight: 300;
   }
 }
 
-.flight-search-detail--collapsed {
+.flight-card--collapsed {
   .flight-count {
     font-size: 0.8rem;
   }
@@ -172,4 +172,3 @@
     font-size: 0.8rem;
   }
 }
-

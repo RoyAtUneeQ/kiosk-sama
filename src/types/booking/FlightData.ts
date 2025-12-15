@@ -11,4 +11,3 @@ export interface FlightData {
   hasQSuite: number; // 0 or 1
   flightNumber: string;
 }
-

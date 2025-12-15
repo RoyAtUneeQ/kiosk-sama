@@ -6,9 +6,7 @@ import type { Event } from "@/types/uneeq/Event";
 import type { Memory, Media, ErrorMessage } from "@/types/utils";
 import type { MicrophoneStatus } from "@/types/microphone";
 import type { PersistentStateWrapper } from "@/types/stateManager";
-import type { FlightsSearchData } from "@/types/flight";
-import type { FareSelectionData } from "@/types/fare";
-import type { BookingSummaryData } from "@/types/booking";   
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData } from "@/types/booking";   
 
 /**
  * Shape of the session state stored in Zustand.

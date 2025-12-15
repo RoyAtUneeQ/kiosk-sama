@@ -1,6 +1,6 @@
 import { type SessionContextType } from "@/contexts/SessionContext";
 import { type CustomEventListener } from "@/listeners/types/CustomEventListener";
-import type { FlightsSearchData } from "@/types/flight";
+import type { FlightsSearchData } from "@/types/booking";
 
 /**
  * Handle the FlightsSearch event.

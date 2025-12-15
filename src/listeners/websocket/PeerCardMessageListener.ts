@@ -1,6 +1,5 @@
 import type { SessionContextType } from '@/contexts/SessionContext';
-import type { FlightsSearchData } from '@/types/flight';
-import type { FareSelectionData } from '@/types/fare';
+import type { FlightsSearchData, FareSelectionData } from '@/types/booking';
 import type { BookingSummaryData } from '@/types/booking';
 
 /**
@@ -30,11 +29,8 @@ export class PeerCardMessageListener {
       console.log('[PeerCardMessageListener] Flights search message received, updating flights search data:', flightsData);
       
       if (flightsData && Array.isArray(flightsData) && flightsData.length > 0) {
-        // Construct FlightsSearchData object with the flights array
-        const flightsSearchData: FlightsSearchData = {
-          data: flightsData,
-          metadata: payload.data.payload.metadata // Include metadata if present
-        };
+        // Set FlightsSearchData directly as the array of flights
+        const flightsSearchData: FlightsSearchData = flightsData;
         session.actions.setFlightsSearchData(flightsSearchData);
       } else {
         session.actions.setFlightsSearchData(null);
@@ -51,11 +47,8 @@ export class PeerCardMessageListener {
       console.log('[PeerCardMessageListener] Fare selection message received, updating fare selection data:', faresData);
       
       if (faresData && Array.isArray(faresData) && faresData.length > 0) {
-        // Construct FareSelectionData object with the fares array
-        const fareSelectionData: FareSelectionData = {
-          data: faresData,
-          metadata: payload.data.payload.metadata // Include metadata if present
-        };
+        // Set FareSelectionData directly as the array of fares
+        const fareSelectionData: FareSelectionData = faresData;
         session.actions.setFareSelectionData(fareSelectionData);
       } else {
         session.actions.setFareSelectionData(null);

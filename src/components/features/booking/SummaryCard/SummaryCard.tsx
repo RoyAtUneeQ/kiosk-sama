@@ -1,37 +1,25 @@
 import { useState } from "react";
 import { Card } from "@/components/index";
 import type { BookingSummaryData } from "@/types/booking";
-import "./BookingSummaryCard.scss";
+import "./SummaryCard.scss";
 
-interface BookingSummaryCardProps {
+interface SummaryCardProps {
   booking: BookingSummaryData;
 }
 
-/**
- * Format date string to readable format (Month Day, Year)
- */
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
-/**
- * Format currency amount
- */
 function formatPrice(amount: number, currency: string): string {
   return `${currency} ${amount.toLocaleString()}`;
 }
 
-/**
- * Format cabin class from "ECONOMY" to "Economy"
- */
 function formatCabinClass(cabinClass: string): string {
   return cabinClass.charAt(0) + cabinClass.slice(1).toLowerCase();
 }
 
-/**
- * Format trip type from "one-way" to "One Way"
- */
 function formatTripType(tripType: string): string {
   return tripType
     .split('-')
@@ -39,7 +27,7 @@ function formatTripType(tripType: string): string {
     .join(' ');
 }
 
-export default function BookingSummaryCard({ booking }: BookingSummaryCardProps) {
+export default function SummaryCard({ booking }: SummaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const departureDate = formatDate(booking.departureDate);
@@ -57,12 +45,11 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
 
   const collapsedContent = (
     <>
-      <div className="booking-header">
-        <div className="booking-title">Booking Summary</div>
-        <div className="booking-price">{totalPrice}</div>
+      <div className="summary-header">
+        <div className="summary-title">Booking Summary</div>
+        <div className="summary-price">{totalPrice}</div>
       </div>
-
-      <div className="booking-route">
+      <div className="summary-route">
         <div className="route-cities">
           <span className="origin">{booking.origin}</span>
           <span className="arrow">→</span>
@@ -70,8 +57,7 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
         </div>
         <div className="route-type">{tripType}</div>
       </div>
-
-      <div className="booking-dates">
+      <div className="summary-dates">
         <div className="date-item">
           <span className="date-label">Departure:</span>
           <span className="date-value">{departureDate}</span>
@@ -83,8 +69,7 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
           </div>
         )}
       </div>
-
-      <div className="booking-info-row">
+      <div className="summary-info-row">
         <span className="cabin-class">{cabinClass}</span>
         <span className="passengers-count">
           {booking.adultsCount} adult{booking.adultsCount !== 1 ? 's' : ''}
@@ -97,14 +82,13 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
 
   const expandedContent = (
     <>
-      <div className="booking-header">
-        <div className="booking-title">Booking Summary</div>
-        <div className="booking-price">{totalPrice}</div>
+      <div className="summary-header">
+        <div className="summary-title">Booking Summary</div>
+        <div className="summary-price">{totalPrice}</div>
       </div>
-
-      <div className="booking-section">
+      <div className="summary-section">
         <div className="section-title">Trip Details</div>
-        <div className="booking-route">
+        <div className="summary-route">
           <div className="route-cities">
             <span className="origin">{booking.origin}</span>
             <span className="arrow">→</span>
@@ -112,7 +96,7 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
           </div>
           <div className="route-type">{tripType}</div>
         </div>
-        <div className="booking-dates">
+        <div className="summary-dates">
           <div className="date-item">
             <span className="date-label">Departure:</span>
             <span className="date-value">{departureDate}</span>
@@ -125,8 +109,7 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
           )}
         </div>
       </div>
-
-      <div className="booking-section">
+      <div className="summary-section">
         <div className="section-title">Passengers</div>
         <div className="passengers-list">
           {booking.passengers.map((passenger, index) => (
@@ -141,8 +124,7 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
           ))}
         </div>
       </div>
-
-      <div className="booking-section">
+      <div className="summary-section">
         <div className="section-title">Contact Information</div>
         <div className="contact-info">
           <div className="contact-item">
@@ -155,8 +137,7 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
           </div>
         </div>
       </div>
-
-      <div className="booking-section">
+      <div className="summary-section">
         <div className="section-title">Booking Details</div>
         <div className="booking-details">
           <div className="detail-item">
@@ -181,9 +162,8 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
           )}
         </div>
       </div>
-
       {booking.paymentUrl && (
-        <div className="booking-actions">
+        <div className="summary-actions">
           <button
             type="button"
             className="payment-button"
@@ -199,12 +179,9 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
   return (
     <Card>
       <div
-        className={`booking-summary-card ${
-          isExpanded ? "booking-summary-card--expanded" : "booking-summary-card--collapsed"
-        }`}
+        className={`summary-card ${isExpanded ? "summary-card--expanded" : "summary-card--collapsed"}`}
       >
         {isExpanded ? expandedContent : collapsedContent}
-
         <button
           type="button"
           className="show-more"
@@ -219,4 +196,3 @@ export default function BookingSummaryCard({ booking }: BookingSummaryCardProps)
     </Card>
   );
 }
-

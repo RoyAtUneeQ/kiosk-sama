@@ -1,28 +1,28 @@
-.booking-summary-card {
+.summary-card {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
   color: #fff;
 
-  .booking-header {
+  .summary-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.5rem;
 
-    .booking-title {
+    .summary-title {
       font-size: 1.5rem;
       font-weight: 250;
     }
 
-    .booking-price {
+    .summary-price {
       font-size: 1.25rem;
       font-weight: 600;
     }
   }
 
-  .booking-route {
+  .summary-route {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -51,7 +51,7 @@
     }
   }
 
-  .booking-dates {
+  .summary-dates {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -71,7 +71,7 @@
     }
   }
 
-  .booking-info-row {
+  .summary-info-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -89,7 +89,7 @@
     }
   }
 
-  .booking-section {
+  .summary-section {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -174,7 +174,7 @@
     }
   }
 
-  .booking-actions {
+  .summary-actions {
     margin-top: 0.5rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.16);
@@ -215,4 +215,3 @@
     width: fit-content;
   }
 }
-

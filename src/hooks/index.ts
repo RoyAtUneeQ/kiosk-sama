@@ -1,5 +1,5 @@
 export * from './useAnimatedText';
-export * from './useConfig';    
+export * from './useConfig';
 export * from './useUneeq';
 export * from './useUneeqEvents';
 export * from './useUserInspect';
@@ -10,4 +10,10 @@ export * from './usePerformanceMonitor';
 export * from './useViewport';
 export * from './useSpeechServices';
 export * from './useStateManager';
+export * from './useLanguagePersist';
+export * from './useCardData';
+export * from './useKioskSession';
+export * from './useRemoteConnection';
+export * from './useRemoteSession';
+export * from './useKioskConnection';
 export { usePageLoadMonitor } from './usePerformanceMonitor';

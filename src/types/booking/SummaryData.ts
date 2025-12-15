@@ -1,25 +1,11 @@
-/**
- * Passenger data structure in booking summary
- */
-export interface Passenger {
-  passportNumber: string;
-  firstName: string;
-  lastName: string;
-  passengerType: string; // e.g., "ADT" for adult
-  gender: string;
-  nationality: string;
-  passengerId: string;
-  dateOfBirth: string; // ISO date format
-  title: string;
-  passportExpiry: string; // ISO date format
-}
+import type { PassengerData } from './PassengerData';
 
 /**
  * Booking summary data structure stored in state
  */
 export interface BookingSummaryData {
   cabinClass: string;
-  passengers: Passenger[];
+  passengers: PassengerData[];
   adultsCount: number;
   contactEmail: string;
   cartCurrency: string;
