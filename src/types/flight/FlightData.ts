@@ -12,16 +12,3 @@ export interface FlightData {
   flightNumber: string;
 }
 
-/**
- * Booking data structure stored in state
- */
-export interface BookingData {
-  data: FlightData[];
-  metadata?: {
-    executionTime?: number;
-    apiCalled?: string;
-    environment?: string;
-    cached?: boolean;
-  };
-}
-

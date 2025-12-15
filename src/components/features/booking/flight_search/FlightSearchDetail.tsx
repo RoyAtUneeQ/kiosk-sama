@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Card } from "@/components/index";
-import type { FlightData } from "@/types/booking";
+import type { FlightData } from "@/types/flight";
 import "./FlightSearchDetail.scss";
 
 interface FlightSearchDetailProps {
   flight: FlightData;
+  onFlightNumberClick?: (flightNumber: string) => void;
 }
 
 /**
@@ -55,7 +56,7 @@ function getAirlineName(flightNumber: string): string {
   return airlines[code] || `Airline ${code}`;
 }
 
-export default function FlightSearchDetail({ flight }: FlightSearchDetailProps) {
+export default function FlightSearchDetail({ flight, onFlightNumberClick }: FlightSearchDetailProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const departureTime = formatTime(flight.departureDateTime);
@@ -66,6 +67,16 @@ export default function FlightSearchDetail({ flight }: FlightSearchDetailProps) 
   const airlineCode = getAirlineCode(flight.flightNumber);
   const price = `${flight.currency} ${flight.minPrice}`;
   const stopsText = flight.numberOfStops === 0 ? 'Non-stop' : `${flight.numberOfStops} stop${flight.numberOfStops > 1 ? 's' : ''}`;
+
+  const handleCardClick = () => {
+    // Send flight number via WebSocket without adding to chat history
+    if (onFlightNumberClick) {
+      console.log('[FlightSearchDetail] Sending flight number:', flight.flightNumber);
+      onFlightNumberClick(flight.flightNumber);
+    } else {
+      console.warn('[FlightSearchDetail] onFlightNumberClick callback not provided');
+    }
+  };
 
   const collapsedContent = (
     <>
@@ -112,13 +123,18 @@ export default function FlightSearchDetail({ flight }: FlightSearchDetailProps) 
         className={`flight-search-detail ${
           isExpanded ? "flight-search-detail--expanded" : "flight-search-detail--collapsed"
         }`}
+        onClick={handleCardClick}
+        style={{ cursor: 'pointer' }}
       >
         {isExpanded ? expandedContent : collapsedContent}
 
         <button
           type="button"
           className="show-more"
-          onClick={() => setIsExpanded((prev) => !prev)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded((prev) => !prev);
+          }}
         >
           {isExpanded ? "Show less" : "Show more"}
         </button>

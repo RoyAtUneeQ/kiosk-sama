@@ -86,13 +86,14 @@ export class SpeechEventListener implements UneeqEventListener {
     const paramValue = speechEvent.param_value;
 
     // Legacy support: parse param_value for "type_id" format
-    if (paramValue?.includes("_")) {
-      const [type, value] = paramValue.split("_", 2);
-      return {
-        eventType: type,
-        eventValue: value
-      };
-    }
+    // This will not work with the new format of speech events
+    // if (paramValue?.includes("_")) {
+    //   const [type, value] = paramValue.split("_", 2);
+    //   return {
+    //     eventType: type,
+    //     eventValue: value
+    //   };
+    // }
 
     // Fallback: use param_value as both type and value
     return {

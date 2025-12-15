@@ -2,10 +2,21 @@ import type { SessionContextType } from '@/contexts/SessionContext';
 import type { WebSocketEventListener } from '../types/WebsocketEventListener';
 import { WebSocketEventType } from '@/types/transport/WebsocketEventType';
 import type { Message } from '@/types/transport/Message';
+import { MessageSender } from '@/types/transport/MessageSender';
 import { PeerCardMessageListener } from './PeerCardMessageListener';
 
 export class PeerMessageListener implements WebSocketEventListener {
   eventType = WebSocketEventType.PEER_MESSAGE;
+  
+  /**
+   * Removes uneeq custom event tags from message content.
+   * Matches tags like: <uneeq:custom_event name="..." />
+   */
+  private static removeUneeqCustomEventTag(content: string): string {
+    // Match <uneeq:custom_event name="..." /> with any name value
+    const uneeqCustomEventRegex = /<uneeq:custom_event\s+name="[^"]*"\s*\/?>/gi;
+    return content.replace(uneeqCustomEventRegex, '').trim();
+  }
   
   /**
    * Handle peer messages. Routes card messages to PeerCardMessageListener,
@@ -21,7 +32,17 @@ export class PeerMessageListener implements WebSocketEventListener {
     }
     
     // Regular message - add to history
-    session.actions.addMessageToHistory(payload.data as Message);
+    const message = payload.data as Message;
+    
+    // Remove uneeq custom event tags from message content
+    message.content = PeerMessageListener.removeUneeqCustomEventTag(message.content);
+    
+    session.actions.addMessageToHistory(message);
+    
+    // If it's an assistant message, stop showing the loader
+    if (message.sender === MessageSender.Assistant) {
+      session.actions.setAwaitingPromptResponse(false);
+    }
   }
 }
 

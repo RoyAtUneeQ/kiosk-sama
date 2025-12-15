@@ -1,10 +1,12 @@
 
 import { create } from 'zustand';
-import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media, type ErrorMessage } from '@/types';
+import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media, type ErrorMessage, MessageSender } from '@/types';
 import { type State, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
 import type { PersistentStateWrapper } from '@/types/stateManager';
-import type { BookingData } from '@/types/booking';
+import type { FlightsSearchData } from '@/types/flight';
+import type { FareSelectionData } from '@/types/fare';
+import type { BookingSummaryData } from '@/types/booking';
 
 const initialState: State = {
   // Core session configuration
@@ -52,8 +54,17 @@ const initialState: State = {
   // Persistent state manager
   persist: null,
 
-  // Booking data for displaying flight cards
-  bookingData: null,
+  // Flights search data for displaying flight cards
+  flightsSearchData: null,
+
+  // Fare selection data for displaying fare cards
+  fareSelectionData: null,
+
+  // Booking summary data for displaying booking summary
+  bookingSummaryData: null,
+
+  // Map of message IDs to their associated card data
+  messageCards: {},
 
   // Remote message queue
   remoteMessageQueue: [],
@@ -84,7 +95,9 @@ export type SessionActions = {
   setErrorMessage: (errorMessage: ErrorMessage | null) => void;
   setVadEnabled: (vadEnabled: boolean) => void;
   setPersist: (wrapper: PersistentStateWrapper | null) => void;
-  setBookingData: (bookingData: BookingData | null) => void;
+  setFlightsSearchData: (flightsSearchData: FlightsSearchData | null, messageId?: string) => void;
+  setFareSelectionData: (fareSelectionData: FareSelectionData | null, messageId?: string) => void;
+  setBookingSummaryData: (bookingSummaryData: BookingSummaryData | null, messageId?: string) => void;
   sendRemoteMessage: (data: any) => void;
   clearRemoteMessageQueue: () => void;
 };      
@@ -98,6 +111,53 @@ export interface SessionContextType {
 }
 
 type SessionStore = SessionContextType;
+
+/**
+ * Helper function to find the last assistant message ID if no messageId is provided.
+ */
+const findLastAssistantMessageId = (history: Message[]): string | undefined => {
+  for (let i = history.length - 1; i >= 0; i--) {
+    if (history[i].sender === MessageSender.Assistant) {
+      return history[i].id;
+    }
+  }
+  return undefined;
+};
+
+/**
+ * Helper function to update message card data and global state.
+ */
+const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData | BookingSummaryData>(
+  set: (fn: (prev: SessionStore) => SessionStore) => void,
+  get: () => SessionStore,
+  data: T | null,
+  messageId: string | undefined,
+  stateKey: keyof State
+) => {
+  const state = get().state;
+  let targetMessageId = messageId;
+  
+  // If no messageId provided, find the last assistant message
+  if (!targetMessageId) {
+    targetMessageId = findLastAssistantMessageId(state.history);
+  }
+  
+  // Update both the global data field and the message-specific cards
+  set((prev) => {
+    const newMessageCards = { ...prev.state.messageCards };
+    if (targetMessageId) {
+      newMessageCards[targetMessageId] = data;
+    }
+    return { 
+      ...prev,
+      state: { 
+        ...prev.state, 
+        [stateKey]: data,
+        messageCards: newMessageCards
+      } 
+    };
+  });
+};
 
 /**
  * Zustand store holding session state and actions.
@@ -183,8 +243,14 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     setPersist: (wrapper) => {
       set((prev) => ({ state: { ...prev.state, persist: wrapper } }));
     },
-    setBookingData: (bookingData) => {
-      set((prev) => ({ state: { ...prev.state, bookingData } }));
+    setFlightsSearchData: (flightsSearchData, messageId) => {
+      updateMessageCardData(set, get, flightsSearchData, messageId, 'flightsSearchData');
+    },
+    setFareSelectionData: (fareSelectionData, messageId) => {
+      updateMessageCardData(set, get, fareSelectionData, messageId, 'fareSelectionData');
+    },
+    setBookingSummaryData: (bookingSummaryData, messageId) => {
+      updateMessageCardData(set, get, bookingSummaryData, messageId, 'bookingSummaryData');
     },
     sendRemoteMessage: (data: any) => {
       set((prev) => ({ state: { ...prev.state, remoteMessageQueue: [...prev.state.remoteMessageQueue, data] } }));
