@@ -7,8 +7,7 @@ import { EventType } from '@/types';
  */
 export class SessionLiveListener implements UneeqEventListener {
   eventType = EventType.SessionLive;
-  execute(_data: any, session: SessionContextType): void {
-    session.state?.persist?.set('hello', "I am sending a hello from the Frontend");
+  execute(_data: any, _session: SessionContextType): void {
     console.log('[SessionLiveListener] SessionLive');
   }
 }

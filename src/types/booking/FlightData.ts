@@ -2,6 +2,7 @@
  * Flight data structure from booking pipeline
  */
 export interface FlightData {
+  flightId: string;
   duration: number; // Duration in seconds
   numberOfStops: number;
   minPrice: number;

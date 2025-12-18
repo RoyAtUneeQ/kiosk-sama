@@ -13,14 +13,15 @@ interface UseKioskConnectionParams {
 }
 
 interface UseKioskConnectionReturn {
-  handleCardValueClick: (value: string) => void;
+  handleFlightSelection: (flightId: string) => void;
+  handleFareSelection: (boundId: string) => void;
 }
 
 /**
  * Handle kiosk connection logic: connect to kiosk, forward messages, and card click handling.
  *
  * @param params - Connection parameters
- * @returns Card click handler for sending values to kiosk
+ * @returns Handlers for flight and fare selection
  */
 export const useKioskConnection = ({
   websocket,
@@ -53,21 +54,38 @@ export const useKioskConnection = ({
     }
   }, [state.history, kioskConnectionId, websocket, actions]);
 
-  // Handle card value clicks (flight numbers, boundIds, etc.)
-  const handleCardValueClick = useCallback(
-    (value: string) => {
+  // Generic method to send card values with custom messages
+  const sendCardValue = useCallback(
+    (messageText: string) => {
       if (!kioskConnectionId || !websocket) {
         console.warn('[useKioskConnection] Cannot send card value: missing kioskConnectionId or websocket');
         return;
       }
 
       actions.setAwaitingPromptResponse(true);
-      const message = MessageFactory.createUserMessage(value, true);
-      console.log('[useKioskConnection] Sending card value to kiosk:', value);
+      const message = MessageFactory.createUserMessage(messageText, true);
       websocket.send(createActionFactory().sendMessage(kioskConnectionId, message));
     },
     [kioskConnectionId, websocket, actions]
   );
 
-  return { handleCardValueClick };
+  // Handle flight selection clicks
+  const handleFlightSelection = useCallback(
+    (flightId: string) => {
+      console.log('[useKioskConnection] Sending flight selection to kiosk:', flightId);
+      sendCardValue(`User selected this flight: ${flightId} find the fare options for this flight.`);
+    },
+    [sendCardValue]
+  );
+
+  // Handle fare selection clicks
+  const handleFareSelection = useCallback(
+    (boundId: string) => {
+      console.log('[useKioskConnection] Sending fare selection to kiosk:', boundId);
+      sendCardValue(`User selected this fare: ${boundId} proceed to the next step.`);
+    },
+    [sendCardValue]
+  );
+
+  return { handleFlightSelection, handleFareSelection };
 };

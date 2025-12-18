@@ -21,7 +21,7 @@ function RemotePage() {
   const { websocket, isLargeScreen, userInspect } = useRemoteSession({ config });
 
   // Handle kiosk connection and messaging
-  const { handleCardValueClick } = useKioskConnection({
+  const { handleFlightSelection, handleFareSelection } = useKioskConnection({
     websocket,
     kioskConnectionId: kioskConnectionId ?? null,
     userInspect
@@ -63,8 +63,8 @@ function RemotePage() {
             <MessageCards
               message={message}
               cardData={cardData}
-              onFlightNumberClick={handleCardValueClick}
-              onBoundIdClick={handleCardValueClick}
+              onFlightIdClick={handleFlightSelection}
+              onBoundIdClick={handleFareSelection}
             />
           )}
         />

@@ -5,7 +5,7 @@ import "./FlightCard.scss";
 
 interface FlightCardProps {
   flight: FlightData;
-  onFlightNumberClick?: (flightNumber: string) => void;
+  onFlightIdClick?: (flightId: string) => void;
 }
 
 function formatDuration(seconds: number): string {
@@ -40,7 +40,7 @@ function getAirlineName(flightNumber: string): string {
   return airlines[code] || `Airline ${code}`;
 }
 
-export default function FlightCard({ flight, onFlightNumberClick }: FlightCardProps) {
+export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const departureTime = formatTime(flight.departureDateTime);
@@ -53,11 +53,11 @@ export default function FlightCard({ flight, onFlightNumberClick }: FlightCardPr
   const stopsText = flight.numberOfStops === 0 ? 'Non-stop' : `${flight.numberOfStops} stop${flight.numberOfStops > 1 ? 's' : ''}`;
 
   const handleCardClick = () => {
-    if (onFlightNumberClick) {
-      console.log('[FlightCard] Sending flight number:', flight.flightNumber);
-      onFlightNumberClick(flight.flightNumber);
+    if (onFlightIdClick) {
+      console.log('[FlightCard] Sending flight ID:', flight.flightId);
+      onFlightIdClick(flight.flightId);
     } else {
-      console.warn('[FlightCard] onFlightNumberClick callback not provided');
+      console.warn('[FlightCard] onFlightIdClick callback not provided');
     }
   };
 

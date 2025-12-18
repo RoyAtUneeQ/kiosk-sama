@@ -9,7 +9,7 @@ import './MessageCards.scss';
 interface MessageCardsProps {
   message: Message;
   cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | null;
-  onFlightNumberClick?: (flightNumber: string) => void;
+  onFlightIdClick?: (flightId: string) => void;
   onBoundIdClick?: (boundId: string) => void;
 }
 
@@ -28,7 +28,7 @@ function isBookingSummaryData(data: unknown): data is BookingSummaryData {
 /**
  * MessageCards - Renders booking cards (flights, fares, or summary) for assistant messages.
  */
-export default function MessageCards({ message, cardData, onFlightNumberClick, onBoundIdClick }: MessageCardsProps) {
+export default function MessageCards({ message, cardData, onFlightIdClick, onBoundIdClick }: MessageCardsProps) {
   if (message.sender !== MessageSender.Assistant || !cardData) {
     return null;
   }
@@ -44,9 +44,9 @@ export default function MessageCards({ message, cardData, onFlightNumberClick, o
     itemLabel = 'flight';
     children = cardData.map((flight, index) => (
       <FlightCard
-        key={`${flight.flightNumber}-${index}`}
+        key={`${flight.flightId}-${index}`}
         flight={flight}
-        onFlightNumberClick={onFlightNumberClick}
+        onFlightIdClick={onFlightIdClick}
       />
     ));
   } else if (isFareSelectionData(cardData)) {
