@@ -88,6 +88,7 @@ export type SessionActions = {
   setShowSuggestions: (showSuggestions: boolean) => void;
   setCamera: (camera: CameraHorizontalAnchor | CameraDistanceAnchor) => void;
   setShowClosedCaptions: (showClosedCaptions: boolean) => void;
+  //ToDo - Verify if this is still needed
   setMemory: (key: string, value: any) => void;
   setMicrophoneStatus: (status: MicrophoneStatus) => void;
   setErrorMessage: (errorMessage: ErrorMessage | null) => void;

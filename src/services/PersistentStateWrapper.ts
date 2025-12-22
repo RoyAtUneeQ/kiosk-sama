@@ -158,4 +158,25 @@ export class PersistentStateWrapper implements IPersistentStateWrapper {
   getSessionId(): string | undefined {
     return this.getSessionIdFn();
   }
+
+  async publishToTopic<T>(topicId: string, data: T): Promise<{ topicId: string; sessionId: string; deliveredTo: number; publishedAt: Date }> {
+    console.log(`[StateManagerSDK] 📢 PUBLISHTOTOPIC called for topic: "${topicId}"`);
+    console.log(`[StateManagerSDK] Data to publish:`, data);
+    try {
+      const session = this.getCurrentSession();
+      console.log(`[StateManagerSDK] Calling session.publishToTopic() on SDK...`);
+      const result = await session.publishToTopic<T>(topicId, data);
+      console.log(`[StateManagerSDK] ✅ PUBLISHTOTOPIC successful for "${topicId}":`, result);
+      return result;
+    } catch (error) {
+      console.error(`[StateManagerSDK] ❌ PUBLISHTOTOPIC failed for "${topicId}":`, error);
+      console.error(`[StateManagerSDK] Error details:`, {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        topicId,
+        data
+      });
+      throw error;
+    }
+  }
 }

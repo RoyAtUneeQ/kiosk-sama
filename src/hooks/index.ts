@@ -10,6 +10,7 @@ export * from './usePerformanceMonitor';
 export * from './useViewport';
 export * from './useSpeechServices';
 export * from './useStateManager';
+export * from './useTopicSubscriptions';
 export * from './useLanguagePersist';
 export * from './useCardData';
 export * from './useKioskSession';

@@ -1,7 +1,8 @@
 {
   "welcome": {
     "title": "¡Bienvenido a bordo!",
-    "description": "Tu experiencia digital está a punto de comenzar."
+    "description": "Tu experiencia digital está a punto de comenzar.",
+    "prompt": "Preséntate al usuario de manera amigable y atractiva. Utiliza tu base de conocimientos para iniciar una conversación y guiar la interacción. Continúa con una pregunta específica y enfocada que dirija el siguiente paso en la conversación, evitando preguntas abiertas."
   },
   "actions": {
     "startExperience": "Iniciar experiencia"

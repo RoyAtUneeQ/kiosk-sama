@@ -3,10 +3,10 @@ import type { Config } from '@/types';
 import type { UneeqOptions } from '@/types/uneeq';
 import { defaultUneeqOptions } from '@/types';
 import { useUneeq } from '@/hooks/useUneeq';
-import { useUneeqEvents, useStateManager, useWebSocket } from '@/hooks';
+import { useUneeqEvents, useStateManager, useWebSocket, useTopicSubscriptions } from '@/hooks';
 import { useSession } from '@/contexts/SessionContext';
 import { WebSocketService } from '@/services';
-
+import { useTranslation } from 'react-i18next';
 interface UseKioskSessionParams {
   /**
    * Application configuration containing persona, backend, and environment settings.
@@ -58,17 +58,13 @@ interface UseKioskSessionReturn {
 export const useKioskSession = (params: UseKioskSessionParams): UseKioskSessionReturn => {
   const { config, language, renderMode } = params;
   const { state, actions } = useSession();
-
-  // Welcome prompt for UneeQ session
-  const welcomePrompt = `Introduce yourself to the user in a friendly and engaging manner. Use your knowledge base to spark a conversation and guide the interaction.
-Follow up with a specific, focused question that directs the next step in the conversation, avoiding open-ended questions.`;
+  const { t } = useTranslation();        
 
   // Initialize UneeQ with merged options
   useUneeq(
     {
       ...defaultUneeqOptions,
       showClosedCaptions: state.showClosedCaptions,
-      welcomePrompt,
       showUserInputInterface: false
     } as UneeqOptions,
     language,
@@ -80,6 +76,9 @@ Follow up with a specific, focused question that directs the next step in the co
 
   // Initialize state manager for persistent storage
   useStateManager();
+
+  // Initialize pub/sub topic subscriptions
+  useTopicSubscriptions();
 
   // Configure the application config in session state
   useEffect(() => {

@@ -108,17 +108,17 @@ export const useUneeq = (options: UneeqOptions, language: string = 'en', type: '
     };
   }, [scriptLoading, scriptError, connectionUrl, personaId, loading, sessionKey, handleUneeqMessage]);
 
+  //ToDo - Revise this code it suppose to be lastMessage.sender === MessageSender.Assistant but for this all messages should come from the state manager
   //Send last history message to Uneeq  
   useEffect(() => {
     console.log("[useUneeq] sending message to Uneeq, last message is");
     const lastMessage = state.history[state.history.length - 1];    
-    console.dir(lastMessage);
+    
     // Only send non-User messages to Uneeq to prevent loops
     if (lastMessage && state.uneeq && lastMessage.sender !== MessageSender.Assistant) {
       window.uneeq?.[lastMessage.prompt ? 'chatPrompt' : 'speak'](lastMessage.content);
       console.log("[useUneeq] message sent to Uneeq");
     }
-
   }, [state.history]);        
 
   // Update VAD state when session changes

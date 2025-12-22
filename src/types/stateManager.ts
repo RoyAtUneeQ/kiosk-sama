@@ -77,6 +77,16 @@ export interface PersistentStateWrapper {
    * @returns The session ID or undefined if no session is active
    */
   getSessionId(): string | undefined;
+
+  /**
+   * Publish data to a topic for broadcast to subscribers.
+   *
+   * @template T The type of the data being published
+   * @param topicId The topic identifier to publish to
+   * @param data The data to publish to the topic
+   * @returns Promise resolving to the publish result with delivery information
+   */
+  publishToTopic<T>(topicId: string, data: T): Promise<{ topicId: string; sessionId: string; deliveredTo: number; publishedAt: Date }>;
 }
 
 /**
