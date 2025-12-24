@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import './Loading.scss';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from '@/hooks';
 import { Particles } from '@/components';
 import type { ParticlesOptions } from '@/types';
 

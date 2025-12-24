@@ -11,7 +11,6 @@ export { default as FeedbackLine } from './feedbackLine/FeedbackLine';
 export { default as ErrorBoundary } from './errorBoundary/ErrorBoundary';
 export { default as MessageBubble } from './messageBubble/MessageBubble';
 export { default as SettingsPanel } from './settingsPanel/SettingsPanel';
-export { default as DebugPanel } from './debugPanel/DebugPanel';
 export { default as Tooltip } from './tooltip/Tooltip';
 export { default as TopProgressBar } from './topProgressBar/TopProgressBar';
 export { default as StatusPanel } from './statusPanel/StatusPanel';

@@ -5,12 +5,9 @@ import type { Message, RemoteSessionInfo, WebsocketStatus } from "@/types/transp
 import type { Event } from "@/types/uneeq/Event";
 import type { Memory, Media, ErrorMessage } from "@/types/utils";
 import type { MicrophoneStatus } from "@/types/microphone";
-import type { PersistentStateWrapper } from "@/types/stateManager";
+import type { StateWrapper } from "@/types/stateManager";
 import type { FlightsSearchData, FareSelectionData, BookingSummaryData } from "@/types/booking";   
 
-/**
- * Shape of the session state stored in Zustand.
- */
 export interface State {
     config: Config;
     status: SessionStatus;
@@ -45,8 +42,8 @@ export interface State {
     // VAD state
     vadEnabled: boolean;
 
-    // Persistent state manager (server-backed session state)
-    persist: PersistentStateWrapper | null;
+    // State Manager
+    stateManager: StateWrapper | null;
 
     // Flights search data for displaying flight cards
     flightsSearchData: FlightsSearchData | null;
@@ -63,4 +60,8 @@ export interface State {
 
     // Websocket message
     remoteMessageQueue: any[];
+
+    // Avatar speech state
+    isAvatarSpeaking: boolean;
+    sentMessageIds: Set<string>;
   }

@@ -4,24 +4,17 @@ import { WebSocketEventType } from '@/types/transport/WebsocketEventType';
 import type { Message } from '@/types/transport/Message';
 import { MessageSender } from '@/types/transport/MessageSender';
 import { PeerCardMessageListener } from './PeerCardMessageListener';
+import { MessageFactory } from '@/factories';
 
 export class PeerMessageListener implements WebSocketEventListener {
   eventType = WebSocketEventType.PEER_MESSAGE;
-  
-  /**
-   * Removes uneeq custom event tags from message content.
-   * Matches tags like: <uneeq:custom_event name="..." />
-   */
+
   private static removeUneeqCustomEventTag(content: string): string {
     // Match <uneeq:custom_event name="..." /> with any name value
     const uneeqCustomEventRegex = /<uneeq:custom_event\s+name="[^"]*"\s*\/?>/gi;
     return content.replace(uneeqCustomEventRegex, '').trim();
   }
-  
-  /**
-   * Handle peer messages. Routes card messages to PeerCardMessageListener,
-   * and regular messages are added to message history.
-   */
+
   execute(payload: any, session: SessionContextType): void {
     console.log(`[PeerMessageListener] received message from WebSocket event:`, payload);
     
@@ -35,9 +28,15 @@ export class PeerMessageListener implements WebSocketEventListener {
     const message = payload.data as Message;
     
     // Remove uneeq custom event tags from message content
-    message.content = PeerMessageListener.removeUneeqCustomEventTag(message.content);
+    const cleanedContent = PeerMessageListener.removeUneeqCustomEventTag(message.content);
     
-    session.actions.addMessageToHistory(message);
+    // Preserve the original sender from the message (don't force it to be a user message)
+    const messageToAdd = MessageFactory.fromRawData({
+      ...message,
+      content: cleanedContent
+    });
+    
+    session.actions.addMessageToHistory(messageToAdd);
     
     // If it's an assistant message, stop showing the loader
     if (message.sender === MessageSender.Assistant) {

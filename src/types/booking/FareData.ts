@@ -1,6 +1,3 @@
-/**
- * Fare data structure from booking pipeline
- */
 export interface FareData {
   fareFamilyCode: string;
   isPromotionalOffer: number;

@@ -9,9 +9,6 @@ export class EventsTrigger implements Trigger {
     icon: string = "BsCalendar3";
     description: string = "Let's discover this special event calendar! Party time!";
 
-    /** 
-     * Generate information about Lee's Summit city events and FIFA World Cup 2026 calendar
-     */
     execute({actions}: SessionContextType): Message {
         actions.setAwaitingPromptResponse(true);
         actions.setMedia(null);

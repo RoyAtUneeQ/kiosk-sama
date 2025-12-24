@@ -12,13 +12,9 @@ export interface StatusItem {
 }
 
 export interface StatusPanelProps {
-  /** Array of status items to display */
   items: StatusItem[];
-  /** Custom className for the container */
   className?: string;
-  /** Layout orientation */
   orientation?: 'vertical' | 'horizontal';
-  /** Whether to show the panel */
   visible?: boolean;
 }
 

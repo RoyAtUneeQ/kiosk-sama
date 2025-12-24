@@ -1,14 +1,11 @@
-/**
- * Flight data structure from booking pipeline
- */
 export interface FlightData {
   flightId: string;
-  duration: number; // Duration in seconds
+  duration: number;
   numberOfStops: number;
   minPrice: number;
-  departureDateTime: string; // ISO 8601 format
+  departureDateTime: string;
   currency: string;
-  arrivalDateTime: string; // ISO 8601 format
-  hasQSuite: number; // 0 or 1
+  arrivalDateTime: string;
+  hasQSuite: number;
   flightNumber: string;
 }

@@ -4,23 +4,14 @@ import React, { useState, useRef, useEffect } from 'react';
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
 export interface TooltipProps {
-  /** Content to display in the tooltip */
   content: string;
-  /** Position of the tooltip relative to the trigger element */
   position?: TooltipPosition;
-  /** Whether the tooltip is for a special element (gold styling) */
   special?: boolean;
-  /** Delay before showing tooltip (in milliseconds) */
   showDelay?: number;
-  /** Delay before hiding tooltip (in milliseconds) */
   hideDelay?: number;
-  /** Whether to disable the tooltip */
   disabled?: boolean;
-  /** Custom className for the tooltip container */
   className?: string;
-  /** Children element that triggers the tooltip */
   children: React.ReactNode;
-  /** Whether to show tooltip on focus (for accessibility) */
   showOnFocus?: boolean;
 }
 

@@ -12,9 +12,6 @@ const triggerRegistry = new Map<string, Trigger>();
 // Cache for getAllTriggers to prevent unnecessary re-renders
 let cachedTriggerItems: TriggerItem[] | null = null;
 
-/**
- * Register a trigger class by instantiating and indexing by its generated key.
- */
 export function registerTrigger<T extends Trigger>(TriggerClass: new () => T, className: string) {
   try {
     const instance = new TriggerClass();
@@ -44,10 +41,6 @@ Object.entries(triggers).forEach(([className, TriggerClass]: [string, any]) => {
   }
 });
 
-/**
- * Get all registered triggers as TriggerItem array.
- * This is the main factory function that components should use.
- */
 export const getAllTriggers = (): TriggerItem[] => {
   // Return cached version if available
   if (cachedTriggerItems) {
@@ -68,9 +61,6 @@ export const getAllTriggers = (): TriggerItem[] => {
   return triggerItems;
 };
 
-/**
- * Get a specific trigger by key, or null if not registered.
- */
 export const getTrigger = (key: string): Trigger | null => {
   const trigger = triggerRegistry.get(key);
   if (!trigger) {
@@ -80,9 +70,6 @@ export const getTrigger = (key: string): Trigger | null => {
   return trigger;
 };
 
-/**
- * Get all registered trigger keys.
- */
 export const getTriggerKeys = (): string[] => {
   return Array.from(triggerRegistry.keys());
 };

@@ -4,9 +4,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 export interface FeedbackLineProps {
   listening?: boolean;
   speaking?: boolean;
-  thickness?: number; // pixels
+  thickness?: number;
   className?: string;
-  /** Optional external level 0..1; when provided we won't open the mic */
   level?: number;
 }
 

@@ -3,8 +3,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { FiX } from 'react-icons/fi';
 import { useSession } from '@/contexts/SessionContext';
 import { MessageFactory } from '@/factories';
-import { useTranslation } from '@/hooks/useTranslation';
-import { useDynamicIcons } from '@/hooks/useDynamicIcons';
+import { useTranslation, useDynamicIcons } from '@/hooks';
   
 
 interface SuggestionsProps {

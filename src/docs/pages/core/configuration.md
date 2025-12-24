@@ -18,7 +18,7 @@ The configuration system provides a centralized way to manage application settin
 
 ```mermaid
 graph TB
-    A[📄 config.yaml] --> B[🪝 useConfig Hook]
+    A[📄 config.yaml] --> B[🪝 useConfiguration Hook]
     B --> C[📊 React Query Cache]
     C --> D[🎨 ConfigLoader Component]
     D --> E[🖥️ Application Components]
@@ -37,7 +37,7 @@ graph TB
 sequenceDiagram
     participant App as 🚀 App Startup
     participant Loader as 📦 ConfigLoader
-    participant Hook as 🪝 useConfig
+    participant Hook as 🪝 useConfiguration
     participant Query as 📊 React Query
     participant Component as 🎨 Your Components
 
@@ -185,9 +185,9 @@ export interface ApiConfig {
 
 ## 🪝 Using Configuration in Components
 
-### The useConfig Hook
+### The useConfiguration Hook
 
-The `useConfig` hook provides access to configuration data with helpful utilities:
+The `useConfiguration` hook provides access to configuration data with helpful utilities:
 
 ```typescript
 const {
@@ -198,17 +198,17 @@ const {
   getSupportedLanguages,     // Get available languages
   getDefaultLanguage,        // Get default/fallback language
   getRenderByLanguage        // Get render types for language
-} = useConfig();
+} = useConfiguration();
 ```
 
 ### Basic Usage Examples
 
 #### Accessing App Configuration
 ```typescript
-import { useConfig } from '@/hooks/useConfig';
+import { useConfiguration } from '@/hooks';
 
 function MyComponent() {
-  const { config } = useConfig();
+  const { config } = useConfiguration();
   
   // Access app settings
   const appName = config?.app?.name || 'Default App';
@@ -302,7 +302,7 @@ graph LR
 
 **Example:**
 ```typescript
-const { config } = useConfig();
+const { config } = useConfiguration();
 console.log(config?.app?.name); // undefined
 ```
 
@@ -313,7 +313,7 @@ console.log(config?.app?.name); // undefined
 
 ```typescript
 function SafeComponent() {
-  const { config, loading, error } = useConfig();
+  const { config, loading, error } = useConfiguration();
   
   // ✅ Handle loading state
   if (loading) return <div>Loading...</div>;
@@ -380,7 +380,7 @@ backend:
 
 // ✅ Component uses config + EphemeralTokenService securely
 function SecureApiComponent() {
-  const { config } = useConfig();
+  const { config } = useConfiguration();
   
   const tokenService = new EphemeralTokenService({
     apiBaseUrl: config?.backend?.endpoints?.http
@@ -424,7 +424,7 @@ The configuration system provides a robust foundation for managing application s
 4. **Test loading**: Verify configuration loads without errors
 
 ### **Using Configuration:**
-1. **Import hook**: Use `useConfig()` in components
+1. **Import hook**: Use `useConfiguration()` in components
 2. **Handle states**: Check `loading` and `error` states
 3. **Access safely**: Use optional chaining and fallbacks
 4. **Wrap app**: Use `ConfigLoader` to ensure config is ready

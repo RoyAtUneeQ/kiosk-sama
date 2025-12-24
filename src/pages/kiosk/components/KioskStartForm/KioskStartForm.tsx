@@ -1,5 +1,5 @@
 import "./KioskStartForm.scss";
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Button from "@/components/shared/button/Button";
 import Panel from "@/components/shared/panel/Panel";
 import { SettingsPanel, StatusPanel } from "@/components";
@@ -9,15 +9,11 @@ import { useConfig, useTranslation } from "@/hooks";
 import { useSession } from "@/contexts/SessionContext";
 import { WebsocketStatus } from "@/types";
 import { SessionStatus } from '@/contexts/types';
-import { usePerformanceMonitor } from "@/hooks/usePerformanceMonitor";
 
 const KioskStartForm: React.FC = () => { 
   const { actions, state } = useSession();
   const { getSupportedLanguages, getRenderByLanguage } = useConfig();
   const { t, changeLanguage } = useTranslation();
-  
-  // Performance monitoring for experience startup
-  const { startTiming, endTiming } = usePerformanceMonitor('KioskStartForm');
 
   // Configure settings options
   const settingsOptions = useMemo<SettingsOption[]>(() => {
@@ -83,21 +79,12 @@ const KioskStartForm: React.FC = () => {
     }
   ], [state.webSocketState, state.uneeq, state.connectionId, t]);
 
-  // Start the experience when the user clicks the start button
   const startExperience = useCallback(() => {
-    startTiming('experience-startup');
     actions.setSessionStatus(SessionStatus.LOADING, () => {
       state.uneeq?.init();
       state.uneeq?.startSession();
     });
-  }, [state.uneeq, startTiming]);
-
-  // Track when experience startup completes (LOADING -> LIVE)
-  useEffect(() => {
-    if (state.status === SessionStatus.LIVE) {
-      endTiming('experience-startup');
-    }
-  }, [state.status, endTiming]);
+  }, [state.uneeq, actions]);
 
   return (
     <div className="kiosk-component">

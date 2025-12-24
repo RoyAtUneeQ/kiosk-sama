@@ -1,37 +1,31 @@
 import './ChatInput.scss';
 import { FeedbackLine } from '@/components';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { FiSend } from 'react-icons/fi';
 import MicrophoneControl from '../MicrophoneControl/MicrophoneControl';
 import { useSession } from '@/contexts';
-import { MessageFactory } from '@/factories';
 import { MicrophoneStatus } from '@/types/microphone';
 
 interface ChatInputProps {
   disabled?: boolean;
+  onSendText: (text: string) => void;
 }
 
 const ChatInput: React.FC<ChatInputProps> = React.memo(({ 
   disabled,
+  onSendText,
 }) => {
-  const { state, actions } = useSession();
-  const [inputText, setInputText] = useState('');
+  const { state } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Focus input field on mount
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+  const [inputText, setInputText] = useState('');
 
   const handleSendText = useCallback(() => {
     const trimmed = inputText.trim();
     if (!trimmed || disabled) return;
-    
+
     setInputText('');
-    actions.addMessageToHistory(
-      MessageFactory.createUserMessage(trimmed)
-    );
-  }, [inputText, disabled, actions]);
+    onSendText(trimmed);
+  }, [inputText, disabled, onSendText]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {

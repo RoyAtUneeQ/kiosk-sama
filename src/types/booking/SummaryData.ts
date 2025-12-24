@@ -1,8 +1,5 @@
 import type { PassengerData } from './PassengerData';
 
-/**
- * Booking summary data structure stored in state
- */
 export interface BookingSummaryData {
   cabinClass: string;
   passengers: PassengerData[];

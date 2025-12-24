@@ -4,9 +4,6 @@ import { WebSocketEventType } from '@/types/transport/WebsocketEventType';
 
 export class RegisterRemoteListener implements WebSocketEventListener {
   eventType = WebSocketEventType.REGISTER_REMOTE;
-  /**
-   * Store remote info received from backend after successful registration.
-   */
   execute(data: any, session: SessionContextType): void {
     console.log("[RegisterRemoteListener] 🎤 Disabling VAD for remote session");
     session.actions.setVadEnabled(false);

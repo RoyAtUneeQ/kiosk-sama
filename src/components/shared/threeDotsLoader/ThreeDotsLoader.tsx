@@ -1,9 +1,6 @@
 import React from 'react';
 import './ThreeDotsLoader.scss';
 
-/**
- * ThreeDotsLoader component displays an animated three dots loader
- */
 export const ThreeDotsLoader: React.FC = () => {
   return (
     <div className="three-dots-loader">

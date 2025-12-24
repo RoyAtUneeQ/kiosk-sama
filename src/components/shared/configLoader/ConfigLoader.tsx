@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import type { ReactNode } from 'react';
-import { useConfig } from '@/hooks/useConfig';
+import { useConfig } from '@/hooks';
 import { LoadingFallback } from '../loadingFallback/LoadingFallback';
-import { PerformanceMonitor } from '@/services';
 
 interface ConfigLoaderProps {
   children: ReactNode;
@@ -14,13 +13,6 @@ export const ConfigLoader: React.FC<ConfigLoaderProps> = ({
   fallback = <LoadingFallback message="Loading configuration..." size="large" className="loading-fallback--fullscreen" />
 }) => {
   const { config, loading, error, reload } = useConfig();
-
-  // Initialize PerformanceMonitor with config once it's loaded
-  useEffect(() => {
-    if (config) {
-      PerformanceMonitor.initialize(config);
-    }
-  }, [config]);
 
   // Show loading state
   if (loading) {

@@ -1,7 +1,8 @@
 {
   "welcome": {
     "title": "أهلاً وسهلاً بك على متن الطائرة!",
-    "description": "تجربتك الرقمية على وشك أن تبدأ."
+    "description": "تجربتك الرقمية على وشك أن تبدأ.",
+    "prompt": "Tell me who you are and what you do."
   },
   "actions": {
     "startExperience": "بدء التجربة"

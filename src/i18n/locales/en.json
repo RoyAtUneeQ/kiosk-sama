@@ -1,7 +1,8 @@
 {
   "welcome": {
     "title": "Welcome Aboard!",
-    "description": "Your digital experience is about to begin."
+    "description": "Your digital experience is about to begin.",
+    "prompt": "Introduce yourself to the user in a friendly and engaging manner."
   },
   "actions": {
     "startExperience": "Start Experience"

@@ -1,7 +1,8 @@
 {
   "welcome": {
     "title": "ようこそ！",
-    "description": "デジタル体験が始まろうとしています。"
+    "description": "デジタル体験が始まろうとしています。",
+    "prompt": "Tell me who you are and what you do."
   },
   "actions": {
     "startExperience": "体験開始"

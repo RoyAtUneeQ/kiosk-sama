@@ -2,11 +2,6 @@ import { type SessionContextType } from "@/contexts/SessionContext";
 import { type CustomEventListener } from "@/listeners/types/CustomEventListener";
 import type { FlightsSearchData } from "@/types/booking";
 
-/**
- * Handle the FlightsSearch event.
- * When a flights search event is received, fetch flights search data from persistent state
- * and store it in session state for display on the Remote page.
- */
 export class FlightsSearchListener implements CustomEventListener {
   type = "flight_search";
   async execute(data: any, session: SessionContextType): Promise<void> {
@@ -15,12 +10,12 @@ export class FlightsSearchListener implements CustomEventListener {
 
     // Fetch flights search data from persistent state
     try {
-      if (!session.state.persist) {
-        console.warn('[FlightsSearchListener] Persistent state not available');
+      if (!session.state.stateManager) {
+        console.warn('[FlightsSearchListener] State Manager not available');
         return;
       }
 
-      const flightsSearchData = await session.state.persist.get<FlightsSearchData>('flights');
+      const flightsSearchData = await session.state.stateManager.get<FlightsSearchData>('flights');
 
       if (flightsSearchData && Array.isArray(flightsSearchData) && flightsSearchData.length > 0) {
         console.log('[FlightsSearchListener] Flights search data found:', flightsSearchData);

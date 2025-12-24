@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from '../../../hooks/useTranslation';
+import { useTranslation } from '@/hooks';
 import './TopProgressBar.scss';
 
 interface TopProgressBarProps {
-  /** Whether the progress bar should be visible */
   isVisible: boolean;
-  /** Custom className for additional styling */
   className?: string;
-  /** Progress bar height in rem */
   height?: number;
-  /** Animation speed in seconds */
   animationSpeed?: number;
 }
 

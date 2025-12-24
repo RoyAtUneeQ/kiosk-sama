@@ -11,7 +11,7 @@ A complete service-based architecture for voice interaction that handles microph
 - **MicrophonePermissionsService** - Permission management
 - **MicrophoneStreamService** - Audio capture and processing  
 - **SpeechToTextService** - Speech recognition with Deepgram
-- **useSpeechServices Hook** - Service orchestration
+- **useSpeechAdapter Hook** - Service orchestration
 - **MicrophoneControl Component** - UI integration
 
 ## 🏗️ Service Architecture
@@ -25,7 +25,7 @@ graph TB
     end
     
     subgraph "Orchestration Layer"
-        SpeechHook[🎛️ useSpeechServices<br/>Service coordination]
+        SpeechHook[🎛️ useSpeechAdapter<br/>Service coordination]
     end
     
     subgraph "UI Layer"
@@ -46,17 +46,17 @@ graph TB
 
 ### Step 1: Service Orchestration Hook
 
-The `useSpeechServices` hook manages all voice services automatically:
+The `useSpeechAdapter` hook manages all voice services automatically:
 
 ```typescript
-import { useSpeechServices } from '@/hooks';
+import { useSpeechAdapter } from '@/hooks';
 
 function VoiceEnabledComponent() {
     const { 
         isProcessing,      // Is speech being processed?
         status,           // Current microphone status display info
         toggleMicrophone  // Function to toggle mic on/off
-    } = useSpeechServices();
+    } = useSpeechAdapter();
     
     return (
         <div>
@@ -103,7 +103,7 @@ function MessageHandler() {
     const { state, actions } = useSession();
     
     // Voice messages are automatically added to state.history
-    // when speech recognition completes via useSpeechServices
+    // when speech recognition completes via useSpeechAdapter
     
     return (
         <div>
@@ -175,7 +175,7 @@ function CustomVoiceComponent() {
     const servicesRef = useRef(null);
     
     useEffect(() => {
-        // Services are initialized automatically by useSpeechServices
+        // Services are initialized automatically by useSpeechAdapter
         // Manual control is rarely needed
         
         return () => {
@@ -353,7 +353,7 @@ if (status.className === 'permission-needed') {
 **Issue: "STT service not working"**
 ```typescript
 // Check backend configuration
-const { config } = useConfig();
+const { config } = useConfiguration();
 console.log('Backend config:', config?.backend);
 
 // Verify ephemeral token service
@@ -469,7 +469,7 @@ The voice services system provides:
 - 🔄 **Message Integration**: Seamless integration with MessageFactory and session state
 
 ### **Simple Integration:**
-1. **Import Hook**: `const { toggleMicrophone } = useSpeechServices()`
+1. **Import Hook**: `const { toggleMicrophone } = useSpeechAdapter()`
 2. **Add Component**: `<MicrophoneControl />`  
 3. **Handle Messages**: Messages automatically appear in `state.history`
 4. **Style UI**: Use status-aware styling for visual feedback
