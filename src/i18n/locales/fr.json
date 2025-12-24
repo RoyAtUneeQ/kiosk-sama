@@ -2,7 +2,7 @@
   "welcome": {
     "title": "Bienvenue à bord !",
     "description": "Votre expérience numérique va commencer.",
-    "prompt": "Présentez-vous à l'utilisateur de manière amicale et engageante. Utilisez votre base de connaissances pour lancer une conversation et guider l'interaction. Suivez avec une question spécifique et ciblée qui oriente la prochaine étape de la conversation, en évitant les questions trop ouvertes."
+    "prompt": "Tell me who you are and what you do."
   },
   "actions": {
     "startExperience": "Commencer l'expérience"

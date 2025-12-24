@@ -2,7 +2,7 @@
   "welcome": {
     "title": "Welcome Aboard!",
     "description": "Your digital experience is about to begin.",
-    "prompt": "Introduce yourself to the user in a friendly and engaging manner. Use your knowledge base to spark a conversation and guide the interaction. Follow up with a specific, focused question that directs the next step in the conversation, avoiding open-ended questions."
+    "prompt": "Introduce yourself to the user in a friendly and engaging manner."
   },
   "actions": {
     "startExperience": "Start Experience"

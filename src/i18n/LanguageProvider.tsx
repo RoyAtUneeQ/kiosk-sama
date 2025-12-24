@@ -1,11 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/hooks/useConfig';
+import { useConfig } from '@/hooks';
 
-/**
- * Metadata and UI flags for a supported language.
- */
 export interface LanguageOption {
   code: string;
   label: string;
@@ -43,9 +40,6 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
-/**
- * Provide language switching utilities and metadata for the app.
- */
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const { i18n, t } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language || 'en');
@@ -142,9 +136,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   );
 };
 
-/**
- * Access the language context. Must be used within `LanguageProvider`.
- */
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (context === undefined) {

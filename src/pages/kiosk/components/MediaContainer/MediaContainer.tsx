@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./MediaContainer.scss";
 import type { Media } from "@/types";
-import { useViewport } from "@/hooks/useViewport"; 
+import { useViewport } from "@/hooks"; 
 
 const MediaContainer: React.FC<Media> = ({ 
   type, 

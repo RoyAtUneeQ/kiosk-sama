@@ -1,7 +1,7 @@
 import './LeftSideBar.scss';
 import { useSession } from '@/contexts';
 import { CircleButton, Tooltip } from '@/components';
-import { getAllTriggers, useIconFactory } from '@/factories';
+import { getAllTriggers, useIconFactory, MessageFactory } from '@/factories';
 // Available for customization: import type { TriggerItem } from '@/factories';
 import { useMemo } from 'react';  
 import type { Trigger } from '@/triggers/types/Trigger';
@@ -29,7 +29,7 @@ const LeftSideBar: React.FC = () => {
   const handleTriggerClick = async (trigger: Trigger) => {
     // Generate a message from the trigger and add it to the history ortherwise just execute the trigger
     const message = await trigger.execute({state, actions});
-    message && actions.addMessageToHistory(message);
+    message && actions.addMessageToHistory(MessageFactory.createUserMessage(message.content));
   };
 
   const { getIconComponent } = useIconFactory(iconNames);

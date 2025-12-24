@@ -14,15 +14,10 @@ export interface SettingsOption {
 }
 
 export interface SettingsPanelProps {
-  /** Array of settings options to display */
   settings: SettingsOption[];
-  /** Whether the panel is initially open */
   defaultOpen?: boolean;
-  /** Custom className for the container */
   className?: string;
-  /** Custom toggle button content */
   toggleContent?: React.ReactNode;
-  /** Whether to show the settings toggle button */
   showToggle?: boolean;
 }
 

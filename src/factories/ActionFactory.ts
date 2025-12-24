@@ -3,10 +3,6 @@ import type {
 } from "@/types/transport/actions";
 import type { RemoteSessionInfo, Message } from "@/types/transport";
 
-/**
- * Strongly-typed factory for creating websocket actions.
- * Provides an instance API with optional defaults via withDefaults().
- */
 export type ActionFactoryDefaults = {
   peerId?: string;
   remoteInfo?: RemoteSessionInfo;
@@ -35,9 +31,6 @@ export interface ActionFactory {
   withDefaults: (overrides: Partial<ActionFactoryDefaults>) => ActionFactory;
 }
 
-/**
- * Create an action factory with optional default parameters.
- */
 export const createActionFactory = (
   defaults: Partial<ActionFactoryDefaults> = {}
 ): ActionFactory => {

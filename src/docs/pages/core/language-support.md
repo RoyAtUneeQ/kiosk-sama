@@ -331,10 +331,10 @@ function WelcomeMessage() {
 Languages automatically integrate with persona configuration:
 
 ```typescript
-import { useConfig } from '@/hooks/useConfig';
+import { useConfiguration } from '@/hooks';
 
 function PersonaSelector() {
-  const { getSupportedLanguages, getRenderByLanguage } = useConfig();
+  const { getSupportedLanguages, getRenderByLanguage } = useConfiguration();
   const supportedLangs = getSupportedLanguages(); // ['en', 'fr', 'es', ...]
   const renderModes = getRenderByLanguage('fr'); // ['cloud', 'miniprem']
 }

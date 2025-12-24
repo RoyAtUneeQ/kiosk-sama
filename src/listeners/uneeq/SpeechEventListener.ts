@@ -8,9 +8,6 @@ import * as customEvents from './speech_events';
 export class SpeechEventListener implements UneeqEventListener {
   eventType = EventType.SpeechEvent;
   
-  /**
-   * Registry of custom event handlers indexed by their type
-   */
   private readonly customEvents: Map<string, CustomEventListener>;
 
   constructor() {
@@ -38,12 +35,6 @@ export class SpeechEventListener implements UneeqEventListener {
     console.log(`SpeechEventListener: Registered ${this.customEvents.size} custom events:`, Array.from(this.customEvents.keys()));
   }
 
-  /**
-   * Executes the appropriate custom event handler based on the speech event data
-   * 
-   * @param data - Speech event data containing event type and parameters
-   * @param session - Session context providing actions and state management
-   */
   execute(data: {speechEvent: SpeechEventData}, session: SessionContextType): void {
     try {
       console.log("SpeechEventListener: Executing speech event", data.speechEvent);
@@ -75,13 +66,6 @@ export class SpeechEventListener implements UneeqEventListener {
     }
   }
 
-  /**
-   * Parses speech event data to extract event type and value
-   * Handles both formats: "type_id" and just "type"
-   * 
-   * @param speechEvent - The speech event data
-   * @returns Object containing eventType and eventValue
-   */
   private parseEventData(speechEvent: SpeechEventData): { eventType: string; eventValue: string } {
     const paramValue = speechEvent.param_value;
 

@@ -42,5 +42,5 @@ i18n
 export default i18n;
 
 // Export hooks for easy access
-export { useTranslation } from '../hooks/useTranslation';
+export { useTranslation } from '@/hooks';
 export { useLanguage, LanguageProvider } from './LanguageProvider'; 

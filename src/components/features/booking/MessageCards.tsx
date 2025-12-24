@@ -25,9 +25,6 @@ function isBookingSummaryData(data: unknown): data is BookingSummaryData {
   return typeof data === 'object' && data !== null && !Array.isArray(data) && 'cabinClass' in data && 'passengers' in data;
 }
 
-/**
- * MessageCards - Renders booking cards (flights, fares, or summary) for assistant messages.
- */
 export default function MessageCards({ message, cardData, onFlightIdClick, onBoundIdClick }: MessageCardsProps) {
   if (message.sender !== MessageSender.Assistant || !cardData) {
     return null;

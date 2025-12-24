@@ -25,7 +25,6 @@
 .remote-connection-label {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--theme-primary-main);
   letter-spacing: 0.01em;
 }
 
@@ -37,7 +36,6 @@
   transform: translateX(-5%);
   min-width: 400px;
   background: var(--theme-background-paper);
-  color: var(--theme-primary-dark);
   border-radius: var(--theme-border-radius-md);
   box-shadow: 0 8px 32px 0 var(--theme-effects-primary-glow);
   padding: 1rem 1.25rem;
@@ -58,7 +56,7 @@
 .tooltip-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--theme-primary-main);
+  color: #FFD6D6; /* soft cherry-pink accent */
   margin-bottom: 0.5rem;
   letter-spacing: 0.01em;
 }
@@ -67,15 +65,21 @@
   display: flex;
   justify-content: flex-start;
   margin-bottom: 0.25rem;
-  gap: 0.2rem;
+  gap: 0.5rem;
 }
 
 .tooltip-label {
-  color: var(--theme-neutral-dark);
+  color: #FFB3B3; /* rosy red accent */
   font-weight: 500;
 }
 
 .tooltip-value {
-  color: var(--theme-primary-dark);
+  color: #FFEFCC; /* light warm yellow for contrast */
   font-weight: 600;
-} 
+  text-shadow: 0 1px 5px rgba(98, 13, 27, 0.2);
+}
+
+.remote-connection-tooltip {
+  background: linear-gradient(135deg, #3a0712 0%, #80151f 100%);
+  border: 1px solid #b10426;
+}

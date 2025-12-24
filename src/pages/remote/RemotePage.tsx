@@ -2,30 +2,31 @@ import './RemotePage.scss';
 import { useParams } from 'react-router-dom';
 import { WebsocketStatus } from '@/types/transport/WebsocketStatus';
 import { MicrophoneStatus } from '@/types/microphone';
-import { useConfig } from '@/hooks/useConfig';
+import { useConfig } from '@/hooks';
 import { useSession } from '@/contexts';
-import { usePageLoadMonitor, useRemoteSession, useKioskConnection } from '@/hooks';
+import { useRemoteOrchestrator } from './hooks/useRemoteOrchestrator';
 
 import { RemoteHeader, MessageList, Suggestions, ChatInput } from './components';
 import { MessageCards } from '@/components/features/booking';
 import { GlowBackground } from '@/components';
+import { useCallback } from 'react';
+import { MessageFactory } from '@/factories';
 
 function RemotePage() {
-  usePageLoadMonitor('RemotePage');
 
   const { config } = useConfig();
   const { kioskConnectionId } = useParams<{ kioskConnectionId: string }>();
   const { state, actions } = useSession();
 
-  // Initialize remote session (config, WebSocket, viewport, userInspect)
-  const { websocket, isLargeScreen, userInspect } = useRemoteSession({ config });
-
-  // Handle kiosk connection and messaging
-  const { handleFlightSelection, handleFareSelection } = useKioskConnection({
-    websocket,
-    kioskConnectionId: kioskConnectionId ?? null,
-    userInspect
+  const { isLargeScreen, handleFlightSelection, handleFareSelection } = useRemoteOrchestrator({ 
+    config, 
+    kioskConnectionId: kioskConnectionId ?? null 
   });
+
+  const onSendText = useCallback((text: string) => {
+    console.log('[onSendText] sending text to kiosk:', text);
+    actions.addMessageToHistory(MessageFactory.createUserMessage(text));
+  }, []);
 
   if (!kioskConnectionId) {
     return (
@@ -77,7 +78,7 @@ function RemotePage() {
           />
         )}
 
-        <ChatInput disabled={state.webSocketState !== WebsocketStatus.CONNECTED} />
+        <ChatInput disabled={state.webSocketState !== WebsocketStatus.CONNECTED} onSendText={onSendText} />
       </div>
     </div>
   );

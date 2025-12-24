@@ -10,6 +10,7 @@ lerna-debug.log*
 config.yaml
 .env
 .cursor/*
+.serena/*
 
 # Deployment configuration (contains AWS account info)
 deployment-config.json
@@ -39,5 +40,6 @@ sonar-project.properties
 commits.mdc
 
 .claude/
+.serena/
 
 CLAUDE.md

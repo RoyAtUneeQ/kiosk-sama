@@ -1,0 +1,89 @@
+import { useEffect, useRef } from 'react';
+import { MessageSender, WebsocketStatus } from '@/types/transport';
+import { useSession, type SessionContextType } from '@/contexts';
+import { createActionFactory, WebSocketEventFactory } from '@/factories';
+import { WebSocketService } from '@/services';
+import { WebSocketEventType } from '@/types/transport/WebsocketEventType';  
+
+interface UseWebSocketProps {
+    webSocketUrl: string;
+}
+
+export const useWebSocketAdapter = (props: UseWebSocketProps) => {
+  const { webSocketUrl } = props;
+  const session = useSession();
+  const actionFactory = createActionFactory();
+
+  // Ensure a singleton WebSocketService instance stored in the session
+  const websocketRef = useRef<WebSocketService | null>(null);
+  if (!websocketRef.current) {
+    websocketRef.current = new WebSocketService();
+  }
+
+  useEffect(() => {
+    if (!webSocketUrl || webSocketUrl.trim() === '') {
+      console.warn('useWebSocket: Invalid or empty WebSocket URL provided');
+      return;
+    }
+
+    const websocket = websocketRef.current!;
+
+    const unsubscribeHandlers: Array<() => void> = [
+      websocket.on('open', () => {
+        session.actions.setWebSocketState(WebsocketStatus.CONNECTED);
+        websocket.send(actionFactory.getConnectionId());
+      }),
+      websocket.on('*', ({ payload }: any) =>
+        WebSocketEventFactory(
+          payload?.type as WebSocketEventType
+        )?.execute(payload, session as SessionContextType)
+      ),
+      websocket.on('error', (error: unknown) => {
+        console.error('WebSocket error event:', error);
+        session.actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
+      }),
+      websocket.on('close', () => {
+        session.actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
+      })
+    ];
+
+    websocket.connect(webSocketUrl).catch((err: any) => {
+      console.error('Failed to connect WebSocket:', err);
+      session.actions.setWebSocketState(WebsocketStatus.DISCONNECTED);
+    });
+
+    return () => {
+      try { websocket.send(actionFactory.closeSession()); } catch {}
+      unsubscribeHandlers.forEach((unsubscribe) => unsubscribe?.());
+      // Do not close or forcibly change state here to preserve singleton connection
+    };
+  }, [webSocketUrl]);
+
+  useEffect(() => {
+    if (session.state.remoteInfo?.connectionId && session.state.remoteMessageQueue.length > 0) {
+      const queueToProcess = [...session.state.remoteMessageQueue];
+      
+      queueToProcess.forEach((data) => {
+        console.log('[useWebSocket] send remote message to peer', data);
+        websocketRef.current!.send(actionFactory.sendMessage(session.state.remoteInfo!.connectionId, data));
+      });
+      
+      session.actions.clearRemoteMessageQueue();
+    }
+  }, [session.state.remoteInfo?.connectionId, session.state.remoteMessageQueue.length]);
+
+  //Send last history message to peer
+  useEffect(() => {
+    const lastMessage = session.state.history[session.state.history.length - 1];
+    if(lastMessage && session.state.remoteInfo?.connectionId && lastMessage.sender === MessageSender.Assistant){
+      console.log('[useWebSocket] send last message to peer');
+      websocketRef.current!.send(actionFactory.sendMessage(session.state.remoteInfo.connectionId, lastMessage));
+    }
+  }, [session.state.history]);
+
+  return {
+    websocket: websocketRef.current!,
+  };
+};
+
+

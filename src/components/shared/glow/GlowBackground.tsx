@@ -12,12 +12,9 @@ export interface GlowBallConfig {
 export interface GlowBackgroundProps {
   className?: string;
   ariaHidden?: boolean;
-  /** When true, render a lighter set of balls for performance on large displays. */
   isLargeScreen?: boolean;
-  reactiveActive?: boolean; // when true, use mic amplitude to modulate size
-  /** @deprecated Pulse removed; this prop is ignored. */
+  reactiveActive?: boolean;
   reactiveIntensity?: number;
-  /** Controls how much the background is dimmed when not listening (0..1). Default 0.28 */
   dimOpacity?: number;
 }
 

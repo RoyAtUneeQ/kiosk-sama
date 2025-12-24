@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media, type ErrorMessage, MessageSender } from '@/types';
 import { type State, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
-import type { PersistentStateWrapper } from '@/types/stateManager';
+import type { StateWrapper } from '@/types/stateManager';
 import type { FlightsSearchData, FareSelectionData, BookingSummaryData } from '@/types/booking';
 
 const initialState: State = {
@@ -50,7 +50,7 @@ const initialState: State = {
   vadEnabled: true,
 
   // Persistent state manager
-  persist: null,
+  stateManager: null,
 
   // Flights search data for displaying flight cards
   flightsSearchData: null,
@@ -66,11 +66,12 @@ const initialState: State = {
 
   // Remote message queue
   remoteMessageQueue: [],
+
+  // Avatar speech state
+  isAvatarSpeaking: false,
+  sentMessageIds: new Set<string>(),
 };
 
-/**
- * All actions that can mutate the session store. Implemented via Zustand.
- */
 export type SessionActions = {
   setConfig: (config: Config) => void;
   setSessionStatus: (status: SessionStatus, callback?: () => void) => void;
@@ -93,17 +94,16 @@ export type SessionActions = {
   setMicrophoneStatus: (status: MicrophoneStatus) => void;
   setErrorMessage: (errorMessage: ErrorMessage | null) => void;
   setVadEnabled: (vadEnabled: boolean) => void;
-  setPersist: (wrapper: PersistentStateWrapper | null) => void;
+  setStateManager: (wrapper: StateWrapper | null) => void;
   setFlightsSearchData: (flightsSearchData: FlightsSearchData | null, messageId?: string) => void;
   setFareSelectionData: (fareSelectionData: FareSelectionData | null, messageId?: string) => void;
   setBookingSummaryData: (bookingSummaryData: BookingSummaryData | null, messageId?: string) => void;
   sendRemoteMessage: (data: any) => void;
   clearRemoteMessageQueue: () => void;
+  setIsAvatarSpeaking: (isSpeaking: boolean) => void;
+  markMessageAsSent: (messageId: string) => void;
 };      
 
-/**
- * Public store shape returned by `useSession()`.
- */
 export interface SessionContextType {
   state: State;
   actions: SessionActions;
@@ -111,9 +111,6 @@ export interface SessionContextType {
 
 type SessionStore = SessionContextType;
 
-/**
- * Helper function to find the last assistant message ID if no messageId is provided.
- */
 const findLastAssistantMessageId = (history: Message[]): string | undefined => {
   for (let i = history.length - 1; i >= 0; i--) {
     if (history[i].sender === MessageSender.Assistant) {
@@ -123,9 +120,6 @@ const findLastAssistantMessageId = (history: Message[]): string | undefined => {
   return undefined;
 };
 
-/**
- * Helper function to update message card data and global state.
- */
 const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData | BookingSummaryData>(
   set: (fn: (prev: SessionStore) => SessionStore) => void,
   get: () => SessionStore,
@@ -158,9 +152,6 @@ const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData |
   });
 };
 
-/**
- * Zustand store holding session state and actions.
- */
 export const useSessionStore = create<SessionStore>((set, get) => ({
   state: initialState,
   actions: {
@@ -239,8 +230,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       set((prev) => ({ state: { ...prev.state, vadEnabled } }));
       console.log(`[SessionContext] ✅ VAD state updated to ${vadEnabled}`);
     },
-    setPersist: (wrapper) => {
-      set((prev) => ({ state: { ...prev.state, persist: wrapper } }));
+    setStateManager: (wrapper) => {
+      set((prev) => ({ state: { ...prev.state, stateManager: wrapper } }));
     },
     setFlightsSearchData: (flightsSearchData, messageId) => {
       updateMessageCardData(set, get, flightsSearchData, messageId, 'flightsSearchData');
@@ -257,12 +248,20 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     clearRemoteMessageQueue: () => {
       set((prev) => ({ state: { ...prev.state, remoteMessageQueue: [] } }));
     },
+    setIsAvatarSpeaking: (isSpeaking) => {
+      set((prev) => ({ state: { ...prev.state, isAvatarSpeaking: isSpeaking } }));
+    },
+    markMessageAsSent: (messageId) => {
+      set((prev) => ({
+        state: {
+          ...prev.state,
+          sentMessageIds: new Set([...prev.state.sentMessageIds, messageId]),
+        },
+      }));
+    },
   },
 }));
 
 
 
-/**
- * Access the session store state and actions.
- */
 export const useSession = (): SessionContextType => useSessionStore((s) => s);

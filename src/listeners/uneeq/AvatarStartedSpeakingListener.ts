@@ -9,5 +9,6 @@ export class AvatarStartedSpeakingListener implements UneeqEventListener {
     session.actions.setCamera(CameraHorizontalAnchor.center);
     session.actions.setMedia(null);
     session.actions.setAwaitingPromptResponse(false);
+    session.actions.setIsAvatarSpeaking(true);
   }
 }

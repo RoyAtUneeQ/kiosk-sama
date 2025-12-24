@@ -2,7 +2,7 @@
   "welcome": {
     "title": "ようこそ！",
     "description": "デジタル体験が始まろうとしています。",
-    "prompt": "ユーザーにフレンドリーで魅力的な方法で自己紹介してください。知識ベースを使用して会話を始め、対話を導いてください。オープンエンドの質問を避け、会話の次のステップを示す具体的で焦点を絞った質問でフォローアップしてください。"
+    "prompt": "Tell me who you are and what you do."
   },
   "actions": {
     "startExperience": "体験開始"

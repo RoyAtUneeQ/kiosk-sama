@@ -27,12 +27,6 @@ import { LanguageProvider } from './i18n/LanguageProvider'
 import { ConfigLoader } from './components/shared/configLoader/ConfigLoader'
 import { ErrorBoundary } from './components/shared/errorBoundary/ErrorBoundary'
 import { LoadingFallback } from './components/shared/loadingFallback/LoadingFallback'
-import { PerformanceMonitor } from './services'
-
-// Performance monitoring will be initialized by ConfigLoader after config is loaded
-// Start initial app timing and web vitals tracking
-PerformanceMonitor.startTiming('app-initialization');
-PerformanceMonitor.trackWebVitals();
 
 // Create a client
 const queryClient = new QueryClient({
