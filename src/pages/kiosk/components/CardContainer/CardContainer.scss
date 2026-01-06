@@ -1,6 +1,6 @@
 .card-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-direction: row;
     gap: 1rem;
     padding: 1rem;
     border-radius: 1rem;
@@ -10,10 +10,12 @@
     border: 1px solid var(--theme-neutral-darkest-alpha-10);
     margin: 1rem;
     position: fixed;
-    top: 50rem;
     left: 1rem;
     right: 1rem;
     bottom: 1rem;
     z-index: 1000;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-neutral-darkest-alpha-50) transparent;
 }
