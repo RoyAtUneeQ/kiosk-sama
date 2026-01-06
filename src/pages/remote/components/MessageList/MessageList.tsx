@@ -59,8 +59,10 @@ const MessageList: React.FC<MessageListProps> = ({ messages, messageCards, rende
   
   // Auto-scroll to most recent message or loader
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, awaitingPromptResponse]);
+    requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    });
+  }, [messages, awaitingPromptResponse, messageCards]);
 
     
   return (
