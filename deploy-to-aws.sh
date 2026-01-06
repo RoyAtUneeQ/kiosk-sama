@@ -10,7 +10,9 @@ STACK_NAME="kiosk-frontend-stack"
 S3_REGION="us-east-2"  # Default S3 region (can be changed)
 CF_REGION="us-east-1"  # CloudFront region (required for certificates)
 BUILD_DIR="dist"
-CONFIG_FILE="deployment-config.json"
+ENVIRONMENT=""
+CONFIG_FILE=""
+APP_CONFIG_FILE=""
 
 # Colors for output
 RED='\033[0;31m'
@@ -34,6 +36,63 @@ log_warning() {
 
 log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Select deployment environment
+select_environment() {
+    # If environment was passed via CLI, use it
+    if [ -n "$ENVIRONMENT" ]; then
+        case "$ENVIRONMENT" in
+            dev|development)
+                ENVIRONMENT="dev"
+                CONFIG_FILE="deployment-config.dev.json"
+                APP_CONFIG_FILE="src/assets/config.dev.yaml"
+                ;;
+            staging)
+                ENVIRONMENT="staging"
+                CONFIG_FILE="deployment-config.staging.json"
+                APP_CONFIG_FILE="src/assets/config.staging.yaml"
+                ;;
+            *)
+                log_error "Unknown environment: $ENVIRONMENT"
+                echo "Valid environments: dev, staging"
+                exit 1
+                ;;
+        esac
+        log_info "Using environment from CLI: $ENVIRONMENT"
+        return
+    fi
+
+    echo
+    echo "================================="
+    echo "  Select Deployment Environment"
+    echo "================================="
+    echo "1) dev        - Development (sama-dev.services.uneeq.io)"
+    echo "2) staging    - Staging (sama.services.uneeq.io)"
+    echo
+
+    while true; do
+        read -p "Enter environment [1-2]: " env_choice
+        case $env_choice in
+            1|dev)
+                ENVIRONMENT="dev"
+                CONFIG_FILE="deployment-config.dev.json"
+                APP_CONFIG_FILE="src/assets/config.dev.yaml"
+                break
+                ;;
+            2|staging)
+                ENVIRONMENT="staging"
+                CONFIG_FILE="deployment-config.staging.json"
+                APP_CONFIG_FILE="src/assets/config.staging.yaml"
+                break
+                ;;
+            *)
+                echo "Invalid choice. Please enter 1 or 2."
+                ;;
+        esac
+    done
+
+    log_info "Selected environment: $ENVIRONMENT"
 }
 
 # Check requirements
@@ -202,43 +261,45 @@ EOF
 
 # Build the application
 build_app() {
-    log_info "Building application..."
-    
-    # Check if config.yaml exists
-    if [ ! -f "src/assets/config.yaml" ]; then
-        log_warning "config.yaml not found, copying from sample..."
-        cp src/assets/config.sample.yaml src/assets/config.yaml
-        log_warning "Please update src/assets/config.yaml with production settings"
-        read -p "Press Enter to continue after updating config.yaml..."
+    log_info "Building application for $ENVIRONMENT environment..."
+
+    # Copy environment-specific config
+    if [ -f "$APP_CONFIG_FILE" ]; then
+        cp "$APP_CONFIG_FILE" src/assets/config.yaml
+        log_info "Applied $ENVIRONMENT configuration from $APP_CONFIG_FILE"
+    else
+        log_error "Configuration file not found: $APP_CONFIG_FILE"
+        log_error "Expected file for $ENVIRONMENT environment"
+        exit 1
     fi
-    
+
     # Install dependencies and build
     npm ci --silent
     npm run build
-    
+
     if [ ! -d "$BUILD_DIR" ]; then
         log_error "Build failed - $BUILD_DIR directory not found"
         exit 1
     fi
-    
-    log_success "Build completed"
+
+    log_success "Build completed for $ENVIRONMENT"
 }
 
 # Verify config.yaml environment setting
 verify_config_environment() {
     local config_file="src/assets/config.yaml"
-    
+
     if [ ! -f "$config_file" ]; then
         log_warning "config.yaml not found at $config_file"
         return 0
     fi
-    
+
     # Try to extract environment setting from YAML
-    local environment=""
+    local config_env=""
     if command -v python3 &> /dev/null && python3 -c "import yaml" &> /dev/null; then
-        environment=$(python3 -c "import yaml; data=yaml.safe_load(open('$config_file')); print(data.get('app', {}).get('environment', 'not-set'))" 2>/dev/null)
+        config_env=$(python3 -c "import yaml; data=yaml.safe_load(open('$config_file')); print(data.get('app', {}).get('environment', 'not-set'))" 2>/dev/null)
     elif command -v node &> /dev/null; then
-        environment=$(node -e "
+        config_env=$(node -e "
             const fs = require('fs');
             const yaml = require('js-yaml');
             try {
@@ -250,49 +311,49 @@ verify_config_environment() {
         " 2>/dev/null)
     else
         # Fallback: simple grep approach
-        environment=$(grep -E "^\s*environment\s*:" "$config_file" | sed 's/.*environment\s*:\s*["\x27]*\([^"\x27]*\)["\x27]*.*/\1/' | tr -d ' ')
+        config_env=$(grep -E "^\s*environment\s*:" "$config_file" | sed 's/.*environment\s*:\s*["\x27]*\([^"\x27]*\)["\x27]*.*/\1/' | tr -d ' ')
     fi
-    
-    if [ -z "$environment" ] || [ "$environment" = "not-set" ] || [ "$environment" = "parse-error" ]; then
+
+    if [ -z "$config_env" ] || [ "$config_env" = "not-set" ] || [ "$config_env" = "parse-error" ]; then
         log_info "Could not detect environment setting in config.yaml"
         return 0
     fi
-    
-    log_info "Detected environment in config.yaml: $environment"
-    
-    # Check if it's a development-like environment
-    case "$environment" in
-        development|dev|staging|test|local)
-            echo
-            log_warning "⚠️  Environment Check"
-            echo "Your config.yaml is set to environment: '$environment'"
-            echo "This may not be appropriate for production deployment."
-            echo
-            echo "Common production settings:"
-            echo "  - environment: 'production'"
-            echo "  - Update API URLs to production endpoints"
-            echo "  - Use production API keys and CDN URLs"
-            echo
-            read -p "Continue with '$environment' environment? (y/N): " continue_env
-            if [[ ! $continue_env =~ ^[Yy]$ ]]; then
-                log_info "Deployment cancelled. Please update config.yaml and try again."
-                echo
-                echo "To fix:"
-                echo "1. Edit src/assets/config.yaml"
-                echo "2. Change 'environment: $environment' to 'environment: production'"
-                echo "3. Update any development URLs/keys to production values"
-                echo "4. Re-run the deployment script"
-                exit 1
-            fi
+
+    log_info "Config environment: $config_env (deploying to: $ENVIRONMENT)"
+
+    # Check for environment mismatch
+    local mismatch=false
+    case "$ENVIRONMENT" in
+        dev)
+            # Dev deployment expects development/dev config
+            case "$config_env" in
+                development|dev) mismatch=false ;;
+                *) mismatch=true ;;
+            esac
             ;;
-        production|prod)
-            log_success "✅ Environment set to '$environment' - good for production deployment"
-            ;;
-        *)
-            log_info "Environment set to '$environment' - proceeding with deployment"
+        staging)
+            # Staging deployment expects staging/production config
+            case "$config_env" in
+                staging|production|prod) mismatch=false ;;
+                *) mismatch=true ;;
+            esac
             ;;
     esac
-    
+
+    if [ "$mismatch" = true ]; then
+        echo
+        log_warning "Environment mismatch detected!"
+        echo "You are deploying to '$ENVIRONMENT' but config.yaml is set to '$config_env'"
+        echo
+        read -p "Continue anyway? (y/N): " continue_env
+        if [[ ! $continue_env =~ ^[Yy]$ ]]; then
+            log_info "Deployment cancelled."
+            exit 1
+        fi
+    else
+        log_success "Config environment matches deployment target"
+    fi
+
     echo
 }
 
@@ -867,16 +928,20 @@ cleanup() {
 # Main deployment flow
 main() {
     trap cleanup EXIT
-    
-    echo "🚀 AWS S3 + CloudFront Deployment Script"
+
     echo "========================================"
-    
+    echo "  AWS S3 + CloudFront Deployment Script"
+    echo "========================================"
+
+    # Select environment first
+    select_environment
+
     # Check if this is a forced redeploy
-    if [ "$1" == "--force-config" ]; then
+    if [ "$FORCE_CONFIG" = true ]; then
         rm -f "$CONFIG_FILE"
-        log_info "Forcing configuration recreation"
+        log_info "Forcing configuration recreation for $ENVIRONMENT"
     fi
-    
+
     check_requirements
     load_config
     build_app
@@ -899,8 +964,19 @@ show_help() {
     echo "Usage: $0 [options]"
     echo
     echo "Options:"
-    echo "  --help          Show this help message"
-    echo "  --force-config  Force recreation of deployment configuration"
+    echo "  --help              Show this help message"
+    echo "  --env <env>         Specify environment (dev, staging)"
+    echo "  --force-config      Force recreation of deployment configuration"
+    echo
+    echo "Examples:"
+    echo "  $0                      Interactive environment selection"
+    echo "  $0 --env dev            Deploy to dev environment"
+    echo "  $0 --env staging        Deploy to staging environment"
+    echo "  $0 --env dev --force-config  Deploy to dev with fresh config"
+    echo
+    echo "Environments:"
+    echo "  dev       Development - sama-dev.services.uneeq.io"
+    echo "  staging   Staging - sama.services.uneeq.io"
     echo
     echo "Features:"
     echo "  - Interactive configuration for S3 buckets and CloudFront"
@@ -913,10 +989,11 @@ show_help() {
     echo "  AWS_PROFILE     AWS profile to use (optional)"
     echo "  AWS_REGION      AWS region override (optional)"
     echo
-    echo "Files created:"
-    echo "  $CONFIG_FILE     Deployment configuration"
-    echo "  build-analysis.json       Build optimization report (optional)"
-    echo "  cloudformation-template.yaml  CloudFormation template"
+    echo "Config Files:"
+    echo "  deployment-config.dev.json       Dev deployment configuration"
+    echo "  deployment-config.staging.json   Staging deployment configuration"
+    echo "  src/assets/config.dev.yaml       Dev app configuration"
+    echo "  src/assets/config.staging.yaml   Staging app configuration"
     echo
     echo "Prerequisites:"
     echo "  - AWS CLI installed and configured"
@@ -925,20 +1002,33 @@ show_help() {
 }
 
 # Handle command line arguments
-case "${1:-}" in
-    --help)
-        show_help
-        exit 0
-        ;;
-    --force-config)
-        main "$1"
-        ;;
-    "")
-        main
-        ;;
-    *)
-        echo "Unknown option: $1"
-        show_help
-        exit 1
-        ;;
-esac
+FORCE_CONFIG=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        --env|-e)
+            if [ -n "${2:-}" ]; then
+                ENVIRONMENT="$2"
+                shift 2
+            else
+                log_error "--env requires an argument (dev, staging)"
+                exit 1
+            fi
+            ;;
+        --force-config)
+            FORCE_CONFIG=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+main

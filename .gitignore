@@ -12,8 +12,12 @@ config.yaml
 .cursor/*
 .serena/*
 
-# Deployment configuration (contains AWS account info)
-deployment-config.json
+# Deployment configuration (contains AWS account info and deployment state)
+deployment-config.*.json
+deployment-config.dev.json
+deployment-config.staging.json
+config.dev.yaml
+config.staging.yaml
 build-analysis.json
 
 node_modules
