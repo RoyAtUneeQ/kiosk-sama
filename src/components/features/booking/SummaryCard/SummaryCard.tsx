@@ -8,7 +8,15 @@ interface SummaryCardProps {
 }
 
 function formatDate(dateString: string): string {
+  if (!dateString) {
+    console.warn('[SummaryCard] formatDate: Missing dateString');
+    return 'Date TBD';
+  }
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.warn('[SummaryCard] formatDate: Invalid date string:', dateString);
+    return 'Date TBD';
+  }
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 

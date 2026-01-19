@@ -18,12 +18,22 @@ export class FlightsSearchListener implements CustomEventListener {
       const flightsSearchData = await session.state.stateManager.get<FlightsSearchData>('flights');
 
       if (flightsSearchData && Array.isArray(flightsSearchData) && flightsSearchData.length > 0) {
-        console.log('[FlightsSearchListener] Flights search data found:', flightsSearchData);
-        session.actions.setFlightsSearchData(flightsSearchData);
+        console.log('[FlightsSearchListener] Flights search data found (raw):', flightsSearchData);
+        
+        // Transform the data to match FlightData interface
+        // The API returns 'departure' and 'arrival', but we need 'departureDateTime' and 'arrivalDateTime'
+        const transformedData: FlightsSearchData = flightsSearchData.map((flight: any) => ({
+          ...flight,
+          departureDateTime: flight.departure || flight.departureDateTime,
+          arrivalDateTime: flight.arrival || flight.arrivalDateTime,
+        }));
+        
+        console.log('[FlightsSearchListener] Transformed flights data:', transformedData);
+        session.actions.setFlightsSearchData(transformedData);
         session.actions.sendRemoteMessage({
           type: 'flights_search',
           payload: {
-            data: flightsSearchData
+            data: transformedData
           }
         });
       } else {

@@ -15,12 +15,28 @@ function formatDuration(seconds: number): string {
 }
 
 function formatTime(dateTimeString: string): string {
+  if (!dateTimeString) {
+    console.warn('[FlightCard] formatTime: Missing dateTimeString');
+    return '--:--';
+  }
   const date = new Date(dateTimeString);
+  if (isNaN(date.getTime())) {
+    console.warn('[FlightCard] formatTime: Invalid date string:', dateTimeString);
+    return '--:--';
+  }
   return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 function formatDate(dateTimeString: string): string {
+  if (!dateTimeString) {
+    console.warn('[FlightCard] formatDate: Missing dateTimeString');
+    return 'Date TBD';
+  }
   const date = new Date(dateTimeString);
+  if (isNaN(date.getTime())) {
+    console.warn('[FlightCard] formatDate: Invalid date string:', dateTimeString);
+    return 'Date TBD';
+  }
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 }
 

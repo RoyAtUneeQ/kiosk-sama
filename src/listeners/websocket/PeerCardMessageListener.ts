@@ -15,11 +15,17 @@ export class PeerCardMessageListener {
     if (payload.data.type === 'flights_search') {
       // The payload structure is: payload.data.payload.data contains the array of flights
       const flightsData = payload.data.payload.data;
-      console.log('[PeerCardMessageListener] Flights search message received, updating flights search data:', flightsData);
+      console.log('[PeerCardMessageListener] Flights search message received, raw data:', flightsData);
       
       if (flightsData && Array.isArray(flightsData) && flightsData.length > 0) {
-        // Set FlightsSearchData directly as the array of flights
-        const flightsSearchData: FlightsSearchData = flightsData;
+        // Transform the data to match FlightData interface
+        // The API returns 'departure' and 'arrival', but we need 'departureDateTime' and 'arrivalDateTime'
+        const flightsSearchData: FlightsSearchData = flightsData.map((flight: any) => ({
+          ...flight,
+          departureDateTime: flight.departure || flight.departureDateTime,
+          arrivalDateTime: flight.arrival || flight.arrivalDateTime,
+        }));
+        console.log('[PeerCardMessageListener] Transformed flights data:', flightsSearchData);
         session.actions.setFlightsSearchData(flightsSearchData);
       } else {
         session.actions.setFlightsSearchData(null);
