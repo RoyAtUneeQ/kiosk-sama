@@ -130,9 +130,17 @@ const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData |
   const state = get().state;
   let targetMessageId = messageId;
   
+  console.log(`[SessionContext] 📊 updateMessageCardData called:`, {
+    stateKey,
+    dataType: data ? (Array.isArray(data) ? `Array[${data.length}]` : 'Object') : 'null',
+    providedMessageId: messageId,
+    historyLength: state.history.length
+  });
+  
   // If no messageId provided, find the last assistant message
   if (!targetMessageId) {
     targetMessageId = findLastAssistantMessageId(state.history);
+    console.log(`[SessionContext] No messageId provided, found last assistant message: ${targetMessageId}`);
   }
   
   // Update both the global data field and the message-specific cards
@@ -140,7 +148,17 @@ const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData |
     const newMessageCards = { ...prev.state.messageCards };
     if (targetMessageId) {
       newMessageCards[targetMessageId] = data;
+      console.log(`[SessionContext] Updated messageCards for message ${targetMessageId}`);
+    } else {
+      console.warn(`[SessionContext] No targetMessageId found, card data will be set globally only`);
     }
+    
+    console.log(`[SessionContext] ✅ ${stateKey} updated:`, {
+      hasData: !!data,
+      messageId: targetMessageId,
+      cardCount: Object.keys(newMessageCards).length
+    });
+    
     return { 
       ...prev,
       state: { 

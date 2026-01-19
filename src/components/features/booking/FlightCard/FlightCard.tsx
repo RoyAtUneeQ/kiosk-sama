@@ -65,7 +65,9 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
   const duration = formatDuration(flight.duration);
   const airlineName = getAirlineName(flight.flightNumber);
   const airlineCode = getAirlineCode(flight.flightNumber);
-  const price = `${flight.currency} ${flight.minPrice}`;
+  const price = flight.minPrice && flight.currency 
+    ? `${flight.currency} ${flight.minPrice}` 
+    : 'Price TBD';
   const stopsText = flight.numberOfStops === 0 ? 'Non-stop' : `${flight.numberOfStops} stop${flight.numberOfStops > 1 ? 's' : ''}`;
 
   const handleCardClick = () => {

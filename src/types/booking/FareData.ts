@@ -1,5 +1,5 @@
 export interface FareData {
-  fareFamilyCode: string;
+  fareFamilyType: string;  // Changed from fareFamilyCode
   isPromotionalOffer: number;
   features: string;
   priceCurrency: string;
@@ -11,5 +11,12 @@ export interface FareData {
   priceBase: number;
   cabinType: string;
   isLowestFare: number;
+  totalPrice?: {  // Optional - backend sends both formats
+    amount: number;
+    currency: string;
+  };
+  appliedDiscount?: {  // Optional discount info
+    originalTotalPrice: number;
+  };
 }
 

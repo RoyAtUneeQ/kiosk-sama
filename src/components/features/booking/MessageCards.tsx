@@ -18,7 +18,7 @@ function isFlightsSearchData(data: unknown): data is FlightsSearchData {
 }
 
 function isFareSelectionData(data: unknown): data is FareSelectionData {
-  return Array.isArray(data) && data.length > 0 && 'fareFamilyCode' in data[0];
+  return Array.isArray(data) && data.length > 0 && 'fareFamilyType' in data[0];
 }
 
 function isBookingSummaryData(data: unknown): data is BookingSummaryData {
@@ -26,7 +26,18 @@ function isBookingSummaryData(data: unknown): data is BookingSummaryData {
 }
 
 export default function MessageCards({ message, cardData, onFlightIdClick, onBoundIdClick }: MessageCardsProps) {
+  console.log('[MessageCards] Render called:', {
+    messageId: message.id,
+    messageSender: message.sender,
+    hasCardData: !!cardData,
+    cardDataType: cardData ? (Array.isArray(cardData) ? `Array[${cardData.length}]` : 'Object') : 'null'
+  });
+
   if (message.sender !== MessageSender.Assistant || !cardData) {
+    console.log('[MessageCards] Early return:', {
+      reason: message.sender !== MessageSender.Assistant ? 'Not assistant message' : 'No card data',
+      messageId: message.id
+    });
     return null;
   }
 
@@ -35,7 +46,21 @@ export default function MessageCards({ message, cardData, onFlightIdClick, onBou
   let itemLabel: string;
   let children: React.ReactNode;
 
-  if (isFlightsSearchData(cardData)) {
+  const isFlights = isFlightsSearchData(cardData);
+  const isFares = isFareSelectionData(cardData);
+  const isBooking = isBookingSummaryData(cardData);
+  
+  console.log('[MessageCards] Type guard results:', {
+    messageId: message.id,
+    isFlights,
+    isFares,
+    isBooking,
+    firstItem: Array.isArray(cardData) && cardData.length > 0 ? Object.keys(cardData[0]) : 'N/A',
+    firstItemData: Array.isArray(cardData) && cardData.length > 0 ? cardData[0] : 'N/A'
+  });
+
+  if (isFlights) {
+    console.log('[MessageCards] Rendering FLIGHT cards');
     title = 'Available Flights';
     count = cardData.length;
     itemLabel = 'flight';
@@ -46,25 +71,37 @@ export default function MessageCards({ message, cardData, onFlightIdClick, onBou
         onFlightIdClick={onFlightIdClick}
       />
     ));
-  } else if (isFareSelectionData(cardData)) {
+  } else if (isFares) {
+    console.log('[MessageCards] Rendering FARE cards:', cardData);
     title = 'Available Fares';
     count = cardData.length;
     itemLabel = 'fare';
-    children = cardData.map((fare, index) => (
-      <FareCard
-        key={`${fare.fareFamilyCode}-${fare.flightId}-${index}`}
-        fare={fare}
-        onBoundIdClick={onBoundIdClick}
-      />
-    ));
-  } else if (isBookingSummaryData(cardData)) {
+    children = cardData.map((fare, index) => {
+      console.log(`[MessageCards] Creating FareCard ${index}:`, {
+        fareFamilyType: fare.fareFamilyType,
+        flightId: fare.flightId,
+        boundId: fare.boundId
+      });
+      return (
+        <FareCard
+          key={`${fare.fareFamilyType}-${fare.flightId}-${index}`}
+          fare={fare}
+          onBoundIdClick={onBoundIdClick}
+        />
+      );
+    });
+  } else if (isBooking) {
+    console.log('[MessageCards] Rendering BOOKING SUMMARY card');
     title = 'Booking Summary';
     count = 1;
     itemLabel = 'booking';
     children = <SummaryCard booking={cardData} />;
   } else {
+    console.warn('[MessageCards] No matching card type found! Returning null');
     return null;
   }
+  
+  console.log('[MessageCards] Rendering container with title:', title);
 
   return (
     <div className="message-cards">

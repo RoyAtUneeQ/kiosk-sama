@@ -20,12 +20,29 @@ export class PeerCardMessageListener {
       if (flightsData && Array.isArray(flightsData) && flightsData.length > 0) {
         // Transform the data to match FlightData interface
         // The API returns 'departure' and 'arrival', but we need 'departureDateTime' and 'arrivalDateTime'
-        const flightsSearchData: FlightsSearchData = flightsData.map((flight: any) => ({
-          ...flight,
-          departureDateTime: flight.departure || flight.departureDateTime,
-          arrivalDateTime: flight.arrival || flight.arrivalDateTime,
-        }));
-        console.log('[PeerCardMessageListener] Transformed flights data:', flightsSearchData);
+        const flightsSearchData: FlightsSearchData = flightsData.map((flight: any) => {
+          const transformed = {
+            flightId: flight.flightId,
+            duration: flight.duration,
+            numberOfStops: flight.numberOfStops,
+            minPrice: flight.lowestFare || flight.minPrice, // API uses 'lowestFare' now
+            departureDateTime: flight.departure || flight.departureDateTime,
+            currency: flight.currency,
+            arrivalDateTime: flight.arrival || flight.arrivalDateTime,
+            hasQSuite: flight.hasQSuite, // Optional field
+            flightNumber: flight.flightNumber,
+            // Include additional fields from new API
+            origin: flight.origin,
+            destination: flight.destination,
+            segments: flight.segments,
+            flightOfferId: flight.flightOfferId,
+          };
+          console.log('[PeerCardMessageListener] Transformed flight:', {
+            original: flight,
+            transformed: transformed
+          });
+          return transformed;
+        });
         session.actions.setFlightsSearchData(flightsSearchData);
       } else {
         session.actions.setFlightsSearchData(null);

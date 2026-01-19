@@ -69,6 +69,16 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
 
   const cardData: CardData = state.bookingSummaryData ?? state.fareSelectionData ?? state.flightsSearchData;
   
+  console.log('[useKioskOrchestrator] Card data state:', {
+    hasBookingSummaryData: !!state.bookingSummaryData,
+    hasFareSelectionData: !!state.fareSelectionData,
+    hasFlightsSearchData: !!state.flightsSearchData,
+    selectedCardData: cardData ? (Array.isArray(cardData) ? `Array[${cardData.length}]` : 'Object') : 'null',
+    bookingSummaryDataType: typeof state.bookingSummaryData,
+    fareSelectionDataType: typeof state.fareSelectionData,
+    flightsSearchDataType: typeof state.flightsSearchData,
+  });
+  
   let lastAssistantMessage: Message | null = null;
   for (let i = state.history.length - 1; i >= 0; i--) {
     if (state.history[i].sender === MessageSender.Assistant) {
@@ -78,6 +88,13 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
   }
 
   const hasCards = cardData !== null && lastAssistantMessage !== null;
+  
+  console.log('[useKioskOrchestrator] Card display state:', {
+    hasCards,
+    hasLastAssistantMessage: !!lastAssistantMessage,
+    lastAssistantMessageId: lastAssistantMessage?.id,
+    cardDataExists: !!cardData,
+  });
 
   return {
     websocket: websocket ?? null,

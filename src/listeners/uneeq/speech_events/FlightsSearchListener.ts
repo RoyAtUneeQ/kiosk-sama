@@ -23,9 +23,20 @@ export class FlightsSearchListener implements CustomEventListener {
         // Transform the data to match FlightData interface
         // The API returns 'departure' and 'arrival', but we need 'departureDateTime' and 'arrivalDateTime'
         const transformedData: FlightsSearchData = flightsSearchData.map((flight: any) => ({
-          ...flight,
+          flightId: flight.flightId,
+          duration: flight.duration,
+          numberOfStops: flight.numberOfStops,
+          minPrice: flight.lowestFare || flight.minPrice, // API uses 'lowestFare' now
           departureDateTime: flight.departure || flight.departureDateTime,
+          currency: flight.currency,
           arrivalDateTime: flight.arrival || flight.arrivalDateTime,
+          hasQSuite: flight.hasQSuite, // Optional field
+          flightNumber: flight.flightNumber,
+          // Include additional fields from new API
+          origin: flight.origin,
+          destination: flight.destination,
+          segments: flight.segments,
+          flightOfferId: flight.flightOfferId,
         }));
         
         console.log('[FlightsSearchListener] Transformed flights data:', transformedData);

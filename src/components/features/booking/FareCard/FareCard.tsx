@@ -29,7 +29,7 @@ export default function FareCard({ fare, onBoundIdClick }: FareCardProps) {
       .join(' ');
   };
 
-  const fareTitle = formatFareFamilyCode(fare.fareFamilyCode);
+  const fareTitle = formatFareFamilyCode(fare.fareFamilyType);
 
   const handleCardClick = () => {
     if (onBoundIdClick) {
