@@ -1,0 +1,42 @@
+import { EventType } from '@/types';
+import type { UneeqEventListener } from '../types/UneeqEventListener';
+import type { SessionContextType } from '@/contexts/SessionContext';
+import { MessageFactory } from '@/factories';
+
+/**
+ * AvatarAnswerContentListener
+ * 
+ * Listens for AvatarAnswerContent events from Uneeq, which contain the avatar's
+ * actual spoken text content (including welcome messages and all responses).
+ * 
+ * This is the PRIMARY listener for capturing assistant messages to history.
+ */
+export class AvatarAnswerContentListener implements UneeqEventListener {
+  eventType = EventType.AvatarAnswerContent;
+  
+  execute(data: any, session: SessionContextType): void {
+    console.log('[AvatarAnswerContentListener] AvatarAnswerContent event:', data);
+    
+    // Extract the avatar's spoken content
+    // Try multiple possible property paths for robustness
+    const answerText = data?.answerText || data?.text || data?.content || data?.answer || '';
+    
+    if (answerText && answerText.trim()) {
+      const preview = answerText.length > 100 
+        ? answerText.substring(0, 100) + '...' 
+        : answerText;
+      
+      console.log('[AvatarAnswerContentListener] 💬 Adding assistant message to history:', preview);
+      
+      // Add assistant message to history
+      session.actions.addMessageToHistory(
+        MessageFactory.createAssistantMessage(answerText)
+      );
+      
+      console.log('[AvatarAnswerContentListener] ✅ Message added to history successfully');
+    } else {
+      console.warn('[AvatarAnswerContentListener] ⚠️ No text content found in AvatarAnswerContent:', data);
+      console.warn('[AvatarAnswerContentListener] ⚠️ Available properties:', Object.keys(data || {}));
+    }
+  }
+}

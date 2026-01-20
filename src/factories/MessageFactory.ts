@@ -45,7 +45,8 @@ export class MessageFactory {
       content: data.content.trim(),
       sender: data.sender,
       timestamp: data.timestamp || new Date().toISOString(),
-      prompt: data.prompt
+      prompt: data.prompt,
+      isHistorical: data.isHistorical
     };
   }
 }

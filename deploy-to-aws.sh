@@ -273,8 +273,16 @@ build_app() {
         exit 1
     fi
 
-    # Install dependencies and build
-    npm ci --silent
+    # Install dependencies if needed
+    if [ ! -d "node_modules" ]; then
+        log_info "Installing dependencies (first time)..."
+        npm install
+    else
+        log_info "Dependencies already installed, updating if needed..."
+        npm ci --silent || npm install
+    fi
+    
+    # Build application
     npm run build
 
     if [ ! -d "$BUILD_DIR" ]; then
@@ -359,6 +367,12 @@ verify_config_environment() {
 
 # Run optional build analysis
 run_build_analysis() {
+    # Skip if flag is set
+    if [ "$SKIP_ANALYSIS" = true ]; then
+        log_info "Skipping build analysis (--skip-analysis flag set)"
+        return 0
+    fi
+    
     echo
     echo "📊 Build Analysis & Optimization"
     echo "=================================="
@@ -967,12 +981,15 @@ show_help() {
     echo "  --help              Show this help message"
     echo "  --env <env>         Specify environment (dev, staging)"
     echo "  --force-config      Force recreation of deployment configuration"
+    echo "  --skip-analysis     Skip build analysis and optimization step"
+    echo "  --no-analysis       Alias for --skip-analysis"
     echo
     echo "Examples:"
     echo "  $0                      Interactive environment selection"
     echo "  $0 --env dev            Deploy to dev environment"
     echo "  $0 --env staging        Deploy to staging environment"
     echo "  $0 --env dev --force-config  Deploy to dev with fresh config"
+    echo "  $0 --env dev --skip-analysis Deploy to dev without build analysis"
     echo
     echo "Environments:"
     echo "  dev       Development - sama-dev.services.uneeq.io"
@@ -1003,6 +1020,7 @@ show_help() {
 
 # Handle command line arguments
 FORCE_CONFIG=false
+SKIP_ANALYSIS=true
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -1021,6 +1039,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --force-config)
             FORCE_CONFIG=true
+            shift
+            ;;
+        --skip-analysis|--no-analysis)
+            SKIP_ANALYSIS=true
             shift
             ;;
         *)

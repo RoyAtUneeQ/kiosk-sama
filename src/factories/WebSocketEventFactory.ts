@@ -10,11 +10,18 @@ export function registerWebSocketListener<T extends WebSocketEventListener>(Even
 }
 
 // Auto-register all listeners exported from listeners/websocket
+console.log('[WebSocketEventFactory] Available listeners:', Object.keys(listeners));
 Object.values(listeners).forEach((ListenerClass: any) => {
   try {
-    console.log('registering websocket listener', ListenerClass.name);
-    registerWebSocketListener(ListenerClass as any);
-  } catch {}
+    if (typeof ListenerClass === 'function') {
+      console.log('registering websocket listener', ListenerClass.name);
+      registerWebSocketListener(ListenerClass as any);
+    } else {
+      console.warn('Skipping non-function export:', ListenerClass);
+    }
+  } catch (error) {
+    console.error('Failed to register websocket listener', ListenerClass?.name, error);
+  }
 });
 
 export const WebSocketEventFactory = (type: WebSocketEventType): WebSocketEventListener | null => {

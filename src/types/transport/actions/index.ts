@@ -6,6 +6,7 @@ export type WebsocketAction =
   | import('./ActionPeerMessage').ActionPeerMessage
   | import('./ActionPeerAudioTranscribe').ActionPeerAudioTranscribe
   | import('./ActionCloseSession').ActionCloseSession
-  | import('./ActionServiceToken').ActionServiceToken;
+  | import('./ActionServiceToken').ActionServiceToken
+  | import('./ActionPing').ActionPing;
 
   

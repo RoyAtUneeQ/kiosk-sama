@@ -11,8 +11,17 @@ export function registerEventListener<T extends UneeqEventListener>(EventClass: 
 }
 
 // Register all available event classes automatically
-Object.values(listeners).forEach(listener => {
-  registerEventListener(listener);
+console.log('[UneeqEventFactory] Available listeners:', Object.keys(listeners));
+Object.values(listeners).forEach((listener: any) => {
+  try {
+    if (typeof listener === 'function') {
+      const instance = new listener();
+      console.log('[UneeqEventFactory] Registering Uneeq listener:', listener.name, '→', instance.eventType);
+      registerEventListener(listener);
+    }
+  } catch (error) {
+    console.error('[UneeqEventFactory] Failed to register listener:', listener?.name, error);
+  }
 });
 
 export const UneeqEventFactory = (event: UneeqEvent): UneeqEventListener | null => {

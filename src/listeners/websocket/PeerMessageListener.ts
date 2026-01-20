@@ -5,6 +5,7 @@ import type { Message } from '@/types/transport/Message';
 import { MessageSender } from '@/types/transport/MessageSender';
 import { PeerCardMessageListener } from './PeerCardMessageListener';
 import { MessageFactory } from '@/factories';
+import { WebSocketEventFactory } from '@/factories/WebSocketEventFactory';
 
 export class PeerMessageListener implements WebSocketEventListener {
   eventType = WebSocketEventType.PEER_MESSAGE;
@@ -17,6 +18,16 @@ export class PeerMessageListener implements WebSocketEventListener {
 
   execute(payload: any, session: SessionContextType): void {
     console.log(`[PeerMessageListener] received message from WebSocket event:`, payload);
+    
+    // Check if this is a history sync message
+    if (payload.data?.type === 'historySync') {
+      console.log('[PeerMessageListener] Routing to HistorySyncListener');
+      const listener = WebSocketEventFactory(WebSocketEventType.HISTORY_SYNC);
+      if (listener) {
+        listener.execute(payload, session);
+      }
+      return;
+    }
     
     // Route card messages to the dedicated card message listener
     if (PeerCardMessageListener.execute(payload, session)) {

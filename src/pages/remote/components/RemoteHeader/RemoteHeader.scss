@@ -4,7 +4,7 @@
   padding: 0.75rem;
   color: #fff;
   display: grid;
-  grid-template-columns: 1fr 40px;
+  grid-template-columns: 1fr auto;
   align-items: center;
   position: relative;
   z-index: 10;
@@ -12,6 +12,12 @@
   backdrop-filter: blur(12px) saturate(110%);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   margin-bottom: 0;
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
   .header-title {
     margin: 0;

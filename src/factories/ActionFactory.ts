@@ -28,6 +28,7 @@ export interface ActionFactory {
     model?: string,
   ) => WebsocketAction;
   closeSession: () => WebsocketAction;
+  ping: () => WebsocketAction;
   withDefaults: (overrides: Partial<ActionFactoryDefaults>) => ActionFactory;
 }
 
@@ -89,6 +90,11 @@ export const createActionFactory = (
 
     closeSession: (): WebsocketAction => ({
       type: 'closeSession'
+    }),
+
+    ping: (): WebsocketAction => ({
+      type: 'ping',
+      timestamp: Date.now()
     }),
 
     withDefaults: (overrides: Partial<ActionFactoryDefaults>): ActionFactory =>

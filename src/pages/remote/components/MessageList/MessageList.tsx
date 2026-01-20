@@ -95,7 +95,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, messageCards, rende
               content={group.content}
               sender={group.sender}
               timestamp={group.lastTimestamp}
-              shouldAnimate={group.id === lastGroup?.id}
+              shouldAnimate={group.id === lastGroup?.id && !group.message.isHistorical}
               onAnimationStart={() => {
                 // Animation started callback
               }}

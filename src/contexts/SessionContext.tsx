@@ -78,6 +78,7 @@ export type SessionActions = {
   setAwaitingPromptResponse: (isAwaitingResponse: boolean) => void;
   setMedia: (media: Media | null) => void;
   setRemoteInfo: (info: RemoteSessionInfo | null) => void;
+  clearRemoteInfo: () => void;
   setLanguage: (language: string) => void;
   setRenderMode: (renderMode: 'cloud' | 'miniprem') => void;
   setWebSocketState: (state: WebsocketStatus) => void;
@@ -191,6 +192,10 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     setRemoteInfo: (info) => {
       set((prev) => ({ state: { ...prev.state, remoteInfo: info } }));
     },
+    clearRemoteInfo: () => {
+      console.log('[SessionContext] 🔌 Clearing remote info (peer disconnected)');
+      set((prev) => ({ state: { ...prev.state, remoteInfo: null } }));
+    },
     setLanguage: (language) => {
       set((prev) => ({ state: { ...prev.state, language } }));
     },
@@ -215,9 +220,19 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       }
     },
     addMessageToHistory: (message: Message) => {
+        console.log('[SessionContext] 📝 addMessageToHistory called:', {
+          messageId: message.id,
+          sender: message.sender,
+          content: message.content?.substring(0, 50) + '...'
+        });
+        
         set((prev) => {
           // Use functional update to avoid stale closure issues
           const newHistory = [...prev.state.history, message];
+          console.log('[SessionContext] ✅ History updated:', {
+            previousLength: prev.state.history.length,
+            newLength: newHistory.length
+          });
           return { state: { ...prev.state, history: newHistory } };
         });
     },
@@ -283,3 +298,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
 
 export const useSession = (): SessionContextType => useSessionStore((s) => s);
+
+// Expose session to window for debugging (development only)
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
+  (window as any).__session = useSessionStore.getState();
+  useSessionStore.subscribe((state) => {
+    (window as any).__session = state;
+  });
+}

@@ -39,63 +39,90 @@ export const useRemoteOrchestrator = ({
   const { isLargeScreen } = useViewport();
   
   useEffect(() => {
-    if (
-      state.webSocketState === WebsocketStatus.CONNECTED &&
-      kioskConnectionId &&
-      state.connectionId &&
-      websocket
-    ) {
-      console.log(`[useRemoteOrchestrator] Connecting from ${state.connectionId} to ${kioskConnectionId}`);
-      
-      const userInspect: RemoteSessionInfo = {
-        connectionId: state.connectionId,
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        browser: 'Unknown',
-        device: 'Unknown',
-        screen: {
-          width: window.screen.width,
-          height: window.screen.height
-        },
-        viewport: {
-          width: window.innerWidth,
-          height: window.innerHeight
-        },
-        connectionType: 'Unknown',
-        online: navigator.onLine,
-        referrer: document.referrer,
-        url: window.location.href,
-        timestamp: new Date().toISOString()
-      };
-      
-      websocket.send(createActionFactory().peerConnect(kioskConnectionId, userInspect));
+    if (state.webSocketState !== WebsocketStatus.CONNECTED || !websocket) {
+      return;
     }
+    if (!kioskConnectionId || kioskConnectionId.trim() === '') {
+      console.warn('[useRemoteOrchestrator] ⚠️ Invalid kioskConnectionId');
+      return;
+    }
+    if (!state.connectionId || state.connectionId.trim() === '') {
+      return;
+    }
+
+    console.log(`[useRemoteOrchestrator] Connecting from ${state.connectionId} to ${kioskConnectionId}`);
+
+    const userInspect: RemoteSessionInfo = {
+      connectionId: state.connectionId,
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language,
+      browser: 'Unknown',
+      device: 'Unknown',
+      screen: {
+        width: window.screen.width,
+        height: window.screen.height
+      },
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight
+      },
+      connectionType: 'Unknown',
+      online: navigator.onLine,
+      referrer: document.referrer,
+      url: window.location.href,
+      timestamp: new Date().toISOString()
+    };
+
+    websocket.send(createActionFactory().peerConnect(kioskConnectionId, userInspect));
   }, [state.webSocketState, kioskConnectionId, state.connectionId, websocket]);
 
   useEffect(() => {
-    // If user
-    if (state.history.length === 0 || !kioskConnectionId || !websocket) return;
+    if (state.history.length === 0) return;
+    if (!kioskConnectionId || kioskConnectionId.trim() === '' || !websocket) return;
+
     const lastMessage = state.history[state.history.length - 1];
-    if (lastMessage.sender === MessageSender.User) {
-      console.log('[useRemoteOrchestrator] Forwarding user message to kiosk:', lastMessage);
-      actions.setAwaitingPromptResponse(true);
-      websocket.send(createActionFactory().sendMessage(kioskConnectionId, MessageFactory.createUserMessage(lastMessage.content)));
-    }
+    if (lastMessage.sender !== MessageSender.User) return;
+    if (state.sentMessageIds.has(lastMessage.id)) return;
+
+    console.log('[useRemoteOrchestrator] 📤 Forwarding user message to kiosk with ACK');
+    actions.setAwaitingPromptResponse(true);
+
+    const messageId = websocket.send(
+      createActionFactory().sendMessage(kioskConnectionId, MessageFactory.createUserMessage(lastMessage.content)),
+      true
+    );
+
+    actions.markMessageAsSent(lastMessage.id);
+    console.log('[useRemoteOrchestrator] Message queued', { messageId, historyMessageId: lastMessage.id });
   }, [state.history.length]);
 
   const sendCardValue = useCallback(
     (messageText: string) => {
-      if (!kioskConnectionId || !websocket) {
-        console.warn('[useRemoteOrchestrator] Cannot send card value: missing kioskConnectionId or websocket');
+      if (!kioskConnectionId || kioskConnectionId.trim() === '' || !websocket) {
+        console.warn('[useRemoteOrchestrator] ⚠️ Cannot send card value: invalid kioskConnectionId or no websocket');
+        return;
+      }
+
+      if (state.webSocketState !== WebsocketStatus.CONNECTED) {
+        console.warn('[useRemoteOrchestrator] ⚠️ Cannot send card value: WebSocket not connected');
         return;
       }
 
       actions.setAwaitingPromptResponse(true);
       const message = MessageFactory.createUserMessage(messageText, true);
-      websocket.send(createActionFactory().sendMessage(kioskConnectionId, message));
+
+      const messageId = websocket.send(
+        createActionFactory().sendMessage(kioskConnectionId, message),
+        true
+      );
+
+      console.log('[useRemoteOrchestrator] 🎴 Card value sent with ACK', {
+        messageId,
+        messageText: messageText.substring(0, 50) + '...'
+      });
     },
-    [kioskConnectionId, websocket, actions]
+    [kioskConnectionId, websocket, actions, state.webSocketState]
   );
 
   const handleFlightSelection = useCallback(

@@ -1,0 +1,106 @@
+.websocket-monitor {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  z-index: 10000;
+  min-width: 280px;
+  max-width: 400px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  .monitor-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .monitor-icon {
+      font-size: 16px;
+    }
+
+    .monitor-title {
+      flex: 1;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .monitor-toggle {
+      opacity: 0.6;
+      font-size: 10px;
+    }
+  }
+
+  .monitor-content {
+    padding: 12px 16px;
+  }
+
+  .monitor-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    gap: 12px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .monitor-label {
+      opacity: 0.7;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .monitor-value {
+      font-weight: 600;
+      font-size: 12px;
+      text-align: right;
+
+      &.monitor-id {
+        font-family: 'Monaco', 'Courier New', monospace;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+      }
+    }
+  }
+
+  .monitor-help {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0.6;
+    
+    small {
+      font-size: 10px;
+      line-height: 1.6;
+      display: block;
+    }
+  }
+}
+
+// Hide in production builds
+@media (min-width: 1px) {
+  .websocket-monitor {
+    // Optionally add data-env attribute to hide in production
+    &[data-env="production"] {
+      display: none;
+    }
+  }
+}

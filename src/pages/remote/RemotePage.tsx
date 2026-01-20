@@ -54,6 +54,7 @@ function RemotePage() {
           webSocketState={state.webSocketState}
           kioskConnectionId={kioskConnectionId}
           connectionId={state.connectionId}
+          messages={state.history}
         />
 
         <MessageList
