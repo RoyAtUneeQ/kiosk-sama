@@ -9,6 +9,7 @@ export interface MessageBubbleProps {
   timestamp?: Date | string;
   shouldAnimate?: boolean;
   onAnimationStart?: () => void;
+  onAnimationStateChange?: (isAnimating: boolean) => void;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ 
@@ -16,7 +17,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   sender = MessageSender.Assistant,
   timestamp,
   shouldAnimate = false,
-  onAnimationStart
+  onAnimationStart,
+  onAnimationStateChange
 }) => {
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
@@ -81,6 +83,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       onAnimationStart();
     }
   }, [displayedText.length, shouldAnimate, onAnimationStart]);
+
+  // Notify parent of animation state changes
+  React.useEffect(() => {
+    if (onAnimationStateChange && shouldAnimate) {
+      onAnimationStateChange(isAnimating);
+    }
+  }, [isAnimating, shouldAnimate, onAnimationStateChange]);
 
   // Hide bubble until minimum characters are displayed (only for assistant messages)
   if (sender === MessageSender.Assistant && displayedText.length < 6 && currentCharIndex < 6) {

@@ -13,6 +13,8 @@ interface MessageListProps {
 
 const MessageList: React.FC<MessageListProps> = ({ messages, messageCards, renderCardsForMessage, awaitingPromptResponse = false }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastMessageAnimationRef = useRef<{ isAnimating: boolean; messageId: string | null }>({ isAnimating: false, messageId: null });
+  const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Convert timestamp to Date object
   const parseTimestamp = (timestamp: Date | string) => 
@@ -57,12 +59,77 @@ const MessageList: React.FC<MessageListProps> = ({ messages, messageCards, rende
 
   const lastGroup = messageGroups.at(-1);
   
-  // Auto-scroll to most recent message or loader
-  useEffect(() => {
+  // Helper function to perform autoscroll
+  const performAutoscroll = React.useCallback(() => {
     requestAnimationFrame(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     });
-  }, [messages, awaitingPromptResponse, messageCards]);
+  }, []);
+
+  // Auto-scroll to most recent message or loader
+  useEffect(() => {
+    performAutoscroll();
+    
+    // Reset animation tracking when last message changes
+    const currentLastMessageId = lastGroup?.id || null;
+    if (lastMessageAnimationRef.current.messageId !== currentLastMessageId) {
+      // Clear any existing scroll interval when message changes
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+      lastMessageAnimationRef.current = { isAnimating: false, messageId: currentLastMessageId };
+    }
+  }, [messages, awaitingPromptResponse, messageCards, performAutoscroll, lastGroup?.id]);
+
+  // Handle animation state changes for the last message
+  const handleAnimationStateChange = React.useCallback((isAnimating: boolean, messageId: string) => {
+    const currentLastMessageId = lastGroup?.id || null;
+    
+    // Only handle animation state for the current last message
+    if (messageId !== currentLastMessageId) {
+      return;
+    }
+
+    const wasAnimating = lastMessageAnimationRef.current.isAnimating;
+    const wasLastMessage = lastMessageAnimationRef.current.messageId === messageId;
+    
+    lastMessageAnimationRef.current = { isAnimating, messageId };
+
+    // If animation just started, set up periodic scrolling
+    if (isAnimating && (!wasAnimating || !wasLastMessage)) {
+      // Clear any existing interval
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+      }
+      
+      // Scroll periodically during animation to keep up with growing content
+      scrollIntervalRef.current = setInterval(() => {
+        performAutoscroll();
+      }, 200); // Scroll every 200ms during animation
+    }
+    
+    // If animation just completed, scroll one final time and clear interval
+    if (!isAnimating && wasAnimating && wasLastMessage) {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+      // Final scroll when animation completes
+      setTimeout(() => {
+        performAutoscroll();
+      }, 100); // Small delay to ensure DOM has updated
+    }
+  }, [performAutoscroll, lastGroup?.id]);
+
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+      }
+    };
+  }, []);
 
     
   return (
@@ -97,8 +164,18 @@ const MessageList: React.FC<MessageListProps> = ({ messages, messageCards, rende
               timestamp={group.lastTimestamp}
               shouldAnimate={group.id === lastGroup?.id && !group.message.isHistorical}
               onAnimationStart={() => {
-                // Animation started callback
+                // When bubble first appears (after 6 chars), trigger scroll
+                if (group.id === lastGroup?.id) {
+                  setTimeout(() => {
+                    performAutoscroll();
+                  }, 50);
+                }
               }}
+              onAnimationStateChange={
+                group.id === lastGroup?.id
+                  ? (isAnimating) => handleAnimationStateChange(isAnimating, group.id)
+                  : undefined
+              }
             />
             {cards}
           </React.Fragment>
