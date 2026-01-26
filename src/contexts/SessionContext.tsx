@@ -4,7 +4,7 @@ import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type M
 import { type State, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
 import type { StateWrapper } from '@/types/stateManager';
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData } from '@/types/booking';
 
 const initialState: State = {
   // Core session configuration
@@ -99,6 +99,9 @@ export type SessionActions = {
   setFlightsSearchData: (flightsSearchData: FlightsSearchData | null, messageId?: string) => void;
   setFareSelectionData: (fareSelectionData: FareSelectionData | null, messageId?: string) => void;
   setBookingSummaryData: (bookingSummaryData: BookingSummaryData | null, messageId?: string) => void;
+  setAddToCartData: (addToCartData: AddToCartData | null, messageId?: string) => void;
+  setPassengerDetailsData: (passengerDetailsData: PassengerDetailsData | null, messageId?: string) => void;
+  setContactDetailsData: (contactDetailsData: ContactDetailsData | null, messageId?: string) => void;
   sendRemoteMessage: (data: any) => void;
   clearRemoteMessageQueue: () => void;
   setIsAvatarSpeaking: (isSpeaking: boolean) => void;
@@ -121,7 +124,28 @@ const findLastAssistantMessageId = (history: Message[]): string | undefined => {
   return undefined;
 };
 
-const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData | BookingSummaryData>(
+const findSecondToLastAssistantMessageId = (history: Message[]): string | undefined => {
+  let foundCount = 0;
+  for (let i = history.length - 1; i >= 0; i--) {
+    if (history[i].sender === MessageSender.Assistant) {
+      foundCount++;
+      if (foundCount === 2) {
+        return history[i].id;
+      }
+    }
+  }
+  // If there's only one assistant message, return it
+  if (foundCount === 1) {
+    for (let i = history.length - 1; i >= 0; i--) {
+      if (history[i].sender === MessageSender.Assistant) {
+        return history[i].id;
+      }
+    }
+  }
+  return undefined;
+};
+
+const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData>(
   set: (fn: (prev: SessionStore) => SessionStore) => void,
   get: () => SessionStore,
   data: T | null,
@@ -274,6 +298,96 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     setBookingSummaryData: (bookingSummaryData, messageId) => {
       updateMessageCardData(set, get, bookingSummaryData, messageId, 'bookingSummaryData');
+    },
+    setAddToCartData: (addToCartData, messageId) => {
+      // For add_to_cart, we only update messageCards (no global state field)
+      const state = get().state;
+      let targetMessageId = messageId;
+      
+      if (!targetMessageId) {
+        // For add_to_cart events, we want to attach to the message that triggered the event,
+        // which is typically the second-to-last assistant message (the last one is often
+        // a follow-up message that comes after the event)
+        targetMessageId = findSecondToLastAssistantMessageId(state.history);
+        console.log(`[SessionContext] No messageId provided for add_to_cart, found second-to-last assistant message: ${targetMessageId}`);
+      }
+      
+      set((prev) => {
+        const newMessageCards = { ...prev.state.messageCards };
+        if (targetMessageId) {
+          newMessageCards[targetMessageId] = addToCartData;
+          console.log(`[SessionContext] Updated messageCards for add_to_cart with message ${targetMessageId}`);
+        } else {
+          console.warn(`[SessionContext] No targetMessageId found for add_to_cart, card data will not be set`);
+        }
+        return {
+          ...prev,
+          state: {
+            ...prev.state,
+            messageCards: newMessageCards
+          }
+        };
+      });
+    },
+    setPassengerDetailsData: (passengerDetailsData, messageId) => {
+      // For passenger_details, we only update messageCards (no global state field)
+      const state = get().state;
+      let targetMessageId = messageId;
+      
+      if (!targetMessageId) {
+        // For passenger_details events, we want to attach to the message that triggered the event,
+        // which is typically the second-to-last assistant message (the last one is often
+        // a follow-up message that comes after the event)
+        targetMessageId = findSecondToLastAssistantMessageId(state.history);
+        console.log(`[SessionContext] No messageId provided for passenger_details, found second-to-last assistant message: ${targetMessageId}`);
+      }
+      
+      set((prev) => {
+        const newMessageCards = { ...prev.state.messageCards };
+        if (targetMessageId) {
+          newMessageCards[targetMessageId] = passengerDetailsData;
+          console.log(`[SessionContext] Updated messageCards for passenger_details with message ${targetMessageId}`);
+        } else {
+          console.warn(`[SessionContext] No targetMessageId found for passenger_details, card data will not be set`);
+        }
+        return {
+          ...prev,
+          state: {
+            ...prev.state,
+            messageCards: newMessageCards
+          }
+        };
+      });
+    },
+    setContactDetailsData: (contactDetailsData, messageId) => {
+      // For contact_details, we only update messageCards (no global state field)
+      const state = get().state;
+      let targetMessageId = messageId;
+      
+      if (!targetMessageId) {
+        // For contact_details events, we want to attach to the message that triggered the event,
+        // which is typically the second-to-last assistant message (the last one is often
+        // a follow-up message that comes after the event)
+        targetMessageId = findSecondToLastAssistantMessageId(state.history);
+        console.log(`[SessionContext] No messageId provided for contact_details, found second-to-last assistant message: ${targetMessageId}`);
+      }
+      
+      set((prev) => {
+        const newMessageCards = { ...prev.state.messageCards };
+        if (targetMessageId) {
+          newMessageCards[targetMessageId] = contactDetailsData;
+          console.log(`[SessionContext] Updated messageCards for contact_details with message ${targetMessageId}`);
+        } else {
+          console.warn(`[SessionContext] No targetMessageId found for contact_details, card data will not be set`);
+        }
+        return {
+          ...prev,
+          state: {
+            ...prev.state,
+            messageCards: newMessageCards
+          }
+        };
+      });
     },
     sendRemoteMessage: (data: any) => {
       set((prev) => ({ state: { ...prev.state, remoteMessageQueue: [...prev.state.remoteMessageQueue, data] } }));

@@ -1,0 +1,44 @@
+.contact-details-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  color: #fff;
+
+  .contact-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .contact-title {
+    font-size: 1rem;
+    color: #fff;
+  }
+
+  .contact-info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(219, 222, 232, 0.1);
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+
+  .info-label {
+    color: #fff;
+    font-weight: 400;
+  }
+
+  .info-value {
+    color: #fff;
+    font-weight: 300;
+    text-align: right;
+  }
+}
