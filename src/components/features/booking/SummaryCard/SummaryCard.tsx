@@ -25,7 +25,10 @@ function formatPrice(amount: number, currency: string): string {
 }
 
 function formatCabinClass(cabinClass: string): string {
-  return cabinClass.charAt(0) + cabinClass.slice(1).toLowerCase();
+  return cabinClass
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 }
 
 function formatTripType(tripType: string): string {
@@ -41,8 +44,9 @@ export default function SummaryCard({ booking }: SummaryCardProps) {
   const departureDate = formatDate(booking.departureDate);
   const returnDate = booking.returnDate ? formatDate(booking.returnDate) : null;
   const totalPrice = formatPrice(booking.cartTotal, booking.cartCurrency);
-  const cabinClass = formatCabinClass(booking.cabinClass);
+  const cabinClass = formatCabinClass(booking.fareFamilyType || booking.cabinClass);
   const tripType = formatTripType(booking.tripType);
+
 
   const handlePaymentClick = (e: React.MouseEvent) => {
     e.stopPropagation();

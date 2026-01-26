@@ -19,5 +19,6 @@ export interface BookingSummaryData {
   departureDate: string;
   contactPhone: string;
   childrenCount: number;
+  fareFamilyType?: string;
 }
 
