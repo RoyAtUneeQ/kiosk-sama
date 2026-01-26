@@ -2,12 +2,12 @@ import './MessageList.scss';
 import React, { useEffect, useRef } from 'react';
 import type { Message } from '@/types/transport/Message';
 import { MessageBubble, ThreeDotsLoader } from '@/components';
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData } from '@/types/booking';
 
 interface MessageListProps {
   messages: Message[];
-  messageCards: Record<string, BookingSummaryData | FlightsSearchData | FareSelectionData | null>;
-  renderCardsForMessage?: (message: Message, cardData: BookingSummaryData | FlightsSearchData | FareSelectionData | null) => React.ReactNode;
+  messageCards: Record<string, BookingSummaryData | FlightsSearchData | FareSelectionData | AddToCartData | PassengerDetailsData | ContactDetailsData | null>;
+  renderCardsForMessage?: (message: Message, cardData: BookingSummaryData | FlightsSearchData | FareSelectionData | AddToCartData | PassengerDetailsData | ContactDetailsData | null) => React.ReactNode;
   awaitingPromptResponse?: boolean;
 }
 

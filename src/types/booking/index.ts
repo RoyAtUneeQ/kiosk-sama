@@ -2,6 +2,9 @@ export type { BookingSummaryData } from './SummaryData';
 export type { PassengerData } from './PassengerData';
 export type { FlightData } from './FlightData';
 export type { FareData } from './FareData';
+export type { AddToCartData } from './AddToCartData';
+export type { PassengerDetailsData } from './PassengerDetailsData';
+export type { ContactDetailsData } from './ContactDetailsData';
 
 // Import types for array type aliases
 import type { FlightData } from './FlightData';
