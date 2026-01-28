@@ -41,21 +41,6 @@ function isContactDetailsData(data: unknown): data is ContactDetailsData {
 }
 
 export default function MessageCards({ message, cardData, onFlightIdClick, onBoundIdClick }: MessageCardsProps) {
-  console.log('[MessageCards] Render called:', {
-    messageId: message.id,
-    messageSender: message.sender,
-    hasCardData: !!cardData,
-    cardDataType: cardData ? (Array.isArray(cardData) ? `Array[${cardData.length}]` : 'Object') : 'null'
-  });
-
-  if (message.sender !== MessageSender.Assistant || !cardData) {
-    console.log('[MessageCards] Early return:', {
-      reason: message.sender !== MessageSender.Assistant ? 'Not assistant message' : 'No card data',
-      messageId: message.id
-    });
-    return null;
-  }
-
   let title: string;
   let count: number;
   let itemLabel: string;
@@ -67,18 +52,6 @@ export default function MessageCards({ message, cardData, onFlightIdClick, onBou
   const isAddToCart = isAddToCartData(cardData);
   const isPassengerDetails = isPassengerDetailsData(cardData);
   const isContactDetails = isContactDetailsData(cardData);
-  
-  console.log('[MessageCards] Type guard results:', {
-    messageId: message.id,
-    isFlights,
-    isFares,
-    isBooking,
-    isAddToCart,
-    isPassengerDetails,
-    isContactDetails,
-    firstItem: Array.isArray(cardData) && cardData.length > 0 ? Object.keys(cardData[0]) : 'N/A',
-    firstItemData: Array.isArray(cardData) && cardData.length > 0 ? cardData[0] : 'N/A'
-  });
 
   if (isFlights) {
     console.log('[MessageCards] Rendering FLIGHT cards');
