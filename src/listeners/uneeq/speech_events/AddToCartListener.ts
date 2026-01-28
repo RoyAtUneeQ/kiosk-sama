@@ -89,7 +89,6 @@ export class AddToCartListener implements CustomEventListener {
       };
 
       console.log('[AddToCartListener] Created add to cart data:', addToCartData);
-
       // Set in state
       session.actions.setAddToCartData(addToCartData);
 
