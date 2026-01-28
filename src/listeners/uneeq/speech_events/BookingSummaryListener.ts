@@ -18,11 +18,18 @@ export class BookingSummaryListener implements CustomEventListener {
       const bookingSummaryData = await session.state.stateManager.get<BookingSummaryData>('booking');
 
       if (bookingSummaryData && typeof bookingSummaryData === 'object' && bookingSummaryData.cabinClass) {
-        // Fetch fare selection data to get fareFamilyType
+        // Fetch fare selection data to get fareFamilyType (check both outbound and inbound)
         let fareFamilyType: string | undefined;
         try {
-          const fareSelectionData = await session.state.stateManager.get<FareSelectionData>('fares');
-          if (fareSelectionData && Array.isArray(fareSelectionData) && fareSelectionData.length > 0) {
+          const [faresOutbound, faresInbound] = await Promise.all([
+            session.state.stateManager.get<FareSelectionData>('fares_outbound'),
+            session.state.stateManager.get<FareSelectionData>('fares_inbound'),
+          ]);
+          const fareSelectionData = [
+            ...(Array.isArray(faresOutbound) ? faresOutbound : []),
+            ...(Array.isArray(faresInbound) ? faresInbound : []),
+          ];
+          if (fareSelectionData.length > 0) {
             // Try to find fare matching selectedFare by boundId, otherwise use first fare
             const selectedFare = fareSelectionData.find(fare => fare.boundId === bookingSummaryData.selectedFare);
             fareFamilyType = selectedFare?.fareFamilyType ?? fareSelectionData[0]?.fareFamilyType;

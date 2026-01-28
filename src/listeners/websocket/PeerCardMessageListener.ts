@@ -11,49 +11,38 @@ export class PeerCardMessageListener {
       return false; // Not a card message, let other handlers process it
     }
 
-    // Handle flights search messages
-    if (payload.data.type === 'flights_search') {
-      // The payload structure is: payload.data.payload.data contains the array of flights
+    // Handle flights search messages (outbound and inbound use same payload structure)
+    const flightsSearchTypes = ['flights_search_outbound', 'flights_search_inbound'] as const;
+    if (flightsSearchTypes.includes(payload.data.type as (typeof flightsSearchTypes)[number])) {
       const flightsData = payload.data.payload.data;
-      console.log('[PeerCardMessageListener] Flights search message received, raw data:', flightsData);
-      
+      console.log(`[PeerCardMessageListener] Flights search (${payload.data.type}) message received, raw data:`, flightsData);
+
       if (flightsData && Array.isArray(flightsData) && flightsData.length > 0) {
-        // Transform the data to match FlightData interface
-        // The API returns 'departure' and 'arrival', but we need 'departureDateTime' and 'arrivalDateTime'
-        const flightsSearchData: FlightsSearchData = flightsData.map((flight: any) => {
-          const transformed = {
-            flightId: flight.flightId,
-            duration: flight.duration,
-            numberOfStops: flight.numberOfStops,
-            minPrice: flight.lowestFare || flight.minPrice, // API uses 'lowestFare' now
-            departureDateTime: flight.departure || flight.departureDateTime,
-            currency: flight.currency,
-            arrivalDateTime: flight.arrival || flight.arrivalDateTime,
-            hasQSuite: flight.hasQSuite, // Optional field
-            flightNumber: flight.flightNumber,
-            // Include additional fields from new API
-            origin: flight.origin,
-            destination: flight.destination,
-            segments: flight.segments,
-            flightOfferId: flight.flightOfferId,
-          };
-          console.log('[PeerCardMessageListener] Transformed flight:', {
-            original: flight,
-            transformed: transformed
-          });
-          return transformed;
-        });
+        const flightsSearchData: FlightsSearchData = flightsData.map((flight: any) => ({
+          flightId: flight.flightId,
+          duration: flight.duration,
+          numberOfStops: flight.numberOfStops,
+          minPrice: flight.lowestFare || flight.minPrice,
+          departureDateTime: flight.departure || flight.departureDateTime,
+          currency: flight.currency,
+          arrivalDateTime: flight.arrival || flight.arrivalDateTime,
+          hasQSuite: flight.hasQSuite,
+          flightNumber: flight.flightNumber,
+          origin: flight.origin,
+          destination: flight.destination,
+          segments: flight.segments,
+          flightOfferId: flight.flightOfferId,
+        }));
         session.actions.setFlightsSearchData(flightsSearchData);
       } else {
         session.actions.setFlightsSearchData(null);
       }
-      
-      // Flights search messages are not added to history - they're displayed as cards instead
-      return true; // Message was handled
+
+      return true;
     }
 
-    // Handle fare selection messages
-    if (payload.data.type === 'fare_selection') {
+    // Handle fare selection messages (outbound and inbound)
+    if (payload.data.type === 'fare_selection_outbound' || payload.data.type === 'fare_selection_inbound') {
       // The payload structure is: payload.data.payload.data contains the array of fares
       const faresData = payload.data.payload.data;
       console.log('[PeerCardMessageListener] Fare selection message received, updating fare selection data:', faresData);
