@@ -170,6 +170,7 @@ const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData |
     }
 
     return {
+      ...prev,
       state: {
         ...prev.state,
         [stateKey]: data,
