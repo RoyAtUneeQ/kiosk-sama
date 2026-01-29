@@ -5,19 +5,28 @@ import type { FlightsSearchData } from "@/types/booking";
 export class FlightSearchOutboundListener implements CustomEventListener {
   type = "flight_search_outbound";
   async execute(data: any, session: SessionContextType): Promise<void> {
-    console.log('[FlightSearchOutboundListener] Flight search outbound event received');
+    console.log('[FlightSearchOutboundListener] 🎯 Event triggered', { eventType: this.type });
     console.dir(data);
 
     try {
       if (!session.state.stateManager) {
-        console.warn('[FlightSearchOutboundListener] State Manager not available');
+        console.log('[FlightSearchOutboundListener] ⚠️  State manager not available');
         return;
       }
 
+      console.log('[FlightSearchOutboundListener] 📊 Fetching from state manager', { key: 'flights_outbound' });
       const flightsSearchData = await session.state.stateManager.get<FlightsSearchData>('flights_outbound');
 
       if (flightsSearchData && Array.isArray(flightsSearchData) && flightsSearchData.length > 0) {
-        console.log('[FlightSearchOutboundListener] Flights outbound data found (raw):', flightsSearchData);
+        console.log('[FlightSearchOutboundListener] ✅ Flights retrieved from state', {
+          flightCount: flightsSearchData.length,
+          sampleFlight: {
+            flightId: flightsSearchData[0]?.flightId,
+            flightNumber: flightsSearchData[0]?.flightNumber,
+            departure: flightsSearchData[0]?.departure || flightsSearchData[0]?.departureDateTime,
+            minPrice: flightsSearchData[0]?.lowestFare || flightsSearchData[0]?.minPrice,
+          }
+        });
 
         const transformedData: FlightsSearchData = flightsSearchData.map((flight: any) => ({
           flightId: flight.flightId,
@@ -35,7 +44,8 @@ export class FlightSearchOutboundListener implements CustomEventListener {
           flightOfferId: flight.flightOfferId,
         }));
 
-        console.log('[FlightSearchOutboundListener] Transformed flights outbound data:', transformedData);
+        console.log('[FlightSearchOutboundListener] 🔄 Data transformed', { transformedCount: transformedData.length });
+
         session.actions.setFlightsSearchData(transformedData);
         session.actions.sendRemoteMessage({
           type: 'flights_search_outbound',
@@ -43,12 +53,14 @@ export class FlightSearchOutboundListener implements CustomEventListener {
             data: transformedData
           }
         });
+
+        console.log('[FlightSearchOutboundListener] 📤 Remote message sent', { type: 'flights_search_outbound', flightCount: transformedData.length });
       } else {
-        console.log('[FlightSearchOutboundListener] No flights outbound data found in state');
+        console.log('[FlightSearchOutboundListener] ⚠️  No flights found in state manager');
         session.actions.setFlightsSearchData(null);
       }
     } catch (error) {
-      console.error('[FlightSearchOutboundListener] Error fetching flights outbound data:', error);
+      console.error('[FlightSearchOutboundListener] ❌ Error fetching flights outbound data:', error);
       session.actions.setFlightsSearchData(null);
     }
   }

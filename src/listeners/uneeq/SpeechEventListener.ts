@@ -31,36 +31,26 @@ export class SpeechEventListener implements UneeqEventListener {
         }
       }
     });
-    
-    console.log(`SpeechEventListener: Registered ${this.customEvents.size} custom events:`, Array.from(this.customEvents.keys()));
   }
 
   execute(data: {speechEvent: SpeechEventData}, session: SessionContextType): void {
     try {
-      console.log("SpeechEventListener: Executing speech event", data.speechEvent);
-
       const { eventType, eventValue } = this.parseEventData(data.speechEvent);
 
-      console.log("SpeechEventListener: Event type and value", { eventType, eventValue });
-      
       if (!eventType || !eventValue) {
-        console.warn("SpeechEventListener: Missing event type or value", { eventType, eventValue });
         return;
       }
 
       const customEvent = this.customEvents.get(eventType);
-      
+
       if (!customEvent) {
         console.warn(`SpeechEventListener: No handler found for event type "${eventType}"`);
         return;
       }
 
-      // Execute the custom event handler with session actions
       customEvent.execute(eventValue, session).catch(error => {
         console.error(`SpeechEventListener: Error in ${eventType} handler:`, error);
       });
-      
-      console.log(`SpeechEventListener: Successfully executed "${eventType}" event`);
     } catch (error) {
       console.error('SpeechEventListener: Error executing speech event', error);
     }

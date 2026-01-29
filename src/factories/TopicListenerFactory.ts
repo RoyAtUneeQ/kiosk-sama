@@ -13,7 +13,6 @@ export function registerTopicListener<T extends TopicListener>(
 // Auto-register all listeners exported from listeners/topics
 Object.values(listeners).forEach((ListenerClass: any) => {
   try {
-    console.log('registering topic listener', ListenerClass.name);
     registerTopicListener(ListenerClass as any);
   } catch {}
 });

@@ -12,7 +12,6 @@ export class EventsTrigger implements Trigger {
     execute({actions}: SessionContextType): Message {
         actions.setAwaitingPromptResponse(true);
         actions.setMedia(null);
-        console.log("[EventsTrigger] setting camera to close_up");
         actions.setCamera(CameraHorizontalAnchor.center);
 
         const eventTopics = [

@@ -5,6 +5,6 @@ import { EventType } from '@/types';
 export class SessionReconnectingFinishedListener implements UneeqEventListener {
   eventType = EventType.SessionReconnectingFinished;
   execute(_data: any, _session: SessionContextType): void {
-    console.log('[SessionReconnectingFinishedListener] Session reconnecting finished');
+    // Session reconnecting finished
   }
 }

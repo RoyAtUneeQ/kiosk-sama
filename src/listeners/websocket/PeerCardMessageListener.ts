@@ -4,9 +4,6 @@ import type { BookingSummaryData } from '@/types/booking';
 
 export class PeerCardMessageListener {
   static execute(payload: any, session: SessionContextType): boolean {
-    // Check if this is a card message
-    console.log('[PeerCardMessageListener] Card message received:', payload);
-    
     if (!payload.data || !payload.data.type || !payload.data.payload) {
       return false; // Not a card message, let other handlers process it
     }
@@ -15,7 +12,12 @@ export class PeerCardMessageListener {
     const flightsSearchTypes = ['flights_search_outbound', 'flights_search_inbound'] as const;
     if (flightsSearchTypes.includes(payload.data.type as (typeof flightsSearchTypes)[number])) {
       const flightsData = payload.data.payload.data;
-      console.log(`[PeerCardMessageListener] Flights search (${payload.data.type}) message received, raw data:`, flightsData);
+
+      console.log(
+        `%c📥 ${payload.data.type === 'flights_search_outbound' ? 'OUTBOUND' : 'INBOUND'} FLIGHTS`,
+        'background: #0891b2; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+        `${flightsData?.length || 0} flights`
+      );
 
       if (flightsData && Array.isArray(flightsData) && flightsData.length > 0) {
         const flightsSearchData: FlightsSearchData = flightsData.map((flight: any) => ({
@@ -43,10 +45,14 @@ export class PeerCardMessageListener {
 
     // Handle fare selection messages (outbound and inbound)
     if (payload.data.type === 'fare_selection_outbound' || payload.data.type === 'fare_selection_inbound') {
-      // The payload structure is: payload.data.payload.data contains the array of fares
       const faresData = payload.data.payload.data;
-      console.log('[PeerCardMessageListener] Fare selection message received, updating fare selection data:', faresData);
-      
+
+      console.log(
+        `%c📥 ${payload.data.type === 'fare_selection_outbound' ? 'OUTBOUND' : 'INBOUND'} FARES`,
+        'background: #059669; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+        `${faresData?.length || 0} fares`
+      );
+
       if (faresData && Array.isArray(faresData) && faresData.length > 0) {
         // Set FareSelectionData directly as the array of fares
         const fareSelectionData: FareSelectionData = faresData;
@@ -61,10 +67,13 @@ export class PeerCardMessageListener {
 
     // Handle booking summary messages
     if (payload.data.type === 'booking_summary') {
-      // The payload structure is: payload.data.payload.data contains the booking summary object
       const bookingData = payload.data.payload.data;
-      console.log('[PeerCardMessageListener] Booking summary message received, updating booking summary data:', bookingData);
-      
+
+      console.log(
+        '%c📥 BOOKING SUMMARY',
+        'background: #7c3aed; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;'
+      );
+
       if (bookingData && typeof bookingData === 'object' && bookingData.cabinClass) {
         // Construct BookingSummaryData object
         const bookingSummaryData: BookingSummaryData = bookingData;
@@ -79,10 +88,14 @@ export class PeerCardMessageListener {
 
     // Handle add to cart messages
     if (payload.data.type === 'add_to_cart') {
-      // The payload structure is: payload.data.payload.data contains the cart data object
       const cartData = payload.data.payload.data;
-      console.log('[PeerCardMessageListener] Add to cart message received, updating cart data:', cartData);
-      
+
+      console.log(
+        '%c📥 ADD TO CART',
+        'background: #ea580c; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+        `${cartData?.items?.length || 0} items`
+      );
+
       if (cartData && typeof cartData === 'object' && cartData.items && Array.isArray(cartData.items)) {
         const addToCartData: AddToCartData = cartData;
         session.actions.setAddToCartData(addToCartData);
@@ -96,10 +109,13 @@ export class PeerCardMessageListener {
 
     // Handle passenger details messages
     if (payload.data.type === 'passenger_details') {
-      // The payload structure is: payload.data.payload.data contains the passenger details object
       const passengerData = payload.data.payload.data;
-      console.log('[PeerCardMessageListener] Passenger details message received, updating passenger details data:', passengerData);
-      
+
+      console.log(
+        '%c📥 PASSENGER DETAILS',
+        'background: #db2777; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;'
+      );
+
       if (passengerData && typeof passengerData === 'object' && passengerData.passengerId && passengerData.firstName && passengerData.lastName) {
         const passengerDetailsData: PassengerDetailsData = passengerData;
         session.actions.setPassengerDetailsData(passengerDetailsData);
@@ -113,10 +129,13 @@ export class PeerCardMessageListener {
 
     // Handle contact details messages
     if (payload.data.type === 'contact_details') {
-      // The payload structure is: payload.data.payload.data contains the contact details object
       const contactData = payload.data.payload.data;
-      console.log('[PeerCardMessageListener] Contact details message received, updating contact details data:', contactData);
-      
+
+      console.log(
+        '%c📥 CONTACT DETAILS',
+        'background: #0284c7; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;'
+      );
+
       if (contactData && typeof contactData === 'object' && contactData.email && contactData.phoneNumber) {
         const contactDetailsData: ContactDetailsData = contactData;
         session.actions.setContactDetailsData(contactDetailsData);

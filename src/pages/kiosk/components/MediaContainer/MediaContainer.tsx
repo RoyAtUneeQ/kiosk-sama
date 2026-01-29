@@ -30,7 +30,6 @@ const MediaContainer: React.FC<Media> = ({
       if ((isMobile || isTablet) && autoPlay) {
         videoElement.muted = true;
         videoElement.play().catch((error) => {
-          console.log('Autoplay prevented:', error);
           setPlaybackError(true);
         });
       }

@@ -26,7 +26,6 @@ export function registerTrigger<T extends Trigger>(TriggerClass: new () => T, cl
       triggerRegistry.set(key, instance);
       // Invalidate cache when registry changes
       cachedTriggerItems = null;
-      console.log(`TriggerFactory: Registered trigger "${key}" from ${className}`);
     }
   } catch (error) {
     console.warn(`TriggerFactory: Failed to instantiate trigger class ${className}:`, error);

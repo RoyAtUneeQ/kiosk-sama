@@ -33,7 +33,11 @@ export default function FareCard({ fare, onBoundIdClick }: FareCardProps) {
 
   const handleCardClick = () => {
     if (onBoundIdClick) {
-      console.log('[FareCard] Sending boundId:', fare.boundId);
+      console.log(
+        '%c💳 FareCard clicked',
+        'background: #22c55e; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;',
+        fare.boundId
+      );
       onBoundIdClick(fare.boundId);
     } else {
       console.warn('[FareCard] onBoundIdClick callback not provided');

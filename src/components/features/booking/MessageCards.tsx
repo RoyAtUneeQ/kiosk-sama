@@ -51,7 +51,6 @@ export default function MessageCards({ cardData, onFlightIdClick, onBoundIdClick
   const isContactDetails = isContactDetailsData(cardData);
 
   if (isFlights) {
-    console.log('[MessageCards] Rendering FLIGHT cards');
     title = 'Available Flights';
     count = cardData.length;
     itemLabel = 'flight';
@@ -63,44 +62,32 @@ export default function MessageCards({ cardData, onFlightIdClick, onBoundIdClick
       />
     ));
   } else if (isFares) {
-    console.log('[MessageCards] Rendering FARE cards:', cardData);
     title = 'Available Fares';
     count = cardData.length;
     itemLabel = 'fare';
-    children = cardData.map((fare, index) => {
-      console.log(`[MessageCards] Creating FareCard ${index}:`, {
-        fareFamilyType: fare.fareFamilyType,
-        flightId: fare.flightId,
-        boundId: fare.boundId
-      });
-      return (
-        <FareCard
-          key={`${fare.fareFamilyType}-${fare.flightId}-${index}`}
-          fare={fare}
-          onBoundIdClick={onBoundIdClick}
-        />
-      );
-    });
+    children = cardData.map((fare, index) => (
+      <FareCard
+        key={`${fare.fareFamilyType}-${fare.flightId}-${index}`}
+        fare={fare}
+        onBoundIdClick={onBoundIdClick}
+      />
+    ));
   } else if (isBooking) {
-    console.log('[MessageCards] Rendering BOOKING SUMMARY card');
     title = 'Booking Summary';
     count = 1;
     itemLabel = 'booking';
     children = <SummaryCard booking={cardData} />;
   } else if (isAddToCart) {
-    console.log('[MessageCards] Rendering ADD TO CART card');
     title = 'Cart';
     count = cardData.items.length;
     itemLabel = 'item';
     children = <AddToCartCard cartData={cardData} />;
   } else if (isPassengerDetails) {
-    console.log('[MessageCards] Rendering PASSENGER DETAILS card');
     title = 'Passenger Details';
     count = 1;
     itemLabel = 'passenger';
     children = <PassengerDetailsCard passenger={cardData} />;
   } else if (isContactDetails) {
-    console.log('[MessageCards] Rendering CONTACT DETAILS card');
     title = 'Contact Details';
     count = 1;
     itemLabel = 'contact';
@@ -109,8 +96,6 @@ export default function MessageCards({ cardData, onFlightIdClick, onBoundIdClick
     console.warn('[MessageCards] No matching card type found! Returning null');
     return null;
   }
-  
-  console.log('[MessageCards] Rendering container with title:', title);
 
   return (
     <div className="message-cards">

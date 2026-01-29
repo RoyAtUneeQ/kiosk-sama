@@ -5,22 +5,32 @@ import type { BookingSummaryData, FareSelectionData } from "@/types/booking";
 export class BookingSummaryListener implements CustomEventListener {
   type = "booking_summary";
   async execute(data: any, session: SessionContextType): Promise<void> {
-    console.log('[BookingSummaryListener] BookingSummary event received');
+    console.log('[BookingSummaryListener] 🎯 Event triggered', { eventType: this.type });
     console.dir(data);
 
     // Fetch booking summary data from persistent state
     try {
       if (!session.state.stateManager) {
-        console.warn('[BookingSummaryListener] State Manager not available');
+        console.log('[BookingSummaryListener] ⚠️  State manager not available');
         return;
       }
 
+      console.log('[BookingSummaryListener] 📊 Fetching from state manager', { key: 'booking' });
       const bookingSummaryData = await session.state.stateManager.get<BookingSummaryData>('booking');
 
       if (bookingSummaryData && typeof bookingSummaryData === 'object' && bookingSummaryData.cabinClass) {
+        console.log('[BookingSummaryListener] ✅ Booking summary retrieved', {
+          cabinClass: bookingSummaryData.cabinClass,
+          selectedFare: bookingSummaryData.selectedFare,
+          bookingKeys: Object.keys(bookingSummaryData)
+        });
+
         // Fetch fare selection data to get fareFamilyType (check both outbound and inbound)
         let fareFamilyType: string | undefined;
         try {
+          console.log('[BookingSummaryListener] 📊 Fetching fare data for enrichment', {
+            keys: ['fares_outbound', 'fares_inbound']
+          });
           const [faresOutbound, faresInbound] = await Promise.all([
             session.state.stateManager.get<FareSelectionData>('fares_outbound'),
             session.state.stateManager.get<FareSelectionData>('fares_inbound'),
@@ -29,13 +39,25 @@ export class BookingSummaryListener implements CustomEventListener {
             ...(Array.isArray(faresOutbound) ? faresOutbound : []),
             ...(Array.isArray(faresInbound) ? faresInbound : []),
           ];
+
+          console.log('[BookingSummaryListener] ✅ Fare data retrieved for enrichment', {
+            totalFares: fareSelectionData.length,
+            outboundCount: Array.isArray(faresOutbound) ? faresOutbound.length : 0,
+            inboundCount: Array.isArray(faresInbound) ? faresInbound.length : 0,
+          });
+
           if (fareSelectionData.length > 0) {
             // Try to find fare matching selectedFare by boundId, otherwise use first fare
             const selectedFare = fareSelectionData.find(fare => fare.boundId === bookingSummaryData.selectedFare);
             fareFamilyType = selectedFare?.fareFamilyType ?? fareSelectionData[0]?.fareFamilyType;
+
+            console.log('[BookingSummaryListener] 🔍 Fare family resolved', {
+              fareFamilyType,
+              matchedByBoundId: !!selectedFare
+            });
           }
         } catch (error) {
-          console.warn('[BookingSummaryListener] Error fetching fare selection data for fareFamilyType:', error);
+          console.log('[BookingSummaryListener] ⚠️  Failed to fetch fare data for enrichment (continuing without)', error);
         }
 
         // Add fareFamilyType to bookingSummaryData
@@ -44,7 +66,10 @@ export class BookingSummaryListener implements CustomEventListener {
           ...(fareFamilyType && { fareFamilyType })
         };
 
-        console.log('[BookingSummaryListener] Booking summary data found:', enrichedBookingSummaryData);
+        console.log('[BookingSummaryListener] 🎁 Booking data enriched', {
+          fareFamilyType: enrichedBookingSummaryData.fareFamilyType
+        });
+
         session.actions.setBookingSummaryData(enrichedBookingSummaryData);
         session.actions.sendRemoteMessage({
           type: 'booking_summary',
@@ -52,12 +77,14 @@ export class BookingSummaryListener implements CustomEventListener {
             data: enrichedBookingSummaryData
           }
         });
+
+        console.log('[BookingSummaryListener] 📤 Remote message sent', { type: 'booking_summary' });
       } else {
-        console.log('[BookingSummaryListener] No booking summary data found in state');
+        console.log('[BookingSummaryListener] ⚠️  No valid booking summary data found');
         session.actions.setBookingSummaryData(null);
       }
     } catch (error) {
-      console.error('[BookingSummaryListener] Error fetching booking summary data:', error);
+      console.error('[BookingSummaryListener] ❌ Error fetching booking summary data:', error);
       session.actions.setBookingSummaryData(null);
     }
   }

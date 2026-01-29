@@ -138,23 +138,11 @@ const MessageList: React.FC<MessageListProps> = ({ messages, messageCards, rende
         // Look up card data for this specific message ID
         // Cards are stored per message ID, so they stay with the message that originally triggered them
         const cardData = messageCards[group.id] || null;
-        
-        console.log(`[MessageList] Rendering message ${group.id}:`, {
-          sender: group.sender,
-          hasCardData: !!cardData,
-          cardDataType: cardData ? (Array.isArray(cardData) ? `Array[${cardData.length}]` : 'Object') : 'null',
-          contentPreview: group.content.substring(0, 50)
-        });
-        
+
         // Determine if cards should be shown for this message
-        const cards = renderCardsForMessage 
+        const cards = renderCardsForMessage
           ? renderCardsForMessage(group.message, cardData)
           : null;
-        
-        console.log(`[MessageList] Cards rendered for ${group.id}:`, {
-          hasCards: !!cards,
-          cardsType: cards ? typeof cards : 'null'
-        });
         
         return (
           <React.Fragment key={group.id}>

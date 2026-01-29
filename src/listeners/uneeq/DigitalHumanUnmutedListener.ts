@@ -6,7 +6,6 @@ import type { SessionContextType } from '@/contexts/SessionContext';
 export class DigitalHumanUnmutedListener implements UneeqEventListener {
   eventType = EventType.DigitalHumanUnmuted;
   execute(_: any, session: SessionContextType): void {
-    console.log('[DigitalHumanUnmutedListener] Avatar unmuted - Setting status to LIVE');
     session.actions.setSessionStatus(SessionStatus.LIVE);
   }
 }

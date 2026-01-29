@@ -62,8 +62,6 @@ export class EphemeralTokenService {
     }
 
     // Debug logging
-    console.log('[EphemeralTokenService] Using baseUrl:', baseUrl);
-    console.log('[EphemeralTokenService] this.apiBaseUrl:', this.apiBaseUrl);
 
     // Ensure baseUrl ends with / to properly append the path
     const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
@@ -72,7 +70,6 @@ export class EphemeralTokenService {
     url.searchParams.set('service', service);
     url.searchParams.set('ttl', String(ttlSeconds));
     
-    console.log('[EphemeralTokenService] Final URL:', url.toString());
 
     const response = await fetch(url.toString(), {
       method: 'GET',

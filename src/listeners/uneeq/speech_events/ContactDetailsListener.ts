@@ -5,25 +5,33 @@ import type { ContactDetailsData } from "@/types/booking";
 export class ContactDetailsListener implements CustomEventListener {
   type = "contact_details";
   async execute(data: any, session: SessionContextType): Promise<void> {
-    console.log('[ContactDetailsListener] ContactDetails event received');
+    console.log('[ContactDetailsListener] 🎯 Event triggered', { eventType: this.type });
     console.dir(data);
 
     try {
       if (!session.state.stateManager) {
-        console.warn('[ContactDetailsListener] State Manager not available');
+        console.log('[ContactDetailsListener] ⚠️  State manager not available');
         return;
       }
 
       // Get contacts data from state manager
+      console.log('[ContactDetailsListener] 📊 Fetching from state manager', { key: 'contacts' });
       const contactsStateData = await session.state.stateManager.get<ContactDetailsData>('contacts');
-      
+
       if (!contactsStateData || !contactsStateData.email || !contactsStateData.phoneNumber) {
-        console.log('[ContactDetailsListener] No valid contact data found in contacts state');
+        console.log('[ContactDetailsListener] ⚠️  No valid contact data found', {
+          hasData: !!contactsStateData,
+          hasEmail: !!contactsStateData?.email,
+          hasPhone: !!contactsStateData?.phoneNumber
+        });
         session.actions.setContactDetailsData(null);
         return;
       }
 
-      console.log('[ContactDetailsListener] Found contact data:', contactsStateData);
+      console.log('[ContactDetailsListener] ✅ Contact details retrieved', {
+        email: contactsStateData.email,
+        phoneNumber: contactsStateData.phoneNumber
+      });
 
       // Create ContactDetailsData from the state data
       const contactDetailsData: ContactDetailsData = {
@@ -31,7 +39,6 @@ export class ContactDetailsListener implements CustomEventListener {
         phoneNumber: contactsStateData.phoneNumber,
       };
 
-      console.log('[ContactDetailsListener] Created contact details data:', contactDetailsData);
 
       // Set in state
       session.actions.setContactDetailsData(contactDetailsData);
@@ -43,8 +50,10 @@ export class ContactDetailsListener implements CustomEventListener {
           data: contactDetailsData
         }
       });
+
+      console.log('[ContactDetailsListener] 📤 Remote message sent', { type: 'contact_details' });
     } catch (error) {
-      console.error('[ContactDetailsListener] Error processing contact details:', error);
+      console.error('[ContactDetailsListener] ❌ Error processing contact details:', error);
       session.actions.setContactDetailsData(null);
     }
   }

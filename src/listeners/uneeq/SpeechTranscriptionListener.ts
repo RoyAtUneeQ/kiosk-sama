@@ -10,7 +10,6 @@ export class SpeechTranscriptionListener implements UneeqEventListener {
     // Just log for debugging
     const transcription = data?.transcript || data?.text || '';
     if (transcription) {
-      console.log('[SpeechTranscriptionListener] 👂 Live transcription:', transcription);
     }
     
     session.actions.setAwaitingPromptResponse(false);

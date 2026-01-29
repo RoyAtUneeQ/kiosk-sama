@@ -17,9 +17,7 @@ export class StateManagerService implements IStateWrapper {
   }
 
   private getCurrentSession() {
-    console.log('[StateManagerSDK] getCurrentSession() called');
     const sessionId = this.getSessionIdFn();
-    console.log('[StateManagerSDK] Retrieved sessionId from getter:', sessionId);
 
     if (!sessionId) {
       console.error('[StateManagerSDK] ❌ No sessionId available!');
@@ -29,57 +27,33 @@ export class StateManagerService implements IStateWrapper {
       );
     }
 
-    console.log('[StateManagerSDK] Creating session accessor for workspace:', this.workspaceId, 'session:', sessionId);
-    const sessionAccessor = this.rawManager.workspace(this.workspaceId).session(sessionId);
-    console.log('[StateManagerSDK] Session accessor created successfully');
-    return sessionAccessor;
+    return this.rawManager.workspace(this.workspaceId).session(sessionId);
   }
 
   async get<T>(key: string): Promise<T | null> {
-    console.log(`[StateManagerSDK] 📖 GET called for key: "${key}"`);
     try {
       const session = this.getCurrentSession();
-      console.log(`[StateManagerSDK] Calling session.get() on SDK...`);
-      const result = await session.get<T>(key);
-      console.log(`[StateManagerSDK] ✅ GET successful for "${key}":`, result);
-      return result;
+      return await session.get<T>(key);
     } catch (error) {
       console.error(`[StateManagerSDK] ❌ GET failed for "${key}":`, error);
-      console.error(`[StateManagerSDK] Error details:`, {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
-      });
       throw error;
     }
   }
 
   async set<T>(key: string, data: T): Promise<void> {
-    console.log(`[StateManagerSDK] 💾 SET called for key: "${key}"`);
-    console.log(`[StateManagerSDK] Data to set:`, data);
     try {
       const session = this.getCurrentSession();
-      console.log(`[StateManagerSDK] Calling session.set() on SDK...`);
       await session.set(key, data);
-      console.log(`[StateManagerSDK] ✅ SET successful for "${key}"`);
     } catch (error) {
       console.error(`[StateManagerSDK] ❌ SET failed for "${key}":`, error);
-      console.error(`[StateManagerSDK] Error details:`, {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        key,
-        data
-      });
       throw error;
     }
   }
 
   async delete(key: string): Promise<void> {
-    console.log(`[StateManagerSDK] 🗑️ DELETE called for key: "${key}"`);
     try {
       const session = this.getCurrentSession();
-      console.log(`[StateManagerSDK] Calling session.delete() on SDK...`);
       await session.delete(key);
-      console.log(`[StateManagerSDK] ✅ DELETE successful for "${key}"`);
     } catch (error) {
       console.error(`[StateManagerSDK] ❌ DELETE failed for "${key}":`, error);
       throw error;
@@ -87,13 +61,9 @@ export class StateManagerService implements IStateWrapper {
   }
 
   async getAll<T>(): Promise<T> {
-    console.log(`[StateManagerSDK] 📚 GETALL called`);
     try {
       const session = this.getCurrentSession();
-      console.log(`[StateManagerSDK] Calling session.getAll() on SDK...`);
-      const result = await session.getAll<T>();
-      console.log(`[StateManagerSDK] ✅ GETALL successful:`, result);
-      return result;
+      return await session.getAll<T>();
     } catch (error) {
       console.error(`[StateManagerSDK] ❌ GETALL failed:`, error);
       throw error;
@@ -101,13 +71,9 @@ export class StateManagerService implements IStateWrapper {
   }
 
   async getInfo(): Promise<any> {
-    console.log(`[StateManagerSDK] ℹ️  GETINFO called`);
     try {
       const session = this.getCurrentSession();
-      console.log(`[StateManagerSDK] Calling session.getInfo() on SDK...`);
-      const result = await session.getInfo();
-      console.log(`[StateManagerSDK] ✅ GETINFO successful:`, result);
-      return result;
+      return await session.getInfo();
     } catch (error) {
       console.error(`[StateManagerSDK] ❌ GETINFO failed:`, error);
       throw error;
@@ -115,12 +81,9 @@ export class StateManagerService implements IStateWrapper {
   }
 
   async keepAlive(): Promise<void> {
-    console.log(`[StateManagerSDK] 💓 KEEPALIVE called`);
     try {
       const session = this.getCurrentSession();
-      console.log(`[StateManagerSDK] Calling session.keepAlive() on SDK...`);
       await session.keepAlive();
-      console.log(`[StateManagerSDK] ✅ KEEPALIVE successful`);
     } catch (error) {
       console.error(`[StateManagerSDK] ❌ KEEPALIVE failed:`, error);
       throw error;
@@ -128,12 +91,9 @@ export class StateManagerService implements IStateWrapper {
   }
 
   async end(): Promise<void> {
-    console.log(`[StateManagerSDK] 🛑 END called`);
     try {
       const session = this.getCurrentSession();
-      console.log(`[StateManagerSDK] Calling session.end() on SDK...`);
       await session.end();
-      console.log(`[StateManagerSDK] ✅ END successful`);
     } catch (error) {
       console.error(`[StateManagerSDK] ❌ END failed:`, error);
       throw error;
@@ -149,22 +109,11 @@ export class StateManagerService implements IStateWrapper {
   }
 
   async publishToTopic<T>(topicId: string, data: T): Promise<{ topicId: string; sessionId: string; deliveredTo: number; publishedAt: Date }> {
-    console.log(`[StateManagerSDK] 📢 PUBLISHTOTOPIC called for topic: "${topicId}"`);
-    console.log(`[StateManagerSDK] Data to publish:`, data);
     try {
       const session = this.getCurrentSession();
-      console.log(`[StateManagerSDK] Calling session.publishToTopic() on SDK...`);
-      const result = await session.publishToTopic<T>(topicId, data);
-      console.log(`[StateManagerSDK] ✅ PUBLISHTOTOPIC successful for "${topicId}":`, result);
-      return result;
+      return await session.publishToTopic<T>(topicId, data);
     } catch (error) {
       console.error(`[StateManagerSDK] ❌ PUBLISHTOTOPIC failed for "${topicId}":`, error);
-      console.error(`[StateManagerSDK] Error details:`, {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        topicId,
-        data
-      });
       throw error;
     }
   }

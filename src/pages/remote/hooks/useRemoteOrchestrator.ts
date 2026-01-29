@@ -50,8 +50,6 @@ export const useRemoteOrchestrator = ({
       return;
     }
 
-    console.log(`[useRemoteOrchestrator] Connecting from ${state.connectionId} to ${kioskConnectionId}`);
-
     const userInspect: RemoteSessionInfo = {
       connectionId: state.connectionId,
       userAgent: navigator.userAgent,
@@ -85,7 +83,6 @@ export const useRemoteOrchestrator = ({
     if (lastMessage.sender !== MessageSender.User) return;
     if (state.sentMessageIds.has(lastMessage.id)) return;
 
-    console.log('[useRemoteOrchestrator] 📤 Forwarding user message to kiosk with ACK');
     actions.setAwaitingPromptResponse(true);
 
     const messageId = websocket.send(
@@ -94,7 +91,6 @@ export const useRemoteOrchestrator = ({
     );
 
     actions.markMessageAsSent(lastMessage.id);
-    console.log('[useRemoteOrchestrator] Message queued', { messageId, historyMessageId: lastMessage.id });
   }, [state.history.length]);
 
   const sendCardValue = useCallback(
@@ -117,17 +113,22 @@ export const useRemoteOrchestrator = ({
         true
       );
 
-      console.log('[useRemoteOrchestrator] 🎴 Card value sent with ACK', {
-        messageId,
-        messageText: messageText.substring(0, 50) + '...'
-      });
+      console.log(
+        '%c📤 MESSAGE SENT TO SERVER',
+        'background: #7c3aed; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+        { messageId, messageText: messageText }
+      );
     },
     [kioskConnectionId, websocket, actions, state.webSocketState]
   );
 
   const handleFlightSelection = useCallback(
     (flightId: string) => {
-      console.log('[useRemoteOrchestrator] Sending flight selection to kiosk:', flightId);
+      console.log(
+        '%c✈️ FLIGHT SELECTED',
+        'background: #2563eb; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+        flightId
+      );
       sendCardValue(`User selected this flight: ${flightId} find the fare options for this flight.`);
     },
     [sendCardValue]
@@ -135,7 +136,11 @@ export const useRemoteOrchestrator = ({
 
   const handleFareSelection = useCallback(
     (boundId: string) => {
-      console.log('[useRemoteOrchestrator] Sending fare selection to kiosk:', boundId);
+      console.log(
+        '%c💳 FARE SELECTED',
+        'background: #16a34a; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+        boundId
+      );
       sendCardValue(`User selected this fare: ${boundId} proceed to the next step.`);
     },
     [sendCardValue]

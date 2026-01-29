@@ -154,43 +154,27 @@ const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData |
 ) => {
   const state = get().state;
   let targetMessageId = messageId;
-  
-  console.log(`[SessionContext] 📊 updateMessageCardData called:`, {
-    stateKey,
-    dataType: data ? (Array.isArray(data) ? `Array[${data.length}]` : 'Object') : 'null',
-    providedMessageId: messageId,
-    historyLength: state.history.length
-  });
-  
+
   // If no messageId provided, find the last assistant message
   if (!targetMessageId) {
     targetMessageId = findLastAssistantMessageId(state.history);
-    console.log(`[SessionContext] No messageId provided, found last assistant message: ${targetMessageId}`);
   }
-  
+
   // Update both the global data field and the message-specific cards
   set((prev) => {
     const newMessageCards = { ...prev.state.messageCards };
     if (targetMessageId) {
       newMessageCards[targetMessageId] = data;
-      console.log(`[SessionContext] Updated messageCards for message ${targetMessageId}`);
     } else {
       console.warn(`[SessionContext] No targetMessageId found, card data will be set globally only`);
     }
-    
-    console.log(`[SessionContext] ✅ ${stateKey} updated:`, {
-      hasData: !!data,
-      messageId: targetMessageId,
-      cardCount: Object.keys(newMessageCards).length
-    });
-    
-    return { 
-      ...prev,
-      state: { 
-        ...prev.state, 
+
+    return {
+      state: {
+        ...prev.state,
         [stateKey]: data,
         messageCards: newMessageCards
-      } 
+      }
     };
   });
 };
@@ -244,19 +228,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       }
     },
     addMessageToHistory: (message: Message) => {
-        console.log('[SessionContext] 📝 addMessageToHistory called:', {
-          messageId: message.id,
-          sender: message.sender,
-          content: message.content?.substring(0, 50) + '...'
-        });
-        
         set((prev) => {
-          // Use functional update to avoid stale closure issues
           const newHistory = [...prev.state.history, message];
-          console.log('[SessionContext] ✅ History updated:', {
-            previousLength: prev.state.history.length,
-            newLength: newHistory.length
-          });
           return { state: { ...prev.state, history: newHistory } };
         });
     },

@@ -89,7 +89,6 @@ export class WebSocketService {
     };
 
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.log(`[WebSocketService] Connection not ready, buffering message`, { messageId, type: message.type });
       this.sendBuffer.push(wrappedMessage);
       if (requiresAck && messageId) {
         this.trackPendingMessage(messageId, wrappedMessage);
@@ -99,8 +98,7 @@ export class WebSocketService {
 
     try {
       this.ws.send(JSON.stringify(wrappedMessage));
-      console.log(`[WebSocketService] Message sent`, { messageId, type: message.type, requiresAck });
-      
+
       if (requiresAck && messageId) {
         this.trackPendingMessage(messageId, wrappedMessage);
       }
@@ -135,7 +133,6 @@ export class WebSocketService {
   public acknowledgeMessage(messageId: string): void {
     const pending = this.pendingMessages.get(messageId);
     if (pending) {
-      console.log(`[WebSocketService] ✅ Message acknowledged`, { messageId, type: pending.message.type });
       this.pendingMessages.delete(messageId);
     }
   }
@@ -274,7 +271,6 @@ export class WebSocketService {
           messageId,
           timestamp: Date.now()
         }));
-        console.log(`[WebSocketService] Sent ACK for message`, { messageId });
       }
     } catch (error) {
       this.handleError('sendAck', error);
@@ -337,13 +333,6 @@ export class WebSocketService {
     messagesToRetry.forEach(messageId => {
       const pending = this.pendingMessages.get(messageId);
       if (pending) {
-        console.log(`[WebSocketService] 🔄 Retrying message`, { 
-          messageId, 
-          type: pending.message.type,
-          retryCount: pending.retryCount + 1,
-          maxRetries: this.MAX_RETRIES
-        });
-        
         try {
           this.ws!.send(JSON.stringify(pending.message));
           pending.retryCount++;
@@ -359,9 +348,7 @@ export class WebSocketService {
     this.stopKeepalive(); // Ensure no duplicate timers
     
     if (!this.ws) return;
-    
-    console.log(`[WebSocketService] 💓 Starting keepalive (interval: ${this.keepaliveInterval}ms)`);
-    
+
     // Send initial ping immediately
     this.sendPing();
     
@@ -379,7 +366,6 @@ export class WebSocketService {
     if (this.keepaliveTimer) {
       clearInterval(this.keepaliveTimer);
       this.keepaliveTimer = null;
-      console.log('[WebSocketService] 🛑 Stopped keepalive');
     }
     
     if (this.pongTimeoutTimer) {
@@ -405,10 +391,6 @@ export class WebSocketService {
       this.pingsSent++;
       
       // Only log ping count occasionally to reduce noise
-      if (this.pingsSent % 10 === 0 || this.pingsSent <= 3) {
-        console.log(`[WebSocketService] 💓 Ping sent (${this.pingsSent} total${this.pongSupportDetected ? ', pong supported' : ', pong not supported'})`);
-      }
-      
       // Set timeout to check if pong is received (only if we haven't determined lack of support)
       this.checkPongTimeout();
     } catch (error) {
@@ -430,14 +412,12 @@ export class WebSocketService {
       ? this.lastPongReceived - this.lastPingSent 
       : null;
     
-    console.log(`[WebSocketService] ✅ Pong received (${this.pongsReceived} total${timeSincePing ? `, RTT: ${timeSincePing}ms` : ''})`);
   }
 
   private checkPongTimeout(): void {
     // If we've already determined backend doesn't support pong, skip timeout checks
     if (!this.pongSupportDetected && this.pingsSent > this.PONG_DETECTION_THRESHOLD && this.pongsReceived === 0) {
       this.pongSupportDetected = false; // Backend doesn't support pong
-      console.log(`[WebSocketService] ℹ️ Backend doesn't support pong responses - pings will keep connection alive at API Gateway level`);
       if (this.pongTimeoutTimer) {
         clearTimeout(this.pongTimeoutTimer);
         this.pongTimeoutTimer = null;

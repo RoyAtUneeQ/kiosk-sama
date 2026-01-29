@@ -14,9 +14,7 @@ const LeftSideBar: React.FC = () => {
 
   // Sort triggers by ID for consistent ordering
   const sortedTriggers = useMemo(() => {
-    const sorted = [...triggerInstances].sort((a, b) => a.instance.id - b.instance.id);
-    console.log('Sorted triggers:', sorted.map(t => ({ key: t.key, id: t.instance.id, icon: t.instance.icon, special: t.instance.special })));
-    return sorted;
+    return [...triggerInstances].sort((a, b) => a.instance.id - b.instance.id);
   }, [triggerInstances]);
 
   const iconNames = useMemo(() => 

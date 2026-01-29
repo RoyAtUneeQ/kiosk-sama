@@ -5,7 +5,6 @@ import type { SessionContextType } from "@/contexts/SessionContext";
 export class AvatarStoppedSpeakingListener implements UneeqEventListener {
   eventType = EventType.AvatarStoppedSpeaking;
   execute(_: any, session: SessionContextType): void {
-    console.log('[AvatarStoppedSpeakingListener] AvatarStoppedSpeaking');
     session.actions.setAwaitingPromptResponse(false);
     session.actions.setIsAvatarSpeaking(false);
   }

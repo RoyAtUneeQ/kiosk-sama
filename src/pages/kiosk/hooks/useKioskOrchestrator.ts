@@ -67,7 +67,6 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
       // Re-check remoteConnectionId in case it was cleared
       const currentRemoteId = state.remoteInfo?.connectionId;
       if (!currentRemoteId || currentRemoteId.trim() === '') {
-        console.log('[useKioskOrchestrator] ⏸️ Remote disconnected, stopping peer checks');
         clearInterval(interval);
         return;
       }
@@ -100,7 +99,6 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
 
       // Reset failure count if connection is healthy or no pending messages
       if (consecutiveFailures > 0) {
-        console.log(`[useKioskOrchestrator] ✅ Connection recovered, resetting failure count`);
         consecutiveFailures = 0;
       }
 
@@ -111,17 +109,7 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
   }, [websocket, state.remoteInfo?.connectionId, actions]);
 
   const cardData: CardData = state.bookingSummaryData ?? state.fareSelectionData ?? state.flightsSearchData;
-  
-  console.log('[useKioskOrchestrator] Card data state:', {
-    hasBookingSummaryData: !!state.bookingSummaryData,
-    hasFareSelectionData: !!state.fareSelectionData,
-    hasFlightsSearchData: !!state.flightsSearchData,
-    selectedCardData: cardData ? (Array.isArray(cardData) ? `Array[${cardData.length}]` : 'Object') : 'null',
-    bookingSummaryDataType: typeof state.bookingSummaryData,
-    fareSelectionDataType: typeof state.fareSelectionData,
-    flightsSearchDataType: typeof state.flightsSearchData,
-  });
-  
+
   let lastAssistantMessage: Message | null = null;
   for (let i = state.history.length - 1; i >= 0; i--) {
     if (state.history[i].sender === MessageSender.Assistant) {
@@ -131,13 +119,6 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
   }
 
   const hasCards = cardData !== null && lastAssistantMessage !== null;
-  
-  console.log('[useKioskOrchestrator] Card display state:', {
-    hasCards,
-    hasLastAssistantMessage: !!lastAssistantMessage,
-    lastAssistantMessageId: lastAssistantMessage?.id,
-    cardDataExists: !!cardData,
-  });
 
   return {
     websocket: websocket ?? null,

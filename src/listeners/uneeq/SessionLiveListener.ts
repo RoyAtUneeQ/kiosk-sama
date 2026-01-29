@@ -6,7 +6,6 @@ import { EventType } from '@/types';
 export class SessionLiveListener implements UneeqEventListener {
   eventType = EventType.SessionLive;
   execute(_data: any, session: SessionContextType): void {
-    console.log('[SessionLiveListener] SessionLive - session connected');
     session.state.uneeq?.chatPrompt(i18n.t('welcome.prompt'));
   }
 }

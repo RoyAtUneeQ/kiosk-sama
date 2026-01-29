@@ -58,7 +58,8 @@ export const defaultUneeqOptions: UneeqOptions = {
   customMetadata: {},
   speechRecognitionHintPhrasesBoost: 0,
   allowResumeSession: false,
-  verboseLogging: false
+  verboseLogging: false,
+  logLevel: 'error'
 };
 
 declare global {

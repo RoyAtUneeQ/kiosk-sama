@@ -24,7 +24,6 @@ function RemotePage() {
   });
 
   const onSendText = useCallback((text: string) => {
-    console.log('[onSendText] sending text to kiosk:', text);
     actions.addMessageToHistory(MessageFactory.createUserMessage(text));
   }, []);
 

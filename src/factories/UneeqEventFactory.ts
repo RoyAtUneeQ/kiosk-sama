@@ -11,12 +11,9 @@ export function registerEventListener<T extends UneeqEventListener>(EventClass: 
 }
 
 // Register all available event classes automatically
-console.log('[UneeqEventFactory] Available listeners:', Object.keys(listeners));
 Object.values(listeners).forEach((listener: any) => {
   try {
     if (typeof listener === 'function') {
-      const instance = new listener();
-      console.log('[UneeqEventFactory] Registering Uneeq listener:', listener.name, '→', instance.eventType);
       registerEventListener(listener);
     }
   } catch (error) {
@@ -24,14 +21,21 @@ Object.values(listeners).forEach((listener: any) => {
   }
 });
 
+const IGNORED_EVENT_TYPES = new Set([
+  'VadInterruptionAllowed',
+  'SessionStateUpdate',
+  'SceneReady',
+]);
+
 export const UneeqEventFactory = (event: UneeqEvent): UneeqEventListener | null => {
   const listener = eventRegistry.get(event.uneeqMessageType);
-  console.log('UneeqEventFactory', event.uneeqMessageType, listener);
   if (listener) {
     return listener;
   }
 
-  console.warn(`Event handler not implemented for event type: ${event.uneeqMessageType}`);
+  if (!IGNORED_EVENT_TYPES.has(event.uneeqMessageType)) {
+    console.warn(`Event handler not implemented for event type: ${event.uneeqMessageType}`);
+  }
   return null;
 };
 

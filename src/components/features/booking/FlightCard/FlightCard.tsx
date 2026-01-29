@@ -72,7 +72,11 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
 
   const handleCardClick = () => {
     if (onFlightIdClick) {
-      console.log('[FlightCard] Sending flight ID:', flight.flightId);
+      console.log(
+        '%c✈️ FlightCard clicked',
+        'background: #3b82f6; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;',
+        flight.flightId
+      );
       onFlightIdClick(flight.flightId);
     } else {
       console.warn('[FlightCard] onFlightIdClick callback not provided');

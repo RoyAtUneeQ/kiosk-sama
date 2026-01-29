@@ -12,7 +12,6 @@ export const useUneeqControls = (options: UseUneeqControlsOptions) => {
   // VAD control
   useEffect(() => {
     if (!window.uneeq) {
-      console.error('Uneeq is not initialized. Cannot update VAD state.');
       return;
     }
 

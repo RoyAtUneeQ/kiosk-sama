@@ -15,7 +15,6 @@ export class AvatarAnswerContentListener implements UneeqEventListener {
   eventType = EventType.AvatarAnswerContent;
   
   execute(data: any, session: SessionContextType): void {
-    console.log('[AvatarAnswerContentListener] AvatarAnswerContent event:', data);
     
     // Extract the avatar's spoken content
     // Try multiple possible property paths for robustness
@@ -26,14 +25,12 @@ export class AvatarAnswerContentListener implements UneeqEventListener {
         ? answerText.substring(0, 100) + '...' 
         : answerText;
       
-      console.log('[AvatarAnswerContentListener] 💬 Adding assistant message to history:', preview);
       
       // Add assistant message to history
       session.actions.addMessageToHistory(
         MessageFactory.createAssistantMessage(answerText)
       );
       
-      console.log('[AvatarAnswerContentListener] ✅ Message added to history successfully');
     } else {
       console.warn('[AvatarAnswerContentListener] ⚠️ No text content found in AvatarAnswerContent:', data);
       console.warn('[AvatarAnswerContentListener] ⚠️ Available properties:', Object.keys(data || {}));
