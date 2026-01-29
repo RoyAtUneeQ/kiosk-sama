@@ -3,8 +3,8 @@ import type { CustomEventListener } from "@/listeners/types/CustomEventListener"
 import type { AddToCartData, FareSelectionData, FlightsSearchData } from "@/types/booking";
 
 interface AddToCartStateData {
-  selectedOutboundFare: string; // boundId for outbound
-  selectedInboundFare?: string; // boundId for inbound (optional, one-way has only outbound)
+  selectedOutboundFare: string; // flightId (segment ID) for outbound
+  selectedInboundFare: string; // flightId (segment ID) for inbound (empty string for one-way)
 }
 
 export class AddToCartListener implements CustomEventListener {
@@ -29,9 +29,12 @@ export class AddToCartListener implements CustomEventListener {
       }
 
       const { selectedOutboundFare, selectedInboundFare } = addToCartStateData;
+      // Normalize empty string to undefined for easier handling
+      const normalizedInboundFare = selectedInboundFare && selectedInboundFare !== '' ? selectedInboundFare : undefined;
+
       console.log('[AddToCartListener] ✅ Cart selection retrieved', {
         selectedOutboundFare,
-        selectedInboundFare: selectedInboundFare || 'none (one-way)',
+        selectedInboundFare: normalizedInboundFare || 'none (one-way)',
       });
 
       // Get outbound and inbound fares/flights from state manager (separate states)
@@ -64,9 +67,12 @@ export class AddToCartListener implements CustomEventListener {
         return;
       }
 
-      const outboundFare = faresOutbound.find((fare) => fare.boundId === selectedOutboundFare);
+      const outboundFare = faresOutbound.find((fare) => fare.flightId === selectedOutboundFare);
       if (!outboundFare) {
-        console.log('[AddToCartListener] ❌ Selected outbound fare not found', { selectedOutboundFare });
+        console.log('[AddToCartListener] ❌ Selected outbound fare not found', {
+          selectedOutboundFare,
+          availableFareFlightIds: faresOutbound.map(f => f.flightId)
+        });
         session.actions.setAddToCartData(null);
         return;
       }
@@ -79,10 +85,12 @@ export class AddToCartListener implements CustomEventListener {
       }
 
       console.log('[AddToCartListener] ✅ Outbound fare and flight matched', {
-        boundId: outboundFare.boundId,
         flightId: outboundFare.flightId,
+        boundId: outboundFare.boundId,
         flightNumber: outboundFlight.flightNumber,
         price: outboundFare.priceTotal,
+        departureDateTime: (outboundFlight as any).departure || outboundFlight.departureDateTime,
+        arrivalDateTime: (outboundFlight as any).arrival || outboundFlight.arrivalDateTime,
       });
 
       const items: AddToCartData['items'] = [
@@ -94,22 +102,22 @@ export class AddToCartListener implements CustomEventListener {
           fareFamilyType: outboundFare.fareFamilyType,
           origin: outboundFlight.origin?.code || '',
           destination: outboundFlight.destination?.code || '',
-          departureDateTime: outboundFlight.departureDateTime,
-          arrivalDateTime: outboundFlight.arrivalDateTime,
+          departureDateTime: (outboundFlight as any).departure || outboundFlight.departureDateTime || '',
+          arrivalDateTime: (outboundFlight as any).arrival || outboundFlight.arrivalDateTime || '',
         },
       ];
 
       let totalPrice = outboundFare.priceTotal;
       const currency = outboundFare.priceCurrency;
 
-      if (selectedInboundFare && Array.isArray(faresInbound) && Array.isArray(flightsInbound)) {
-        const inboundFare = faresInbound.find((fare) => fare.boundId === selectedInboundFare);
+      if (normalizedInboundFare && Array.isArray(faresInbound) && Array.isArray(flightsInbound)) {
+        const inboundFare = faresInbound.find((fare) => fare.flightId === normalizedInboundFare);
         if (inboundFare) {
           const inboundFlight = flightsInbound.find((f) => f.flightId === inboundFare.flightId);
           if (inboundFlight) {
             console.log('[AddToCartListener] ✅ Inbound fare and flight matched', {
-              boundId: inboundFare.boundId,
               flightId: inboundFare.flightId,
+              boundId: inboundFare.boundId,
               flightNumber: inboundFlight.flightNumber,
               price: inboundFare.priceTotal,
             });
@@ -122,15 +130,18 @@ export class AddToCartListener implements CustomEventListener {
               fareFamilyType: inboundFare.fareFamilyType,
               origin: inboundFlight.origin?.code || '',
               destination: inboundFlight.destination?.code || '',
-              departureDateTime: inboundFlight.departureDateTime,
-              arrivalDateTime: inboundFlight.arrivalDateTime,
+              departureDateTime: (inboundFlight as any).departure || inboundFlight.departureDateTime || '',
+              arrivalDateTime: (inboundFlight as any).arrival || inboundFlight.arrivalDateTime || '',
             });
             totalPrice += inboundFare.priceTotal;
           } else {
             console.log('[AddToCartListener] ⚠️  Inbound flight not found (continuing with outbound only)', { flightId: inboundFare.flightId });
           }
         } else {
-          console.log('[AddToCartListener] ⚠️  Inbound fare not found (continuing with outbound only)', { selectedInboundFare });
+          console.log('[AddToCartListener] ⚠️  Inbound fare not found (continuing with outbound only)', {
+            normalizedInboundFare,
+            availableFareFlightIds: faresInbound.map(f => f.flightId)
+          });
         }
       }
 

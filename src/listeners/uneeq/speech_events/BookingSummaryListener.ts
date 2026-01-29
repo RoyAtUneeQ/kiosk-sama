@@ -18,10 +18,12 @@ export class BookingSummaryListener implements CustomEventListener {
       console.log('[BookingSummaryListener] 📊 Fetching from state manager', { key: 'booking' });
       const bookingSummaryData = await session.state.stateManager.get<BookingSummaryData>('booking');
 
-      if (bookingSummaryData && typeof bookingSummaryData === 'object' && bookingSummaryData.cabinClass) {
+      if (bookingSummaryData && typeof bookingSummaryData === 'object' && bookingSummaryData.cabinClass && bookingSummaryData.destination?.destinationTitle) {
         console.log('[BookingSummaryListener] ✅ Booking summary retrieved', {
           cabinClass: bookingSummaryData.cabinClass,
-          selectedFare: bookingSummaryData.selectedFare,
+          selectedOutboundFare: bookingSummaryData.selectedOutboundFare,
+          selectedInboundFare: bookingSummaryData.selectedInboundFare,
+          tripType: bookingSummaryData.tripType,
           bookingKeys: Object.keys(bookingSummaryData)
         });
 
@@ -47,14 +49,31 @@ export class BookingSummaryListener implements CustomEventListener {
           });
 
           if (fareSelectionData.length > 0) {
-            // Try to find fare matching selectedFare by boundId, otherwise use first fare
-            const selectedFare = fareSelectionData.find(fare => fare.boundId === bookingSummaryData.selectedFare);
-            fareFamilyType = selectedFare?.fareFamilyType ?? fareSelectionData[0]?.fareFamilyType;
+            // Conditionally match fare based on trip type
+            if (bookingSummaryData.tripType === 'one-way') {
+              // One-way: match outbound fare only
+              const outboundFare = fareSelectionData.find(fare => fare.boundId === bookingSummaryData.selectedOutboundFare);
+              fareFamilyType = outboundFare?.fareFamilyType ?? fareSelectionData[0]?.fareFamilyType;
 
-            console.log('[BookingSummaryListener] 🔍 Fare family resolved', {
-              fareFamilyType,
-              matchedByBoundId: !!selectedFare
-            });
+              console.log('[BookingSummaryListener] 🔍 Fare family resolved (one-way)', {
+                fareFamilyType,
+                matchedOutbound: !!outboundFare,
+                selectedOutboundFare: bookingSummaryData.selectedOutboundFare
+              });
+            } else {
+              // Round-trip: prefer outbound, fallback to inbound
+              const outboundFare = fareSelectionData.find(fare => fare.boundId === bookingSummaryData.selectedOutboundFare);
+              const inboundFare = fareSelectionData.find(fare => fare.boundId === bookingSummaryData.selectedInboundFare);
+              fareFamilyType = outboundFare?.fareFamilyType || inboundFare?.fareFamilyType || fareSelectionData[0]?.fareFamilyType;
+
+              console.log('[BookingSummaryListener] 🔍 Fare family resolved (round-trip)', {
+                fareFamilyType,
+                matchedOutbound: !!outboundFare,
+                matchedInbound: !!inboundFare,
+                selectedOutboundFare: bookingSummaryData.selectedOutboundFare,
+                selectedInboundFare: bookingSummaryData.selectedInboundFare
+              });
+            }
           }
         } catch (error) {
           console.log('[BookingSummaryListener] ⚠️  Failed to fetch fare data for enrichment (continuing without)', error);

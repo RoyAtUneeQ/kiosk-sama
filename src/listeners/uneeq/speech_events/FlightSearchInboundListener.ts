@@ -23,8 +23,8 @@ export class FlightSearchInboundListener implements CustomEventListener {
           sampleFlight: {
             flightId: flightsSearchData[0]?.flightId,
             flightNumber: flightsSearchData[0]?.flightNumber,
-            departure: flightsSearchData[0]?.departure || flightsSearchData[0]?.departureDateTime,
-            minPrice: flightsSearchData[0]?.lowestFare || flightsSearchData[0]?.minPrice,
+            departureDateTime: flightsSearchData[0]?.departureDateTime,
+            minPrice: flightsSearchData[0]?.minPrice,
           }
         });
 
