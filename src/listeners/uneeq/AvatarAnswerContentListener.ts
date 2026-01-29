@@ -21,11 +21,6 @@ export class AvatarAnswerContentListener implements UneeqEventListener {
     const answerText = data?.answerText || data?.text || data?.content || data?.answer || '';
     
     if (answerText && answerText.trim()) {
-      const preview = answerText.length > 100 
-        ? answerText.substring(0, 100) + '...' 
-        : answerText;
-      
-      
       // Add assistant message to history
       session.actions.addMessageToHistory(
         MessageFactory.createAssistantMessage(answerText)

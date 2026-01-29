@@ -4,7 +4,7 @@ import { WebSocketEventType } from '@/types/transport/WebsocketEventType';
 
 export class PongListener implements WebSocketEventListener {
   eventType = WebSocketEventType.PONG;
-  execute(data: any, _: SessionContextType): void {
+  execute(_data: any, _: SessionContextType): void {
     // Pong received
   }
 }

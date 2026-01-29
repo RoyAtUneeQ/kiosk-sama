@@ -4,7 +4,7 @@ import { WebSocketEventType } from '@/types/transport/WebsocketEventType';
 
 export class PingListener implements WebSocketEventListener {
   eventType = WebSocketEventType.PING;
-  execute(data: any, _: SessionContextType): void {
+  execute(_data: any, _: SessionContextType): void {
     // Ping received
   }
 }

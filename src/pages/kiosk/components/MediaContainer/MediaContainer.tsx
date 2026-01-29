@@ -29,7 +29,7 @@ const MediaContainer: React.FC<Media> = ({
       // For mobile devices, try to play muted first to enable autoplay
       if ((isMobile || isTablet) && autoPlay) {
         videoElement.muted = true;
-        videoElement.play().catch((error) => {
+        videoElement.play().catch((_error) => {
           setPlaybackError(true);
         });
       }

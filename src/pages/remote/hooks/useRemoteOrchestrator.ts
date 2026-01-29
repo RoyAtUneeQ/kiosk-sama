@@ -85,7 +85,7 @@ export const useRemoteOrchestrator = ({
 
     actions.setAwaitingPromptResponse(true);
 
-    const messageId = websocket.send(
+    websocket.send(
       createActionFactory().sendMessage(kioskConnectionId, MessageFactory.createUserMessage(lastMessage.content)),
       true
     );

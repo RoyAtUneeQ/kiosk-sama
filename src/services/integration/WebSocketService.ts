@@ -407,11 +407,6 @@ export class WebSocketService {
       clearTimeout(this.pongTimeoutTimer);
       this.pongTimeoutTimer = null;
     }
-    
-    const timeSincePing = this.lastPingSent 
-      ? this.lastPongReceived - this.lastPingSent 
-      : null;
-    
   }
 
   private checkPongTimeout(): void {

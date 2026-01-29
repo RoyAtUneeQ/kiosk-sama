@@ -103,7 +103,7 @@ export const useWebSocketAdapter = (props: UseWebSocketProps) => {
     const queueToProcess = [...session.state.remoteMessageQueue];
 
     queueToProcess.forEach((data) => {
-      const messageId = websocketRef.current!.send(
+      websocketRef.current!.send(
         actionFactory.sendMessage(remoteConnectionId, data),
         true
       );
@@ -126,7 +126,7 @@ export const useWebSocketAdapter = (props: UseWebSocketProps) => {
       return;
     }
 
-    const messageId = websocketRef.current!.send(
+    websocketRef.current!.send(
       actionFactory.sendMessage(remoteConnectionId, lastMessage),
       true
     );

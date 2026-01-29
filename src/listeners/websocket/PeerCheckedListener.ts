@@ -4,7 +4,7 @@ import { WebSocketEventType } from '@/types/transport/WebsocketEventType';
 
 export class PeerCheckedListener implements WebSocketEventListener {
   eventType = WebSocketEventType.PEER_CHECKED;
-  execute(data: any, _: SessionContextType): void {
+  execute(_data: any, _: SessionContextType): void {
     // Peer check monitoring
   }
 }
