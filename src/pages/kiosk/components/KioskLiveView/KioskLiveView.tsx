@@ -44,7 +44,6 @@ function KioskLiveView({
           {hasCards && lastAssistantMessage && cardData && (
             <CardContainer>
               <MessageCards
-                message={lastAssistantMessage}
                 cardData={cardData}
               />
             </CardContainer>

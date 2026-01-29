@@ -61,9 +61,8 @@ function RemotePage() {
           messages={state.history}
           messageCards={state.messageCards}
           awaitingPromptResponse={state.awaitingPromptResponse}
-          renderCardsForMessage={(message, cardData) => (
+          renderCardsForMessage={(_message, cardData) => (
             <MessageCards
-              message={message}
               cardData={cardData}
               onFlightIdClick={handleFlightSelection}
               onBoundIdClick={handleFareSelection}

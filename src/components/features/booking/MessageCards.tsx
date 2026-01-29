@@ -1,5 +1,3 @@
-import type { Message } from '@/types/transport/Message';
-import { MessageSender } from '@/types';
 import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData } from '@/types/booking';
 import FlightCard from '@/components/features/booking/FlightCard/FlightCard';
 import FareCard from '@/components/features/booking/FareCard/FareCard';
@@ -10,7 +8,6 @@ import ContactDetailsCard from '@/components/features/booking/ContactDetailsCard
 import './MessageCards.scss';
 
 interface MessageCardsProps {
-  message: Message;
   cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData | null;
   onFlightIdClick?: (flightId: string) => void;
   onBoundIdClick?: (boundId: string) => void;
@@ -40,7 +37,7 @@ function isContactDetailsData(data: unknown): data is ContactDetailsData {
   return typeof data === 'object' && data !== null && !Array.isArray(data) && 'email' in data && 'phoneNumber' in data;
 }
 
-export default function MessageCards({ message, cardData, onFlightIdClick, onBoundIdClick }: MessageCardsProps) {
+export default function MessageCards({ cardData, onFlightIdClick, onBoundIdClick }: MessageCardsProps) {
   let title: string;
   let count: number;
   let itemLabel: string;
