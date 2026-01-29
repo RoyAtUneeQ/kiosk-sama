@@ -1,5 +1,5 @@
 export interface PassengerData {
-    passportNumber: string;
+    passportNumber?: string;
     firstName: string;
     lastName: string;
     passengerType: string; // e.g., "ADT" for adult
@@ -8,6 +8,6 @@ export interface PassengerData {
     passengerId: string;
     dateOfBirth: string; // ISO date format
     title: string;
-    passportExpiry: string; // ISO date format
+    passportExpiry?: string; // ISO date format
   }
   
