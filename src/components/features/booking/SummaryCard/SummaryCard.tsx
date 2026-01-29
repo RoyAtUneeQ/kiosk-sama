@@ -20,10 +20,6 @@ function formatDate(dateString: string): string {
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
-function formatPrice(amount: number, currency: string): string {
-  return `${currency} ${amount.toLocaleString()}`;
-}
-
 function formatCabinClass(cabinClass: string): string {
   return cabinClass
     .split('_')
@@ -43,7 +39,6 @@ export default function SummaryCard({ booking }: SummaryCardProps) {
 
   const departureDate = formatDate(booking.departureDate);
   const returnDate = booking.returnDate ? formatDate(booking.returnDate) : null;
-  const totalPrice = formatPrice(booking.cartTotal, booking.cartCurrency);
   const cabinClass = formatCabinClass(booking.fareFamilyType || booking.cabinClass);
   const tripType = formatTripType(booking.tripType);
 
@@ -59,13 +54,12 @@ export default function SummaryCard({ booking }: SummaryCardProps) {
     <>
       <div className="summary-header">
         <div className="summary-title">Booking Summary</div>
-        <div className="summary-price">{totalPrice}</div>
       </div>
       <div className="summary-route">
         <div className="route-cities">
           <span className="origin">{booking.origin}</span>
           <span className="arrow">→</span>
-          <span className="destination">{booking.destination}</span>
+          <span className="destination">{booking.destination.destinationTitle}</span>
         </div>
         <div className="route-type">{tripType}</div>
       </div>
@@ -96,7 +90,6 @@ export default function SummaryCard({ booking }: SummaryCardProps) {
     <>
       <div className="summary-header">
         <div className="summary-title">Booking Summary</div>
-        <div className="summary-price">{totalPrice}</div>
       </div>
       <div className="summary-section">
         <div className="section-title">Trip Details</div>
@@ -104,7 +97,7 @@ export default function SummaryCard({ booking }: SummaryCardProps) {
           <div className="route-cities">
             <span className="origin">{booking.origin}</span>
             <span className="arrow">→</span>
-            <span className="destination">{booking.destination}</span>
+            <span className="destination">{booking.destination.destinationTitle}</span>
           </div>
           <div className="route-type">{tripType}</div>
         </div>
@@ -157,9 +150,15 @@ export default function SummaryCard({ booking }: SummaryCardProps) {
             <span className="detail-value">{cabinClass}</span>
           </div>
           <div className="detail-item">
-            <span className="detail-label">Selected Fare:</span>
-            <span className="detail-value">{booking.selectedFare}</span>
+            <span className="detail-label">Outbound Fare:</span>
+            <span className="detail-value">{booking.selectedOutboundFare}</span>
           </div>
+          {booking.selectedInboundFare && (
+            <div className="detail-item">
+              <span className="detail-label">Inbound Fare:</span>
+              <span className="detail-value">{booking.selectedInboundFare}</span>
+            </div>
+          )}
           {booking.selectedOutbound && (
             <div className="detail-item">
               <span className="detail-label">Outbound Flight:</span>

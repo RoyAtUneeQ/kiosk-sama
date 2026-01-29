@@ -37,29 +37,55 @@ export default function AddToCartCard({ cartData }: AddToCartCardProps) {
     return null;
   }
 
-  const item = cartData.items[0]; // Display first item (typically only one)
-  const fareFamilyType = formatFareFamilyType(item.fareFamilyType);
-  const route = `${item.origin} To ${item.destination}`;
-  const departureTime = formatTime(item.departureDateTime);
-  const arrivalTime = formatTime(item.arrivalDateTime);
-  const date = formatDate(item.departureDateTime);
-  const segmentPrice = formatPrice(item.price, item.currency);
+  const isRoundTrip = cartData.items.length > 1;
+  const outboundItem = cartData.items[0];
+  const inboundItem = isRoundTrip ? cartData.items[1] : null;
+
+  const fareFamilyType = formatFareFamilyType(outboundItem.fareFamilyType);
   const totalPrice = formatPrice(cartData.totalPrice, cartData.currency);
+
+  // Outbound flight details
+  const outboundRoute = `${outboundItem.origin} To ${outboundItem.destination}`;
+  const outboundDepartureTime = formatTime(outboundItem.departureDateTime);
+  const outboundArrivalTime = formatTime(outboundItem.arrivalDateTime);
+  const outboundDate = formatDate(outboundItem.departureDateTime);
+  const outboundPrice = formatPrice(outboundItem.price, outboundItem.currency);
+
+  // Inbound flight details (if round trip)
+  const inboundRoute = inboundItem ? `${inboundItem.origin} To ${inboundItem.destination}` : null;
+  const inboundDepartureTime = inboundItem ? formatTime(inboundItem.departureDateTime) : null;
+  const inboundArrivalTime = inboundItem ? formatTime(inboundItem.arrivalDateTime) : null;
+  const inboundDate = inboundItem ? formatDate(inboundItem.departureDateTime) : null;
+  const inboundPrice = inboundItem ? formatPrice(inboundItem.price, inboundItem.currency) : null;
 
   return (
       <Card>
         <div className="add-to-cart-card">
           <div className="cart-fare-type">{fareFamilyType}</div>
-          
+
+          {/* Outbound Flight */}
           <div className="cart-route-section">
-            <div className="cart-route">{route}</div>
+            <div className="cart-route">{outboundRoute}</div>
             <div className="cart-time-date-row">
               <div className="cart-time-date">
-                {departureTime} - {arrivalTime} • {date}
+                {outboundDepartureTime} - {outboundArrivalTime} • {outboundDate}
               </div>
-              <div className="cart-segment-price">{segmentPrice}</div>
+              <div className="cart-segment-price">{outboundPrice}</div>
             </div>
           </div>
+
+          {/* Inbound Flight (if round trip) */}
+          {isRoundTrip && inboundItem && (
+            <div className="cart-route-section">
+              <div className="cart-route">{inboundRoute}</div>
+              <div className="cart-time-date-row">
+                <div className="cart-time-date">
+                  {inboundDepartureTime} - {inboundArrivalTime} • {inboundDate}
+                </div>
+                <div className="cart-segment-price">{inboundPrice}</div>
+              </div>
+            </div>
+          )}
 
           <div className="cart-divider">
             <div className="left-cut" />
