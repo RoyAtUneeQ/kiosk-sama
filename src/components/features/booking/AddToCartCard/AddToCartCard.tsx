@@ -44,15 +44,16 @@ export default function AddToCartCard({ cartData }: AddToCartCardProps) {
   const fareFamilyType = formatFareFamilyType(outboundItem.fareFamilyType);
   const totalPrice = formatPrice(cartData.totalPrice, cartData.currency);
 
+
   // Outbound flight details
-  const outboundRoute = `${outboundItem.origin} To ${outboundItem.destination}`;
+  const outboundRoute = `${outboundItem.origin.iataCode} To ${outboundItem.destination.iataCode}`;
   const outboundDepartureTime = formatTime(outboundItem.departureDateTime);
   const outboundArrivalTime = formatTime(outboundItem.arrivalDateTime);
   const outboundDate = formatDate(outboundItem.departureDateTime);
   const outboundPrice = formatPrice(outboundItem.price, outboundItem.currency);
 
   // Inbound flight details (if round trip)
-  const inboundRoute = inboundItem ? `${inboundItem.origin} To ${inboundItem.destination}` : null;
+  const inboundRoute = inboundItem ? `${inboundItem.origin.iataCode} To ${inboundItem.destination.iataCode}` : null;
   const inboundDepartureTime = inboundItem ? formatTime(inboundItem.departureDateTime) : null;
   const inboundArrivalTime = inboundItem ? formatTime(inboundItem.arrivalDateTime) : null;
   const inboundDate = inboundItem ? formatDate(inboundItem.departureDateTime) : null;

@@ -1,4 +1,4 @@
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData, MessageCardSet } from '@/types/booking';
 import FlightCard from '@/components/features/booking/FlightCard/FlightCard';
 import FareCard from '@/components/features/booking/FareCard/FareCard';
 import SummaryCard from '@/components/features/booking/SummaryCard/SummaryCard';
@@ -8,9 +8,18 @@ import ContactDetailsCard from '@/components/features/booking/ContactDetailsCard
 import './MessageCards.scss';
 
 interface MessageCardsProps {
-  cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData | null;
+  cardData: MessageCardSet | FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData | null;
   onFlightIdClick?: (flightId: string) => void;
   onBoundIdClick?: (boundId: string) => void;
+}
+
+function isMessageCardSet(data: unknown): data is MessageCardSet {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    !Array.isArray(data) &&
+    ('fareSelection' in data || 'addToCart' in data || 'flightsSearch' in data || 'bookingSummary' in data || 'passengerDetails' in data || 'contactDetails' in data)
+  );
 }
 
 function isFlightsSearchData(data: unknown): data is FlightsSearchData {
@@ -37,76 +46,118 @@ function isContactDetailsData(data: unknown): data is ContactDetailsData {
   return typeof data === 'object' && data !== null && !Array.isArray(data) && 'email' in data && 'phoneNumber' in data;
 }
 
+function renderSingleCardBlock(
+  cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData,
+  onFlightIdClick?: (flightId: string) => void,
+  onBoundIdClick?: (boundId: string) => void
+): { title: string; count: number; itemLabel: string; children: React.ReactNode } {
+  if (isFlightsSearchData(cardData)) {
+    return {
+      title: 'Available Flights',
+      count: cardData.length,
+      itemLabel: 'flight',
+      children: cardData.map((flight, index) => (
+        <FlightCard
+          key={`${flight.flightId}-${index}`}
+          flight={flight}
+          onFlightIdClick={onFlightIdClick}
+        />
+      )),
+    };
+  }
+  if (isFareSelectionData(cardData)) {
+    return {
+      title: 'Available Fares',
+      count: cardData.length,
+      itemLabel: 'fare',
+      children: cardData.map((fare, index) => (
+        <FareCard
+          key={`${fare.fareFamilyType}-${fare.flightId}-${index}`}
+          fare={fare}
+          onBoundIdClick={onBoundIdClick}
+        />
+      )),
+    };
+  }
+  if (isBookingSummaryData(cardData)) {
+    return {
+      title: 'Booking Summary',
+      count: 1,
+      itemLabel: 'booking',
+      children: <SummaryCard booking={cardData} />,
+    };
+  }
+  if (isAddToCartData(cardData)) {
+    return {
+      title: 'Cart',
+      count: cardData.items.length,
+      itemLabel: 'item',
+      children: <AddToCartCard cartData={cardData} />,
+    };
+  }
+  if (isPassengerDetailsData(cardData)) {
+    return {
+      title: 'Passenger Details',
+      count: 1,
+      itemLabel: 'passenger',
+      children: <PassengerDetailsCard passenger={cardData} />,
+    };
+  }
+  if (isContactDetailsData(cardData)) {
+    return {
+      title: 'Contact Details',
+      count: 1,
+      itemLabel: 'contact',
+      children: <ContactDetailsCard contact={cardData} />,
+    };
+  }
+  return { title: '', count: 0, itemLabel: '', children: null };
+}
+
 export default function MessageCards({ cardData, onFlightIdClick, onBoundIdClick }: MessageCardsProps) {
-  let title: string;
-  let count: number;
-  let itemLabel: string;
-  let children: React.ReactNode;
+  if (!cardData) return null;
 
-  const isFlights = isFlightsSearchData(cardData);
-  const isFares = isFareSelectionData(cardData);
-  const isBooking = isBookingSummaryData(cardData);
-  const isAddToCart = isAddToCartData(cardData);
-  const isPassengerDetails = isPassengerDetailsData(cardData);
-  const isContactDetails = isContactDetailsData(cardData);
+  // Multiple card types per message (e.g. fare offers + add-to-cart)
+  if (isMessageCardSet(cardData)) {
+    const blocks: React.ReactNode[] = [];
+    const order: (keyof MessageCardSet)[] = ['flightsSearch', 'fareSelection', 'addToCart', 'bookingSummary', 'passengerDetails', 'contactDetails'];
+    for (const key of order) {
+      const value = cardData[key];
+      if (value == null) continue;
+      const block = renderSingleCardBlock(value, onFlightIdClick, onBoundIdClick);
+      if (block.children == null) continue;
+      blocks.push(
+        <div key={key} className="message-cards">
+          <div className="message-cards__header">
+            <h3 className="message-cards__title">{block.title}</h3>
+            <span className="message-cards__count">
+              {block.count} {block.itemLabel}{block.count !== 1 ? 's' : ''} found
+            </span>
+          </div>
+          <div className="message-cards__items">{block.children}</div>
+        </div>
+      );
+    }
+    if (blocks.length === 0) return null;
+    return <>{blocks}</>;
+  }
 
-  if (isFlights) {
-    title = 'Available Flights';
-    count = cardData.length;
-    itemLabel = 'flight';
-    children = cardData.map((flight, index) => (
-      <FlightCard
-        key={`${flight.flightId}-${index}`}
-        flight={flight}
-        onFlightIdClick={onFlightIdClick}
-      />
-    ));
-  } else if (isFares) {
-    title = 'Available Fares';
-    count = cardData.length;
-    itemLabel = 'fare';
-    children = cardData.map((fare, index) => (
-      <FareCard
-        key={`${fare.fareFamilyType}-${fare.flightId}-${index}`}
-        fare={fare}
-        onBoundIdClick={onBoundIdClick}
-      />
-    ));
-  } else if (isBooking) {
-    title = 'Booking Summary';
-    count = 1;
-    itemLabel = 'booking';
-    children = <SummaryCard booking={cardData} />;
-  } else if (isAddToCart) {
-    title = 'Cart';
-    count = cardData.items.length;
-    itemLabel = 'item';
-    children = <AddToCartCard cartData={cardData} />;
-  } else if (isPassengerDetails) {
-    title = 'Passenger Details';
-    count = 1;
-    itemLabel = 'passenger';
-    children = <PassengerDetailsCard passenger={cardData} />;
-  } else if (isContactDetails) {
-    title = 'Contact Details';
-    count = 1;
-    itemLabel = 'contact';
-    children = <ContactDetailsCard contact={cardData} />;
-  } else {
+  // Legacy: single card type
+  const block = renderSingleCardBlock(cardData, onFlightIdClick, onBoundIdClick);
+  if (block.children == null) {
     console.warn('[MessageCards] No matching card type found! Returning null');
     return null;
   }
-
   return (
     <div className="message-cards">
       <div className="message-cards__header">
-        <h3 className="message-cards__title">{title}</h3>
+        <h3 className="message-cards__title">{block.title}</h3>
         <span className="message-cards__count">
-          {count} {itemLabel}{count !== 1 ? 's' : ''} found
+          {block.count} {block.itemLabel}{block.count !== 1 ? 's' : ''} found
         </span>
       </div>
       <div className="message-cards__items">
-        {children}
+        {block.children}
       </div>
     </div>
   );

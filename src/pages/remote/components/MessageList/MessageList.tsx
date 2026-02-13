@@ -2,12 +2,12 @@ import './MessageList.scss';
 import React, { useEffect, useRef } from 'react';
 import type { Message } from '@/types/transport/Message';
 import { MessageBubble, ThreeDotsLoader } from '@/components';
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData } from '@/types/booking';
+import type { MessageCardSet } from '@/types/booking';
 
 interface MessageListProps {
   messages: Message[];
-  messageCards: Record<string, BookingSummaryData | FlightsSearchData | FareSelectionData | AddToCartData | PassengerDetailsData | ContactDetailsData | null>;
-  renderCardsForMessage?: (message: Message, cardData: BookingSummaryData | FlightsSearchData | FareSelectionData | AddToCartData | PassengerDetailsData | ContactDetailsData | null) => React.ReactNode;
+  messageCards: Record<string, MessageCardSet>;
+  renderCardsForMessage?: (message: Message, cardData: MessageCardSet | undefined) => React.ReactNode;
   awaitingPromptResponse?: boolean;
 }
 
@@ -137,7 +137,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, messageCards, rende
       {messageGroups.map((group) => {
         // Look up card data for this specific message ID
         // Cards are stored per message ID, so they stay with the message that originally triggered them
-        const cardData = messageCards[group.id] || null;
+        const cardData = messageCards[group.id];
 
         // Determine if cards should be shown for this message
         const cards = renderCardsForMessage

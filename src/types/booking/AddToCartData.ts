@@ -4,8 +4,16 @@ export interface CartItem {
   price: number;
   currency: string;
   fareFamilyType: string;
-  origin: string; // Airport code (e.g., "DOH")
-  destination: string; // Airport code (e.g., "CDG")
+  origin: {
+    name: string;
+    city: string;
+    iataCode: string;
+  };
+  destination: {
+    name: string;
+    city: string;
+    iataCode: string;
+  };
   departureDateTime: string;
   arrivalDateTime: string;
 }

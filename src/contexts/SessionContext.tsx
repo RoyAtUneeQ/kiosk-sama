@@ -4,7 +4,7 @@ import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type M
 import { type State, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
 import type { StateWrapper } from '@/types/stateManager';
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData, MessageCardSet } from '@/types/booking';
 
 const initialState: State = {
   // Core session configuration
@@ -145,6 +145,33 @@ const findSecondToLastAssistantMessageId = (history: Message[]): string | undefi
   return undefined;
 };
 
+const STATE_KEY_TO_CARD_KEY: Partial<Record<keyof State, keyof MessageCardSet>> = {
+  flightsSearchData: 'flightsSearch',
+  fareSelectionData: 'fareSelection',
+  bookingSummaryData: 'bookingSummary',
+};
+
+/** Normalize legacy single-card value or existing MessageCardSet to MessageCardSet */
+function toMessageCardSet(existing: unknown): MessageCardSet {
+  if (!existing) return {};
+  if (typeof existing === 'object' && !Array.isArray(existing)) {
+    const o = existing as Record<string, unknown>;
+    if ('fareSelection' in o || 'addToCart' in o || 'flightsSearch' in o || 'bookingSummary' in o) {
+      return existing as MessageCardSet;
+    }
+    if ('items' in o && 'totalPrice' in o && 'currency' in o) return { addToCart: existing as AddToCartData };
+    if ('cabinClass' in o && 'passengers' in o) return { bookingSummary: existing as BookingSummaryData };
+    if ('passengerId' in o && 'firstName' in o) return { passengerDetails: existing as PassengerDetailsData };
+    if ('email' in o && 'phoneNumber' in o) return { contactDetails: existing as ContactDetailsData };
+  }
+  if (Array.isArray(existing) && existing.length > 0) {
+    const first = existing[0] as Record<string, unknown>;
+    if (first && typeof first === 'object' && 'flightNumber' in first) return { flightsSearch: existing as FlightsSearchData };
+    if (first && typeof first === 'object' && 'boundId' in first) return { fareSelection: existing as FareSelectionData };
+  }
+  return {};
+}
+
 const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData>(
   set: (fn: (prev: SessionStore) => SessionStore) => void,
   get: () => SessionStore,
@@ -160,11 +187,18 @@ const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData |
     targetMessageId = findLastAssistantMessageId(state.history);
   }
 
-  // Update both the global data field and the message-specific cards
+  const cardKey = STATE_KEY_TO_CARD_KEY[stateKey];
+  if (!cardKey) return;
+
+  // Update both the global data field and the message-specific cards (merge so fare + addToCart can coexist)
   set((prev) => {
     const newMessageCards = { ...prev.state.messageCards };
     if (targetMessageId) {
-      newMessageCards[targetMessageId] = data;
+      const existing = newMessageCards[targetMessageId];
+      newMessageCards[targetMessageId] = {
+        ...toMessageCardSet(existing),
+        [cardKey]: data,
+      };
     } else {
       console.warn(`[SessionContext] No targetMessageId found, card data will be set globally only`);
     }
@@ -289,7 +323,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       set((prev) => {
         const newMessageCards = { ...prev.state.messageCards };
         if (targetMessageId) {
-          newMessageCards[targetMessageId] = addToCartData;
+          const existing = newMessageCards[targetMessageId];
+          newMessageCards[targetMessageId] = {
+            ...toMessageCardSet(existing),
+            addToCart: addToCartData,
+          };
           console.log(`[SessionContext] Updated messageCards for add_to_cart with message ${targetMessageId}`);
         } else {
           console.warn(`[SessionContext] No targetMessageId found for add_to_cart, card data will not be set`);
@@ -319,7 +357,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       set((prev) => {
         const newMessageCards = { ...prev.state.messageCards };
         if (targetMessageId) {
-          newMessageCards[targetMessageId] = passengerDetailsData;
+          const existing = newMessageCards[targetMessageId];
+          newMessageCards[targetMessageId] = {
+            ...toMessageCardSet(existing),
+            passengerDetails: passengerDetailsData,
+          };
           console.log(`[SessionContext] Updated messageCards for passenger_details with message ${targetMessageId}`);
         } else {
           console.warn(`[SessionContext] No targetMessageId found for passenger_details, card data will not be set`);
@@ -349,7 +391,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       set((prev) => {
         const newMessageCards = { ...prev.state.messageCards };
         if (targetMessageId) {
-          newMessageCards[targetMessageId] = contactDetailsData;
+          const existing = newMessageCards[targetMessageId];
+          newMessageCards[targetMessageId] = {
+            ...toMessageCardSet(existing),
+            contactDetails: contactDetailsData,
+          };
           console.log(`[SessionContext] Updated messageCards for contact_details with message ${targetMessageId}`);
         } else {
           console.warn(`[SessionContext] No targetMessageId found for contact_details, card data will not be set`);

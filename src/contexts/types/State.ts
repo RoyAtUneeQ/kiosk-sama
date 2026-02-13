@@ -6,7 +6,7 @@ import type { Event } from "@/types/uneeq/Event";
 import type { Memory, Media, ErrorMessage } from "@/types/utils";
 import type { MicrophoneStatus } from "@/types/microphone";
 import type { StateWrapper } from "@/types/stateManager";
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData } from "@/types/booking";   
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, MessageCardSet } from "@/types/booking";
 
 export interface State {
     config: Config;
@@ -54,9 +54,8 @@ export interface State {
     // Booking summary data for displaying booking summary
     bookingSummaryData: BookingSummaryData | null;
 
-    // Map of message IDs to their associated card data
-    // This allows cards to stay with specific messages even when new messages arrive
-    messageCards: Record<string, FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData | null>;
+    // Map of message IDs to their associated card data (can have multiple card types per message)
+    messageCards: Record<string, MessageCardSet>;
 
     // Websocket message
     remoteMessageQueue: any[];
