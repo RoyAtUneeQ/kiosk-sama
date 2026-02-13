@@ -47,6 +47,23 @@ export class HistorySyncListener implements WebSocketEventListener {
       Object.entries(data.messageCards).forEach(([messageId, cardData]) => {
         if (!cardData) return;
 
+        const card = cardData as Record<string, unknown>;
+        const isMessageCardSet =
+          typeof card === 'object' &&
+          !Array.isArray(card) &&
+          ('fareSelection' in card || 'addToCart' in card || 'flightsSearch' in card || 'bookingSummary' in card || 'passengerDetails' in card || 'contactDetails' in card);
+
+        if (isMessageCardSet) {
+          if (card.fareSelection != null) session.actions.setFareSelectionData(card.fareSelection as any, messageId);
+          if (card.flightsSearch != null) session.actions.setFlightsSearchData(card.flightsSearch as any, messageId);
+          if (card.bookingSummary != null) session.actions.setBookingSummaryData(card.bookingSummary as any, messageId);
+          if (card.addToCart != null) session.actions.setAddToCartData(card.addToCart as any, messageId);
+          if (card.passengerDetails != null) session.actions.setPassengerDetailsData(card.passengerDetails as any, messageId);
+          if (card.contactDetails != null) session.actions.setContactDetailsData(card.contactDetails as any, messageId);
+          return;
+        }
+
+        // Legacy shape: single card value
         if (Array.isArray(cardData)) {
           if (cardData.length > 0 && 'flightNumber' in cardData[0]) {
             session.actions.setFlightsSearchData(cardData, messageId);

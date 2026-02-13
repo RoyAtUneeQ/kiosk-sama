@@ -12,12 +12,12 @@ export interface FlightData {
   origin?: {
     name: string;
     city: string;
-    code: string;
+    iataCode: string;
   };
   destination?: {
     name: string;
     city: string;
-    code: string;
+    iataCode: string;
   };
   segments?: Array<{
     duration: number;

@@ -5,6 +5,7 @@ export type { FareData } from './FareData';
 export type { AddToCartData } from './AddToCartData';
 export type { PassengerDetailsData } from './PassengerDetailsData';
 export type { ContactDetailsData } from './ContactDetailsData';
+export type { MessageCardSet } from './MessageCardSet';
 
 // Import types for array type aliases
 import type { FlightData } from './FlightData';

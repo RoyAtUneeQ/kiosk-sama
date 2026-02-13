@@ -7,6 +7,17 @@ interface AddToCartStateData {
   selectedInboundFare: string; // flightId (segment ID) for inbound (empty string for one-way)
 }
 
+const DEFAULT_LOCATION = { name: '', city: '', iataCode: '' } as const;
+
+function parseLocation(
+  value: string | { name: string; city: string; iataCode: string } | undefined
+): { name: string; city: string; iataCode: string } {
+  if (typeof value === 'string') {
+    return JSON.parse(value) as { name: string; city: string; iataCode: string };
+  }
+  return value ?? { ...DEFAULT_LOCATION };
+}
+
 export class AddToCartListener implements CustomEventListener {
   type = "add_to_cart";
   async execute(data: any, session: SessionContextType): Promise<void> {
@@ -67,11 +78,11 @@ export class AddToCartListener implements CustomEventListener {
         return;
       }
 
-      const outboundFare = faresOutbound.find((fare) => fare.flightId === selectedOutboundFare);
+      const outboundFare = faresOutbound.find((fare) => fare.boundId === selectedOutboundFare);
       if (!outboundFare) {
         console.log('[AddToCartListener] ❌ Selected outbound fare not found', {
           selectedOutboundFare,
-          availableFareFlightIds: faresOutbound.map(f => f.flightId)
+          availableFareFlightIds: faresOutbound.map(f => f.boundId)
         });
         session.actions.setAddToCartData(null);
         return;
@@ -100,8 +111,8 @@ export class AddToCartListener implements CustomEventListener {
           price: outboundFare.priceTotal,
           currency: outboundFare.priceCurrency,
           fareFamilyType: outboundFare.fareFamilyType,
-          origin: outboundFlight.origin?.code || '',
-          destination: outboundFlight.destination?.code || '',
+          origin: parseLocation(outboundFlight.origin),
+          destination: parseLocation(outboundFlight.destination),
           departureDateTime: (outboundFlight as any).departure || outboundFlight.departureDateTime || '',
           arrivalDateTime: (outboundFlight as any).arrival || outboundFlight.arrivalDateTime || '',
         },
@@ -128,8 +139,8 @@ export class AddToCartListener implements CustomEventListener {
               price: inboundFare.priceTotal,
               currency: inboundFare.priceCurrency,
               fareFamilyType: inboundFare.fareFamilyType,
-              origin: inboundFlight.origin?.code || '',
-              destination: inboundFlight.destination?.code || '',
+              origin: parseLocation(inboundFlight.origin),
+              destination: parseLocation(inboundFlight.destination),
               departureDateTime: (inboundFlight as any).departure || inboundFlight.departureDateTime || '',
               arrivalDateTime: (inboundFlight as any).arrival || inboundFlight.arrivalDateTime || '',
             });
