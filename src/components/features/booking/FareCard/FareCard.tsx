@@ -11,11 +11,25 @@ interface FareCardProps {
 export default function FareCard({ fare, onBoundIdClick }: FareCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const featuresList = fare.features
-    ? (fare.features.includes('|')
-      ? fare.features.split('|').map((f: string) => f.trim()).filter((f: string) => f.length > 0)
-      : [fare.features])
-    : [];
+  console.log(fare.features);
+
+  const featuresList = ((): string[] => {
+    const raw = fare.features?.trim();
+    if (!raw) return [];
+    if (raw.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(raw) as unknown;
+        return Array.isArray(parsed)
+          ? parsed.map((f) => String(f).trim()).filter((f) => f.length > 0)
+          : [];
+      } catch {
+        return [];
+      }
+    }
+    return raw.includes('|')
+      ? raw.split('|').map((f) => f.trim()).filter((f) => f.length > 0)
+      : [raw];
+  })();
 
   const formatPrice = (price: number, currency: string) => {
     return `${currency} ${price.toLocaleString()}`;
