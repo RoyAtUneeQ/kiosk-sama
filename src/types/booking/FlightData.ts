@@ -36,4 +36,7 @@ export interface FlightData {
     airlineLogo?: string;
   }>;
   flightOfferId?: string;
+  appliedDiscount?: {
+    originalTotalPrice: number;
+  };
 }

@@ -29,6 +29,7 @@ export class PeerCardMessageListener {
           currency: flight.currency,
           arrivalDateTime: flight.arrival || flight.arrivalDateTime,
           hasQSuite: flight.hasQSuite,
+          appliedDiscount: flight.appliedDiscount,
           flightNumber: flight.flightNumber,
           origin: flight.origin,
           destination: flight.destination,
