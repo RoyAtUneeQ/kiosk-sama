@@ -59,15 +59,20 @@ function getAirlineName(flightNumber: string): string {
 export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+
   const departureTime = formatTime(flight.departureDateTime);
   const arrivalTime = formatTime(flight.arrivalDateTime);
   const date = formatDate(flight.departureDateTime);
   const duration = formatDuration(flight.duration);
   const airlineName = getAirlineName(flight.flightNumber);
   const airlineCode = getAirlineCode(flight.flightNumber);
-  const price = flight.minPrice && flight.currency 
-    ? `${flight.currency} ${flight.minPrice}` 
+  const price = flight.minPrice != null && flight.currency
+    ? `${flight.currency} ${flight.minPrice}`
     : 'Price TBD';
+  const originalPrice =
+    flight.appliedDiscount != null && flight.currency
+      ? `${flight.currency} ${flight.appliedDiscount.originalTotalPrice}`
+      : null;
   const stopsText = flight.numberOfStops === 0 ? 'Non-stop' : `${flight.numberOfStops} stop${flight.numberOfStops > 1 ? 's' : ''}`;
 
   const handleCardClick = () => {
@@ -88,7 +93,10 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
       <div className="flight-count">{stopsText}</div>
       <div className="flight-route-row">
         <div className="route">{flight.flightNumber}</div>
-        <div className="price-current">{price}</div>
+        <div className="price-column">
+          {originalPrice != null && <div className="price-strikethrough">{originalPrice}</div>}
+          <div className="price-current">{price}</div>
+        </div>
       </div>
       <div className="flight-time-row">
         <div className="time-date">{departureTime} - {arrivalTime} • {date}</div>
@@ -145,6 +153,7 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
             <div className="expanded-content">
               <div className="total-label">Price</div>
               <div className="price-column">
+                {originalPrice != null && <div className="price-strikethrough">{originalPrice}</div>}
                 <div className="price-current">{price}</div>
               </div>
             </div>

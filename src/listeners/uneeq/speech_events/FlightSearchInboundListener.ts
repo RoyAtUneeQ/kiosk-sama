@@ -1,6 +1,7 @@
 import { type SessionContextType } from "@/contexts/SessionContext";
 import { type CustomEventListener } from "@/listeners/types/CustomEventListener";
 import type { FlightsSearchData } from "@/types/booking";
+import { parseAppliedDiscount } from "./utils/parseAppliedDiscount";
 
 export class FlightSearchInboundListener implements CustomEventListener {
   type = "flight_search_inbound";
@@ -28,21 +29,25 @@ export class FlightSearchInboundListener implements CustomEventListener {
           }
         });
 
-        const transformedData: FlightsSearchData = flightsSearchData.map((flight: any) => ({
-          flightId: flight.flightId,
-          duration: flight.duration,
-          numberOfStops: flight.numberOfStops,
-          minPrice: flight.lowestFare || flight.minPrice,
-          departureDateTime: flight.departure || flight.departureDateTime,
-          currency: flight.currency,
-          arrivalDateTime: flight.arrival || flight.arrivalDateTime,
-          hasQSuite: flight.hasQSuite,
-          flightNumber: flight.flightNumber,
-          origin: flight.origin,
-          destination: flight.destination,
-          segments: flight.segments,
-          flightOfferId: flight.flightOfferId,
-        }));
+        const transformedData: FlightsSearchData = flightsSearchData.map((flight: any) => {
+          const appliedDiscount = parseAppliedDiscount(flight.appliedDiscount);
+          return {
+            flightId: flight.flightId,
+            duration: flight.duration,
+            numberOfStops: flight.numberOfStops,
+            minPrice: flight.lowestFare || flight.minPrice,
+            departureDateTime: flight.departure || flight.departureDateTime,
+            currency: flight.currency,
+            arrivalDateTime: flight.arrival || flight.arrivalDateTime,
+            hasQSuite: flight.hasQSuite,
+            flightNumber: flight.flightNumber,
+            origin: flight.origin,
+            destination: flight.destination,
+            segments: flight.segments,
+            flightOfferId: flight.flightOfferId,
+            ...(appliedDiscount != null && { appliedDiscount }),
+          };
+        });
 
         console.log('[FlightSearchInboundListener] 🔄 Data transformed', { transformedCount: transformedData.length });
 
