@@ -66,6 +66,7 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
   const duration = formatDuration(flight.duration);
   const airlineName = getAirlineName(flight.flightNumber);
   const airlineCode = getAirlineCode(flight.flightNumber);
+  const airlineLogo = flight.segments?.[0]?.airlineLogo;
   const price = flight.minPrice != null && flight.currency
     ? `${flight.currency} ${flight.minPrice}`
     : 'Price TBD';
@@ -74,6 +75,7 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
       ? `${flight.currency} ${flight.appliedDiscount.originalTotalPrice}`
       : null;
   const stopsText = flight.numberOfStops === 0 ? 'Non-stop' : `${flight.numberOfStops} stop${flight.numberOfStops > 1 ? 's' : ''}`;
+
 
   const handleCardClick = () => {
     if (onFlightIdClick) {
@@ -111,7 +113,10 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
       <div className="route">{flight.flightNumber}</div>
       <div className="flight-summary">
         <div className="airline-mark">
-          <span className="airline-logo">{airlineCode}</span>
+          {airlineLogo 
+            ? <img src={airlineLogo} alt={airlineName} /> 
+            : <span className="airline-logo">{airlineCode}</span>
+          }
         </div>
         <div className="time-details">
           <div className="time-range">{departureTime} - {arrivalTime}</div>
