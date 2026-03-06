@@ -23,6 +23,11 @@ personas:
       CDN: "https://cdn-eu.uneeq.io/hosted-experience/deploy/index.js"
       API: "https://api-eu.uneeq.io"
       id: "d909d65a-e278-432e-b026-b7f7caa031e4"
+  ar:
+    cloud: 
+      CDN: "https://cdn-eu.uneeq.io/hosted-experience/deploy/index.js"  
+      API: "https://api-eu.uneeq.io"
+      id: "dd5f0288-1f92-4944-bbaf-e6902cd2ec78"
 
 # This Demo version uses Pixabay API for image search
 apis:
