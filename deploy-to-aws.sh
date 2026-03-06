@@ -53,9 +53,14 @@ select_environment() {
                 CONFIG_FILE="deployment-config.staging.json"
                 APP_CONFIG_FILE="src/assets/config.staging.yaml"
                 ;;
+            prod|production)
+                ENVIRONMENT="prod"
+                CONFIG_FILE="deployment-config.prod.json"
+                APP_CONFIG_FILE="src/assets/config.prod.yaml"
+                ;;
             *)
                 log_error "Unknown environment: $ENVIRONMENT"
-                echo "Valid environments: dev, staging"
+                echo "Valid environments: dev, staging, prod"
                 exit 1
                 ;;
         esac
@@ -68,11 +73,12 @@ select_environment() {
     echo "  Select Deployment Environment"
     echo "================================="
     echo "1) dev        - Development (sama-dev.services.uneeq.io)"
-    echo "2) staging    - Staging (sama.services.uneeq.io)"
+    echo "2) staging    - Staging (sama-staging.services.uneeq.io)"
+    echo "3) prod       - Production (sama.services.uneeq.io)"
     echo
 
     while true; do
-        read -p "Enter environment [1-2]: " env_choice
+        read -p "Enter environment [1-3]: " env_choice
         case $env_choice in
             1|dev)
                 ENVIRONMENT="dev"
@@ -86,8 +92,14 @@ select_environment() {
                 APP_CONFIG_FILE="src/assets/config.staging.yaml"
                 break
                 ;;
+            3|prod|production)
+                ENVIRONMENT="prod"
+                CONFIG_FILE="deployment-config.prod.json"
+                APP_CONFIG_FILE="src/assets/config.prod.yaml"
+                break
+                ;;
             *)
-                echo "Invalid choice. Please enter 1 or 2."
+                echo "Invalid choice. Please enter 1, 2, or 3."
                 ;;
         esac
     done
@@ -340,7 +352,14 @@ verify_config_environment() {
             esac
             ;;
         staging)
-            # Staging deployment expects staging/production config
+            # Staging deployment expects production config (testing prod Flowise)
+            case "$config_env" in
+                staging|production|prod) mismatch=false ;;
+                *) mismatch=true ;;
+            esac
+            ;;
+        prod)
+            # Production deployment expects production config
             case "$config_env" in
                 staging|production|prod) mismatch=false ;;
                 *) mismatch=true ;;
@@ -979,7 +998,7 @@ show_help() {
     echo
     echo "Options:"
     echo "  --help              Show this help message"
-    echo "  --env <env>         Specify environment (dev, staging)"
+    echo "  --env <env>         Specify environment (dev, staging, prod)"
     echo "  --force-config      Force recreation of deployment configuration"
     echo "  --skip-analysis     Skip build analysis and optimization step"
     echo "  --no-analysis       Alias for --skip-analysis"
@@ -988,12 +1007,14 @@ show_help() {
     echo "  $0                      Interactive environment selection"
     echo "  $0 --env dev            Deploy to dev environment"
     echo "  $0 --env staging        Deploy to staging environment"
+    echo "  $0 --env prod           Deploy to production environment"
     echo "  $0 --env dev --force-config  Deploy to dev with fresh config"
     echo "  $0 --env dev --skip-analysis Deploy to dev without build analysis"
     echo
     echo "Environments:"
-    echo "  dev       Development - sama-dev.services.uneeq.io"
-    echo "  staging   Staging - sama.services.uneeq.io"
+    echo "  dev       Development - sama-dev.services.uneeq.io (dev Flowise)"
+    echo "  staging   Staging - sama-staging.services.uneeq.io (prod Flowise for testing)"
+    echo "  prod      Production - sama.services.uneeq.io (prod Flowise)"
     echo
     echo "Features:"
     echo "  - Interactive configuration for S3 buckets and CloudFront"
@@ -1009,8 +1030,10 @@ show_help() {
     echo "Config Files:"
     echo "  deployment-config.dev.json       Dev deployment configuration"
     echo "  deployment-config.staging.json   Staging deployment configuration"
+    echo "  deployment-config.prod.json      Production deployment configuration"
     echo "  src/assets/config.dev.yaml       Dev app configuration"
     echo "  src/assets/config.staging.yaml   Staging app configuration"
+    echo "  src/assets/config.prod.yaml      Production app configuration"
     echo
     echo "Prerequisites:"
     echo "  - AWS CLI installed and configured"

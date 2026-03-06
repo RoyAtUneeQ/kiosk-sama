@@ -29,25 +29,12 @@ personas:
       API: "https://api-eu.uneeq.io"
       id: "dd5f0288-1f92-4944-bbaf-e6902cd2ec78"
 
-# This Demo version uses Pixabay API for image search
-apis:
-  pixabay:
-    api_key: "YOUR_PIXABAY_API_KEY"
-    api_url: "https://pixabay.com/api/" 
-
-
-
 # Used for websocket connection and service token retrieval
 backend:
   endpoints:
     ws: "ws://localhost:3001"
     http: "http://localhost:3000"
   key: "7d2eb1df09f9b54875e2e601d6192ec3333a0784d4c487ec1dc8937a2f97a04d"
-
-# Production example:
-#   endpoints:
-#     ws: "wss://ak119kjenl.execute-api.eu-central-1.amazonaws.com/dev"
-#     http: "https://kf9xhxg0o5.execute-api.eu-central-1.amazonaws.com/dev"
 
 # State Manager - Persistent session state accessible across applications
 stateManager:
