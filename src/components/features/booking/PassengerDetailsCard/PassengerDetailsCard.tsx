@@ -16,7 +16,15 @@ function formatDate(dateString: string): string {
     console.warn('[PassengerDetailsCard] formatDate: Invalid date string:', dateString);
     return 'Date TBD';
   }
-  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  return date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+}
+
+/** Lowercases string then capitalizes first letter of each word (e.g. "JOHN DOE" → "John Doe"). */
+function toTitleCase(value: string | undefined): string {
+  if (value == null || value === '') return '';
+  return value
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export default function PassengerDetailsCard({ passenger }: PassengerDetailsCardProps) {
@@ -25,18 +33,17 @@ export default function PassengerDetailsCard({ passenger }: PassengerDetailsCard
   return (
     <Card>
       <div className="passenger-details-card">
-      <div className="passenger-header">
-          <div className="passenger-name">Passanger {passenger.passengerId}</div>
+        <div className="passenger-header">
+          <div className="passenger-name">Passenger {passenger.passengerId}</div>
         </div>
-        
         <div className="passenger-info-section">
           <div className="info-row">
             <span className="info-label">Title</span>
-            <span className="info-value">{passenger.title}</span>
+            <span className="info-value">{toTitleCase(passenger.title)}</span>
           </div>
           <div className="info-row">
             <span className="info-label">Gender</span>
-            <span className="info-value">{passenger.gender}</span>
+            <span className="info-value">{toTitleCase(passenger.gender)}</span>
           </div>
           <div className="info-row">
             <span className="info-label">First Name</span>

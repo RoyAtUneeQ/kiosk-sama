@@ -11,8 +11,6 @@ interface FareCardProps {
 export default function FareCard({ fare, onBoundIdClick }: FareCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  console.log(fare.features);
-
   const featuresList = ((): string[] => {
     const raw = fare.features?.trim();
     if (!raw) return [];
@@ -30,20 +28,6 @@ export default function FareCard({ fare, onBoundIdClick }: FareCardProps) {
       ? raw.split('|').map((f) => f.trim()).filter((f) => f.length > 0)
       : [raw];
   })();
-
-  const formatPrice = (price: number, currency: string) => {
-    return `${currency} ${price.toLocaleString()}`;
-  };
-
-  const formatFareFamilyCode = (code: string | undefined): string => {
-    if (!code) return 'Fare';
-    return code
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  };
-
-  const fareTitle = formatFareFamilyCode(fare.fareFamilyType);
 
   const handleCardClick = () => {
     if (onBoundIdClick) {
@@ -65,7 +49,7 @@ export default function FareCard({ fare, onBoundIdClick }: FareCardProps) {
         onClick={handleCardClick}
         style={{ cursor: 'pointer' }}
       >
-        <div className="fare-title">{fareTitle}</div>
+        <div className="fare-title">{fare.fareFamilyType}</div>
         {isExpanded && featuresList.length > 0 && (
           <ul className="fare-benefits">
             {featuresList.map((feature: string, index: number) => (
@@ -89,7 +73,8 @@ export default function FareCard({ fare, onBoundIdClick }: FareCardProps) {
             </button>
             <div className="price-column">
               <div className="price-current">
-                {formatPrice(fare.priceTotal, fare.priceCurrency)}
+                <span className="price-currency">{fare.priceCurrency}</span>
+                <span className="price-amount">{fare.priceTotal}</span>
               </div>
             </div>
           </div>

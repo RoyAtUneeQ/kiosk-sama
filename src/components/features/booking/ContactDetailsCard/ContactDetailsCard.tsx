@@ -16,11 +16,9 @@ export default function ContactDetailsCard({ contact }: ContactDetailsCardProps)
         
         <div className="contact-info-section">
           <div className="info-row">
-            <span className="info-label">Email</span>
             <span className="info-value">{contact.email}</span>
           </div>
           <div className="info-row">
-            <span className="info-label">Phone Number</span>
             <span className="info-value">{contact.phoneNumber}</span>
           </div>
         </div>

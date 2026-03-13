@@ -17,6 +17,7 @@
 }
 
 .add-to-cart-card {
+  font-family: var(--font-card);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -37,7 +38,8 @@
 
   .cart-route {
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 300;
+    line-height: 22px;
     color: #fff;
   }
 
