@@ -59,7 +59,10 @@ function getAirlineName(flightNumber: string): string {
 export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-
+  const origin = JSON.parse(flight.origin as unknown as string);
+  const destination = JSON.parse(flight.destination as unknown as string);
+  const flightRoute = `${origin.iataCode} To ${destination.iataCode}`;
+  const flightRouteExpanded = `${origin.city} (${origin.iataCode}) To ${destination.city} (${destination.iataCode})`;
   const departureTime = formatTime(flight.departureDateTime);
   const arrivalTime = formatTime(flight.arrivalDateTime);
   const date = formatDate(flight.departureDateTime);
@@ -74,7 +77,7 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
     flight.appliedDiscount != null && flight.currency
       ? `${flight.currency} ${flight.appliedDiscount.originalTotalPrice}`
       : null;
-  const stopsText = flight.numberOfStops === 0 ? 'Non-stop' : `${flight.numberOfStops} stop${flight.numberOfStops > 1 ? 's' : ''}`;
+  const stopsText = flight.numberOfStops === 0 ? '1 flight' : `${flight.numberOfStops + 1} flights and ${flight.numberOfStops} stop${flight.numberOfStops > 1 ? 's' : ''}`;
 
 
   const handleCardClick = () => {
@@ -94,7 +97,7 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
     <>
       <div className="flight-count">{stopsText}</div>
       <div className="flight-route-row">
-        <div className="route">{flight.flightNumber}</div>
+        <div className="route">{flightRoute}</div>
         <div className="price-column">
           {originalPrice != null && <div className="price-strikethrough">{originalPrice}</div>}
           <div className="price-current">{price}</div>
@@ -102,7 +105,7 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
       </div>
       <div className="flight-time-row">
         <div className="time-date">{departureTime} - {arrivalTime} • {date}</div>
-        <div className="duration">{duration}</div>
+        {/* <div className="duration">{duration}</div> */}
       </div>
       <div className="airline">Operated by {airlineName}</div>
     </>
@@ -110,7 +113,7 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
 
   const expandedContent = (
     <>
-      <div className="route">{flight.flightNumber}</div>
+      <div className="route">{flightRouteExpanded}</div>
       <div className="flight-summary">
         <div className="airline-mark">
           {airlineLogo 
@@ -156,7 +159,7 @@ export default function FlightCard({ flight, onFlightIdClick }: FlightCardProps)
               <div className="right-cut" />
             </div>
             <div className="expanded-content">
-              <div className="total-label">Price</div>
+              <div className="total-label">Total for all passengers</div>
               <div className="price-column">
                 {originalPrice != null && <div className="price-strikethrough">{originalPrice}</div>}
                 <div className="price-current">{price}</div>
