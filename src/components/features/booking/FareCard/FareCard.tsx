@@ -14,19 +14,14 @@ export default function FareCard({ fare, onBoundIdClick }: FareCardProps) {
   const featuresList = ((): string[] => {
     const raw = fare.features?.trim();
     if (!raw) return [];
-    if (raw.startsWith('[')) {
-      try {
-        const parsed = JSON.parse(raw) as unknown;
-        return Array.isArray(parsed)
-          ? parsed.map((f) => String(f).trim()).filter((f) => f.length > 0)
-          : [];
-      } catch {
-        return [];
-      }
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      return Array.isArray(parsed)
+        ? parsed.map((f) => String(f).trim()).filter((f) => f.length > 0)
+        : [];
+    } catch {
+      return [];
     }
-    return raw.includes('|')
-      ? raw.split('|').map((f) => f.trim()).filter((f) => f.length > 0)
-      : [raw];
   })();
 
   const handleCardClick = () => {

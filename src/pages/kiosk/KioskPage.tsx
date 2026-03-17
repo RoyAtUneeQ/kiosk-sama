@@ -8,9 +8,10 @@ function KioskPage() {
   const { state } = useSession();
   const { config } = useConfig();
 
+  const language = state.loginInfo?.languageCode ?? state.language;
   const { cardData, lastAssistantMessage, hasCards } = useKioskOrchestrator({
     config,
-    language: state.language,
+    language,
     renderMode: state.renderMode as 'cloud' | 'miniprem'
   });
 
