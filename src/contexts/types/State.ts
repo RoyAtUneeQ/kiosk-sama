@@ -8,6 +8,10 @@ import type { MicrophoneStatus } from "@/types/microphone";
 import type { StateWrapper } from "@/types/stateManager";
 import type { FlightsSearchData, FareSelectionData, BookingSummaryData, MessageCardSet } from "@/types/booking";
 
+export interface LoginInfo {
+  languageCode: string;
+}
+
 export interface State {
     config: Config;
     status: SessionStatus;
@@ -16,6 +20,7 @@ export interface State {
     connectionId: string | null;
     media: Media | null;
     remoteInfo: RemoteSessionInfo | null;
+    loginInfo: LoginInfo | null;
     awaitingPromptResponse: boolean;
     language: string;
     renderMode: string;

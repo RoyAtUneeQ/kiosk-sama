@@ -14,17 +14,18 @@ const KioskStartForm: React.FC = () => {
   const { actions, state } = useSession();
   const { getSupportedLanguages, getRenderByLanguage } = useConfig();
   const { t, changeLanguage } = useTranslation();
+  const language = state.loginInfo?.languageCode ?? state.language;
 
   // Configure settings options
   const settingsOptions = useMemo<SettingsOption[]>(() => {
     const options: SettingsOption[] = [];
     
     // Add render mode options if multiple are available
-    if (getRenderByLanguage(state.language).length > 1) {
+    if (getRenderByLanguage(language).length > 1) {
       options.push({
         id: 'renderMode',
         label: t('renderMode.label'),
-        options: getRenderByLanguage(state.language).map(option => ({
+        options: getRenderByLanguage(language).map(option => ({
           value: option,
           label: option,
           active: state.renderMode === option
@@ -53,7 +54,7 @@ const KioskStartForm: React.FC = () => {
     });
     
     return options;
-  }, [state.language, state.renderMode, state.showClosedCaptions, getRenderByLanguage, t, actions]);
+  }, [language, state.renderMode, state.showClosedCaptions, getRenderByLanguage, t, actions]);
 
   // Configure status items
   const statusItems = useMemo<StatusItem[]>(() => [
@@ -98,9 +99,10 @@ const KioskStartForm: React.FC = () => {
               {getSupportedLanguages().map(option => (
                 <button
                   key={option}
-                  className={`language-option ${state.language === option ? 'active' : ''}`}
+                  className={`language-option ${language === option ? 'active' : ''}`}
                   onClick={() => {
                     changeLanguage(option);
+                    actions.setLoginInfo({ languageCode: option });
                     actions.setLanguage(option);
                   }}
                 >

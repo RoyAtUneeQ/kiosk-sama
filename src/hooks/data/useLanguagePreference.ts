@@ -9,12 +9,13 @@ export const useLanguagePreference = (): void => {
   const { state } = useSession();
 
   useEffect(() => {
-    if (state.stateManager && state.language) {
-      const value: LanguageStateValue = { languageCode: state.language };
+    const languageCode = state.loginInfo?.languageCode;
+    if (state.stateManager && languageCode) {
+      const value: LanguageStateValue = { languageCode };
       console.log('Setting language:', value);
-      state.stateManager.set('language', value).catch((err: unknown) => {
+      state.stateManager.set('loginInfo', value).catch((err: unknown) => {
         console.error('[StateManagerSDK] ❌ Failed to persist language:', err);
       });
     }
-  }, [state.stateManager, state.language]);
+  }, [state.stateManager, state.loginInfo?.languageCode]);
 };

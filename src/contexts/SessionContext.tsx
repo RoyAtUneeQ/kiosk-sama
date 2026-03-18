@@ -1,7 +1,7 @@
 
 import { create } from 'zustand';
 import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media, type ErrorMessage, MessageSender } from '@/types';
-import { type State, SessionStatus } from './types';
+import { type State, type LoginInfo, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
 import type { StateWrapper } from '@/types/stateManager';
 import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData, MessageCardSet } from '@/types/booking';
@@ -20,7 +20,10 @@ const initialState: State = {
   
   // Remote session information
   remoteInfo: null,
-  
+
+  // Login info (e.g. language from auth/session)
+  loginInfo: null,
+
   // Conversation state
   awaitingPromptResponse: false,
   language: 'en',
@@ -79,6 +82,7 @@ export type SessionActions = {
   setMedia: (media: Media | null) => void;
   setRemoteInfo: (info: RemoteSessionInfo | null) => void;
   clearRemoteInfo: () => void;
+  setLoginInfo: (info: LoginInfo | null) => void;
   setLanguage: (language: string) => void;
   setRenderMode: (renderMode: 'cloud' | 'miniprem') => void;
   setWebSocketState: (state: WebsocketStatus) => void;
@@ -238,6 +242,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     clearRemoteInfo: () => {
       console.log('[SessionContext] 🔌 Clearing remote info (peer disconnected)');
       set((prev) => ({ state: { ...prev.state, remoteInfo: null } }));
+    },
+    setLoginInfo: (info) => {
+      set((prev) => ({ state: { ...prev.state, loginInfo: info } }));
     },
     setLanguage: (language) => {
       set((prev) => ({ state: { ...prev.state, language } }));
