@@ -1,5 +1,6 @@
 import './QRCode.scss';
 import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import { createPortal } from 'react-dom';
 import QRCodeStyling, { type Options } from 'qr-code-styling';
 
 
@@ -86,9 +87,10 @@ const QRCode = forwardRef<QRCodeRef, QRCodeProps>(({
     qrCodeRef.current.append(qrRef.current);
   }, [value, size]);
 
-  return (
+  return createPortal(
     <a ref={qrRef} href={value} className="qr-code-container" target="_blank" rel="noopener noreferrer">
-    </a>
+    </a>,
+    document.body
   );
 });
 

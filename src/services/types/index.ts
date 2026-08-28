@@ -1,4 +1,5 @@
 export * from './WebSocketServiceTypes';
+export * from './LangGraphServiceTypes';
 export * from './DeepgramServiceTypes';
 export * from './EphemeralTokenServiceTypes';
 export * from './UneeqEventsServiceTypes';

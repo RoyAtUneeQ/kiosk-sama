@@ -2,6 +2,7 @@
 export { useUneeq, useUneeqSdkLifecycle, useUneeqMessageQueue, useUneeqControls, useUneeqEvents } from './integration/uneeq';
 export { useWebSocketAdapter } from './integration/useWebSocketAdapter';
 export { useSpeechAdapter } from './integration/useSpeechAdapter';
+export { useLangGraphAdapter } from './integration/useLangGraphAdapter';
 
 // State hooks - Complex state coordination
 

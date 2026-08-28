@@ -66,6 +66,15 @@ export default defineConfig({
     fs: {
       // Allow serving files from SDK directory
       allow: ['.', '../../Uneeq/State Manager/State Manager - SDK']
+    },
+    proxy: {
+      // Local `langgraph dev` server (the sama-langgraph repo). Keeps config.yaml's
+      // baseUrl relative, so the deployed builds differ by proxy target only.
+      '/langgraph': {
+        target: process.env.LANGGRAPH_URL || 'http://127.0.0.1:2024',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/langgraph/, '')
+      }
     }
   },
   json: {

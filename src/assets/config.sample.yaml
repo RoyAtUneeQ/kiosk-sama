@@ -42,3 +42,15 @@ stateManager:
   endpoint: "http://localhost:3000"  # or production URL
   apiKey: "YOUR_STATE_MANAGER_API_KEY"
   enabled: true  # Set to false to disable state manager
+
+# LangGraph - the conversational agent. Turns are POSTed to
+# {baseUrl}/threads/{sessionId}/runs; the reply is not in the response, it arrives
+# on the state manager's `messages` topic, so stateManager must be enabled too.
+# In dev, leave baseUrl relative and let vite.config.ts proxy it to the local
+# `langgraph dev` server. A deployed target needs same-origin fronting — a
+# LangGraph Platform key cannot ship in a static bundle.
+langgraph:
+  baseUrl: "/langgraph"
+  assistantId: "booking"       # graph name from the agent's langgraph.json
+  multitaskStrategy: "rollback" # reject | rollback | interrupt | enqueue
+  enabled: true                 # false falls back to no agent at all

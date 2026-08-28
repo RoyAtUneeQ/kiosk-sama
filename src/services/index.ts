@@ -5,6 +5,7 @@ export { MicrophoneStreamService, default as MicrophoneStreamServiceDefault } fr
 export { SpeechToTextService, default as SpeechToTextServiceDefault } from './audio/SpeechToTextService';
 export { WebSocketService, default as WebSocketServiceDefault } from './integration/WebSocketService';
 export { UneeqEventsService, default as UneeqEventsServiceDefault } from './integration/UneeqEventsService';
+export { LangGraphService, default as LangGraphServiceDefault } from './integration/LangGraphService';
 export { DynamicIconLoaderService, default as DynamicIconLoaderServiceDefault } from './data/DynamicIconLoaderService';
 export { PixabayService } from './data/PixabayService';
 export { StateManagerService } from './state/StatePersistenceService';

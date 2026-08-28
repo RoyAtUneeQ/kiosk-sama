@@ -73,10 +73,6 @@ export function useSpeechAdapter(): SpeechServicesReturn {
           }
         });
 
-        console.log('[useSpeechServices] Config loaded:', state.config);
-        console.log('[useSpeechServices] Backend HTTP URL:', state.config?.backend?.endpoints?.http);
-        console.log('[useSpeechServices] Backend key:', state.config?.backend?.key);
-        
         if (state.config?.backend?.endpoints?.http && state.config?.backend?.key) {
           sttServiceRef.current = new SpeechToTextService({
             apiBaseUrl: state.config.backend.endpoints.http,

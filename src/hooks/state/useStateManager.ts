@@ -37,7 +37,6 @@ export const useStateManager = () => {
     );
 
     wrapperRef.current = wrapper;
-    actions.setStateManager(wrapper);
 
     // Create session and persist start timestamp
     rawManager
@@ -59,7 +58,13 @@ export const useStateManager = () => {
       subscriptionsRef.current.set(topicId, subscription);
     });
 
-    pubsubClient.connect().catch((err) => console.error('[PubSub] Connection failed:', err));
+    // Published only once the subscriptions are actually live, so that a consumer
+    // seeing a state manager knows the `messages` topic is being listened to. A
+    // reply published before then is delivered to nobody, and says so nowhere.
+    pubsubClient
+      .connect()
+      .then(() => actions.setStateManager(wrapper))
+      .catch((err) => console.error('[PubSub] Connection failed:', err));
 
     return () => {
       subscriptionsRef.current.forEach((sub) => sub.unsubscribe());

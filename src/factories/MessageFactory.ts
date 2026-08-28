@@ -1,4 +1,5 @@
 import { MessageSender, type Message } from "@/types/transport";
+import { hasSpeechMarkup, stripSpeechMarkup } from "./speechMarkup";
 
 export class MessageFactory {
   static createUserMessage(content: string, prompt: boolean = true): Message {
@@ -12,11 +13,13 @@ export class MessageFactory {
   }
 
   static createAssistantMessage(content: string, id?: string): Message {
+    const raw = content.trim();
     return {
       id: id || crypto.randomUUID(),
-      content: content.trim(),
+      content: stripSpeechMarkup(raw),
       sender: MessageSender.Assistant,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      ...(hasSpeechMarkup(raw) && { speechContent: raw })
     };
   }
 

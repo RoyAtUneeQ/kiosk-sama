@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import PQueue from 'p-queue';
 import { MessageSender } from '@/types/transport/MessageSender';
+import type { Message } from '@/types/transport/Message';
 import { useSession } from '@/contexts/SessionContext';
 
 export const useUneeqMessageQueue = () => {
@@ -9,10 +10,12 @@ export const useUneeqMessageQueue = () => {
   const lastProcessedMessageId = useRef<string | null>(null);
   const resolveCurrentSpeech = useRef<(() => void) | null>(null);
 
-  const speakAndWait = useCallback((content: string): Promise<void> => {
+  const speakAndWait = useCallback((message: Message): Promise<void> => {
     return new Promise((resolve) => {
       resolveCurrentSpeech.current = resolve;
-      window.uneeq?.speak(content);
+      // The raw text when there was markup to strip: the avatar's event tag sits
+      // mid-sentence on purpose, so the gesture lands on the relevant words.
+      window.uneeq?.speak(message.speechContent ?? message.content);
     });
   }, []);
 
@@ -36,20 +39,23 @@ export const useUneeqMessageQueue = () => {
       return;
     }
 
+    // A replayed transcript is not something to say again — HistorySyncListener
+    // adds the whole conversation back when the companion phone reconnects.
+    if (lastMessage.isHistorical) {
+      lastProcessedMessageId.current = lastMessage.id;
+      return;
+    }
+
     if (lastMessage.sender === MessageSender.User) {
+      // Barge-in only. The turn itself goes to the agent in useLangGraphAdapter —
+      // chatPrompt would route it to the persona's own NLP instead.
       resolveCurrentSpeech.current?.();
       resolveCurrentSpeech.current = null;
       queue.current.clear();
-      try {
-        window.uneeq.chatPrompt(lastMessage.content);
-      } catch (error) {
-        console.error('[useUneeqMessageQueue] chatPrompt FAILED:', error);
-      }
       actions.markMessageAsSent(lastMessage.id);
       lastProcessedMessageId.current = lastMessage.id;
     } else if (lastMessage.sender === MessageSender.Assistant) {
-      const queuedContent = lastMessage.content;
-      queue.current.add(() => speakAndWait(queuedContent));
+      queue.current.add(() => speakAndWait(lastMessage));
       actions.markMessageAsSent(lastMessage.id);
       lastProcessedMessageId.current = lastMessage.id;
     }

@@ -20,6 +20,7 @@ export class MessagesTopicListener implements TopicListener<any>
     );
 
 
+    session.actions.setAwaitingPromptResponse(false);
     session.actions.addMessageToHistory(MessageFactory.createAssistantMessage(messageText));
   }
 }
