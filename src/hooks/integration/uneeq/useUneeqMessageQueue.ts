@@ -47,12 +47,18 @@ export const useUneeqMessageQueue = () => {
     }
 
     if (lastMessage.sender === MessageSender.User) {
-      // Barge-in only. The turn itself reaches the agent through the persona's
-      // NLP — SessionLiveListener's chatPrompt for the welcome, speech
-      // recognition for the rest — so there is nothing to dispatch from here.
+      // Barge-in, then dispatch. The kiosk's own speech pipeline puts the
+      // transcript into history; this is what carries it to the persona's NLP,
+      // which the platform forwards to the conversation integration. Without it
+      // only SessionLiveListener's welcome prompt ever reaches the agent.
       resolveCurrentSpeech.current?.();
       resolveCurrentSpeech.current = null;
       queue.current.clear();
+      try {
+        window.uneeq?.chatPrompt(lastMessage.content);
+      } catch (error) {
+        console.error('[useUneeqMessageQueue] chatPrompt FAILED:', error);
+      }
       actions.markMessageAsSent(lastMessage.id);
       lastProcessedMessageId.current = lastMessage.id;
     } else if (lastMessage.sender === MessageSender.Assistant) {
