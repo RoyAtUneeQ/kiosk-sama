@@ -47,8 +47,9 @@ export const useUneeqMessageQueue = () => {
     }
 
     if (lastMessage.sender === MessageSender.User) {
-      // Barge-in only. The turn itself goes to the agent in useLangGraphAdapter —
-      // chatPrompt would route it to the persona's own NLP instead.
+      // Barge-in only. The turn itself reaches the agent through the persona's
+      // NLP — SessionLiveListener's chatPrompt for the welcome, speech
+      // recognition for the rest — so there is nothing to dispatch from here.
       resolveCurrentSpeech.current?.();
       resolveCurrentSpeech.current = null;
       queue.current.clear();

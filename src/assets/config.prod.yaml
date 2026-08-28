@@ -23,12 +23,3 @@ stateManager:
   endpoint: "https://state-manager.services.uneeq.io"  # or production URL 
   apiKey: "wsk_Sama-Sandbox_0cec00eee4fdf2627a02be22d3d91965"
   enabled: true 
-# LangGraph - the booking agent (sama-langgraph). Disabled: there is no deployed
-# agent yet, and a LangGraph Platform key cannot ship in a static bundle — this
-# needs fronting on the same origin (CloudFront behaviour or the existing API
-# Gateway) before it can be turned on here.
-langgraph:
-  baseUrl: ""
-  assistantId: "booking"
-  multitaskStrategy: "rollback"
-  enabled: false

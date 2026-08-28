@@ -22,15 +22,6 @@ export interface BackendConfig {
   key?: string;    // API key for authentication
 }
 
-export type MultitaskStrategy = 'reject' | 'rollback' | 'interrupt' | 'enqueue';
-
-export interface LangGraphConfig {
-  baseUrl: string;
-  assistantId: string;
-  multitaskStrategy?: MultitaskStrategy;
-  enabled: boolean;
-}
-
 export interface ApiConfig {
   pixabay: {
     api_key: string;
@@ -50,5 +41,4 @@ export interface Config {
   apis: ApiConfig;
   backend?: BackendConfig;
   stateManager?: StateManagerConfig;
-  langgraph?: LangGraphConfig;
 }

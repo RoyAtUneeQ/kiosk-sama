@@ -7,8 +7,7 @@ import type { FlightsSearchData, FareSelectionData, BookingSummaryData } from '@
 import {
   useUneeq,
   useStateManager,
-  useWebSocketAdapter,
-  useLangGraphAdapter
+  useWebSocketAdapter
 } from '@/hooks';
 import { useSession } from '@/contexts/SessionContext';
 import { createActionFactory } from '@/factories';
@@ -43,9 +42,6 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
     renderMode
   );
   useStateManager();
-  // Kiosk only — the companion phone relays its input here over the websocket
-  // rather than talking to the agent itself.
-  useLangGraphAdapter();
 
   useEffect(() => {
     if (config) {

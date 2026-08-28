@@ -8,6 +8,7 @@ export enum EventType {
   SessionLive = 'SessionLive',
   SessionEnded = 'SessionEnded',
   AvatarUnavailable = 'AvatarUnavailable',
+  AvatarAnswerContent = 'AvatarAnswerContent',
   PromptRequest = 'PromptRequest',
   PromptResult = 'PromptResult',
   DeviceError = 'DeviceError',
