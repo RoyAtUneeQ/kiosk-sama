@@ -4,7 +4,7 @@ import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type M
 import { type State, type LoginInfo, SessionStatus } from './types';
 import { MicrophoneStatus } from '@/types/microphone';
 import type { StateWrapper } from '@/types/stateManager';
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData, MessageCardSet } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData, GuidedExperienceData, SeatViewerData, MessageCardSet } from '@/types/booking';
 
 const initialState: State = {
   // Core session configuration
@@ -64,6 +64,12 @@ const initialState: State = {
   // Booking summary data for displaying booking summary
   bookingSummaryData: null,
 
+  // Guided experience data for displaying guided experience cards
+  guidedExperienceData: null,
+
+  // Seat viewer data for displaying seat viewer cards
+  seatViewerData: null,
+
   // Map of message IDs to their associated card data
   messageCards: {},
 
@@ -106,6 +112,8 @@ export type SessionActions = {
   setAddToCartData: (addToCartData: AddToCartData | null, messageId?: string) => void;
   setPassengerDetailsData: (passengerDetailsData: PassengerDetailsData | null, messageId?: string) => void;
   setContactDetailsData: (contactDetailsData: ContactDetailsData | null, messageId?: string) => void;
+  setGuidedExperienceData: (guidedExperienceData: GuidedExperienceData | null, messageId?: string) => void;
+  setSeatViewerData: (seatViewerData: SeatViewerData | null, messageId?: string) => void;
   sendRemoteMessage: (data: any) => void;
   clearRemoteMessageQueue: () => void;
   setIsAvatarSpeaking: (isSpeaking: boolean) => void;
@@ -153,6 +161,8 @@ const STATE_KEY_TO_CARD_KEY: Partial<Record<keyof State, keyof MessageCardSet>> 
   flightsSearchData: 'flightsSearch',
   fareSelectionData: 'fareSelection',
   bookingSummaryData: 'bookingSummary',
+  guidedExperienceData: 'guidedExperience',
+  seatViewerData: 'seatViewer',
 };
 
 /** Normalize legacy single-card value or existing MessageCardSet to MessageCardSet */
@@ -160,13 +170,14 @@ function toMessageCardSet(existing: unknown): MessageCardSet {
   if (!existing) return {};
   if (typeof existing === 'object' && !Array.isArray(existing)) {
     const o = existing as Record<string, unknown>;
-    if ('fareSelection' in o || 'addToCart' in o || 'flightsSearch' in o || 'bookingSummary' in o) {
+    if ('fareSelection' in o || 'addToCart' in o || 'flightsSearch' in o || 'bookingSummary' in o || 'guidedExperience' in o || 'seatViewer' in o) {
       return existing as MessageCardSet;
     }
     if ('items' in o && 'totalPrice' in o && 'currency' in o) return { addToCart: existing as AddToCartData };
     if ('cabinClass' in o && 'passengers' in o) return { bookingSummary: existing as BookingSummaryData };
     if ('passengerId' in o && 'firstName' in o) return { passengerDetails: existing as PassengerDetailsData };
     if ('email' in o && 'phoneNumber' in o) return { contactDetails: existing as ContactDetailsData };
+    if ('candidate' in o && 'current' in o) return { guidedExperience: existing as GuidedExperienceData };
   }
   if (Array.isArray(existing) && existing.length > 0) {
     const first = existing[0] as Record<string, unknown>;
@@ -176,7 +187,7 @@ function toMessageCardSet(existing: unknown): MessageCardSet {
   return {};
 }
 
-const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData>(
+const updateMessageCardData = <T extends FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData | GuidedExperienceData | SeatViewerData>(
   set: (fn: (prev: SessionStore) => SessionStore) => void,
   get: () => SessionStore,
   data: T | null,
@@ -313,6 +324,12 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     },
     setBookingSummaryData: (bookingSummaryData, messageId) => {
       updateMessageCardData(set, get, bookingSummaryData, messageId, 'bookingSummaryData');
+    },
+    setGuidedExperienceData: (guidedExperienceData, messageId) => {
+      updateMessageCardData(set, get, guidedExperienceData, messageId, 'guidedExperienceData');
+    },
+    setSeatViewerData: (seatViewerData, messageId) => {
+      updateMessageCardData(set, get, seatViewerData, messageId, 'seatViewerData');
     },
     setAddToCartData: (addToCartData, messageId) => {
       // For add_to_cart, we only update messageCards (no global state field)

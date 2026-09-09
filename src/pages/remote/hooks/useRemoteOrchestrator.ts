@@ -18,6 +18,7 @@ interface UseRemoteOrchestratorReturn {
   isLargeScreen: boolean;
   handleFlightSelection: (flightId: string) => void;
   handleFareSelection: (boundId: string) => void;
+  handleGuidedExperienceConfirm: () => void;
 }
 
 export const useRemoteOrchestrator = ({ 
@@ -146,5 +147,16 @@ export const useRemoteOrchestrator = ({
     [sendCardValue]
   );
 
-  return { websocket: websocket ?? null, isLargeScreen, handleFlightSelection, handleFareSelection};
+  const handleGuidedExperienceConfirm = useCallback(
+    () => {
+      console.log(
+        '%c🗺️ GUIDED EXPERIENCE CONFIRMED',
+        'background: #0d9488; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;'
+      );
+      sendCardValue('I confirm');
+    },
+    [sendCardValue]
+  );
+
+  return { websocket: websocket ?? null, isLargeScreen, handleFlightSelection, handleFareSelection, handleGuidedExperienceConfirm};
 };

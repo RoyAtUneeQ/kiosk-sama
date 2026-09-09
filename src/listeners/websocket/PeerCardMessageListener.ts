@@ -1,5 +1,5 @@
 import type { SessionContextType } from '@/contexts/SessionContext';
-import type { FlightsSearchData, FareSelectionData, AddToCartData, PassengerDetailsData, ContactDetailsData } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, AddToCartData, PassengerDetailsData, ContactDetailsData, GuidedExperienceData, SeatViewerData } from '@/types/booking';
 import type { BookingSummaryData } from '@/types/booking';
 
 export class PeerCardMessageListener {
@@ -146,6 +146,44 @@ export class PeerCardMessageListener {
       
       // Contact details messages are not added to history - they're displayed as cards instead
       return true; // Message was handled
+    }
+
+    // Handle guided experience messages
+    if (payload.data.type === 'guided_experience') {
+      const guidedExperienceData = payload.data.payload.data;
+
+      console.log(
+        '%c📥 GUIDED EXPERIENCE',
+        'background: #0d9488; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;'
+      );
+
+      if (guidedExperienceData && typeof guidedExperienceData === 'object' && (guidedExperienceData.candidate || guidedExperienceData.current)) {
+        const data: GuidedExperienceData = guidedExperienceData;
+        session.actions.setGuidedExperienceData(data);
+      } else {
+        session.actions.setGuidedExperienceData(null);
+      }
+
+      return true;
+    }
+
+    // Handle seat viewer messages
+    if (payload.data.type === 'seat_viewer') {
+      const seatViewerData = payload.data.payload.data;
+
+      console.log(
+        '%c📥 SEAT VIEWER',
+        'background: #0369a1; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;'
+      );
+
+      if (seatViewerData && typeof seatViewerData === 'object' && (seatViewerData.candidate || seatViewerData.current)) {
+        const data: SeatViewerData = seatViewerData;
+        session.actions.setSeatViewerData(data);
+      } else {
+        session.actions.setSeatViewerData(null);
+      }
+
+      return true;
     }
 
     return false; // Not a recognized card message type

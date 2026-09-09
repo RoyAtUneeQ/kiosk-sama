@@ -9,7 +9,7 @@ function KioskPage() {
   const { config } = useConfig();
 
   const language = state.loginInfo?.languageCode ?? state.language;
-  const { cardData, lastAssistantMessage, hasCards } = useKioskOrchestrator({
+  const { cardData, lastAssistantMessage, hasCards, handleGuidedExperienceConfirm, useSeatViewerBackground } = useKioskOrchestrator({
     config,
     language,
     renderMode: state.renderMode as 'cloud' | 'miniprem'
@@ -22,7 +22,7 @@ function KioskPage() {
     return <KioskIdleView config={config} />;
   }
 
-  return <KioskLiveView cardData={cardData} lastAssistantMessage={lastAssistantMessage} hasCards={hasCards} />;
+  return <KioskLiveView cardData={cardData} lastAssistantMessage={lastAssistantMessage} hasCards={hasCards} onGuidedExperienceConfirm={handleGuidedExperienceConfirm} useSeatViewerBackground={useSeatViewerBackground} />;
 }
 
 export default KioskPage;
