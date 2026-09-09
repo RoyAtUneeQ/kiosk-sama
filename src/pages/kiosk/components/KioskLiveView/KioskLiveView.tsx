@@ -6,18 +6,22 @@ import { useSession } from '@/contexts/SessionContext';
 import { defaultUneeqOptions } from '@/types';
 import { MessageCards } from '@/components/features/booking';
 import type { Message } from '@/types/transport/Message';
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, GuidedExperienceData, SeatViewerData } from '@/types/booking';
 
 interface KioskLiveViewProps {
-  cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | null;
+  cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | GuidedExperienceData | SeatViewerData | null;
   lastAssistantMessage: Message | null;
   hasCards: boolean;
+  onGuidedExperienceConfirm?: () => void;
+  useSeatViewerBackground?: boolean;
 }
 
 function KioskLiveView({
   cardData,
   lastAssistantMessage,
-  hasCards
+  hasCards,
+  onGuidedExperienceConfirm,
+  useSeatViewerBackground
 }: KioskLiveViewProps) {
   const { state } = useSession();
 
@@ -45,6 +49,8 @@ function KioskLiveView({
             <CardContainer>
               <MessageCards
                 cardData={cardData}
+                onGuidedExperienceConfirm={onGuidedExperienceConfirm}
+                useSeatViewerBackground={useSeatViewerBackground}
               />
             </CardContainer>
           )}

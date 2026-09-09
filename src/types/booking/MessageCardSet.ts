@@ -4,6 +4,8 @@ import type { BookingSummaryData } from './SummaryData';
 import type { AddToCartData } from './AddToCartData';
 import type { PassengerDetailsData } from './PassengerDetailsData';
 import type { ContactDetailsData } from './ContactDetailsData';
+import type { GuidedExperienceData } from './GuidedExperienceData';
+import type { SeatViewerData } from './SeatViewerData';
 
 /**
  * Per-message card set: a message can have multiple card types at once
@@ -16,4 +18,6 @@ export interface MessageCardSet {
   addToCart?: AddToCartData | null;
   passengerDetails?: PassengerDetailsData | null;
   contactDetails?: ContactDetailsData | null;
+  guidedExperience?: GuidedExperienceData | null;
+  seatViewer?: SeatViewerData | null;
 }

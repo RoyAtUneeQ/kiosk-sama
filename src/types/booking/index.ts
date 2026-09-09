@@ -6,6 +6,8 @@ export type { AddToCartData } from './AddToCartData';
 export type { PassengerDetailsData } from './PassengerDetailsData';
 export type { ContactDetailsData } from './ContactDetailsData';
 export type { MessageCardSet } from './MessageCardSet';
+export type { GuidedExperienceData, GuidedExperienceScene } from './GuidedExperienceData';
+export type { SeatViewerData } from './SeatViewerData';
 
 // Import types for array type aliases
 import type { FlightData } from './FlightData';

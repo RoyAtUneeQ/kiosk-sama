@@ -18,7 +18,7 @@ function RemotePage() {
   const { kioskConnectionId } = useParams<{ kioskConnectionId: string }>();
   const { state, actions } = useSession();
 
-  const { isLargeScreen, handleFlightSelection, handleFareSelection } = useRemoteOrchestrator({ 
+  const { isLargeScreen, handleFlightSelection, handleFareSelection, handleGuidedExperienceConfirm } = useRemoteOrchestrator({ 
     config, 
     kioskConnectionId: kioskConnectionId ?? null 
   });
@@ -65,6 +65,7 @@ function RemotePage() {
               cardData={cardData ?? null}
               onFlightIdClick={handleFlightSelection}
               onBoundIdClick={handleFareSelection}
+              onGuidedExperienceConfirm={handleGuidedExperienceConfirm}
             />
           )}
         />

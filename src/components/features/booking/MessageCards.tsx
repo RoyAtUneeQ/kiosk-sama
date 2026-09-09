@@ -1,16 +1,20 @@
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData, MessageCardSet } from '@/types/booking';
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData, GuidedExperienceData, SeatViewerData, MessageCardSet } from '@/types/booking';
 import FlightCard from '@/components/features/booking/FlightCard/FlightCard';
 import FareCard from '@/components/features/booking/FareCard/FareCard';
 import SummaryCard from '@/components/features/booking/SummaryCard/SummaryCard';
 import AddToCartCard from '@/components/features/booking/AddToCartCard/AddToCartCard';
 import PassengerDetailsCard from '@/components/features/booking/PassengerDetailsCard/PassengerDetailsCard';
 import ContactDetailsCard from '@/components/features/booking/ContactDetailsCard/ContactDetailsCard';
+import GuidedExperienceCard from '@/components/features/guidedExperience/GuidedExperienceCard/GuidedExperienceCard';
+import { toSeatViewerBackgroundUrl } from '@/components/features/guidedExperience/toSeatViewerBackgroundUrl';
 import './MessageCards.scss';
 
 interface MessageCardsProps {
-  cardData: MessageCardSet | FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData | null;
+  cardData: MessageCardSet | FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData | GuidedExperienceData | SeatViewerData | null;
   onFlightIdClick?: (flightId: string) => void;
   onBoundIdClick?: (boundId: string) => void;
+  onGuidedExperienceConfirm?: () => void;
+  useSeatViewerBackground?: boolean;
 }
 
 function isMessageCardSet(data: unknown): data is MessageCardSet {
@@ -18,7 +22,7 @@ function isMessageCardSet(data: unknown): data is MessageCardSet {
     typeof data === 'object' &&
     data !== null &&
     !Array.isArray(data) &&
-    ('fareSelection' in data || 'addToCart' in data || 'flightsSearch' in data || 'bookingSummary' in data || 'passengerDetails' in data || 'contactDetails' in data)
+    ('fareSelection' in data || 'addToCart' in data || 'flightsSearch' in data || 'bookingSummary' in data || 'passengerDetails' in data || 'contactDetails' in data || 'guidedExperience' in data || 'seatViewer' in data)
   );
 }
 
@@ -46,11 +50,17 @@ function isContactDetailsData(data: unknown): data is ContactDetailsData {
   return typeof data === 'object' && data !== null && !Array.isArray(data) && 'email' in data && 'phoneNumber' in data;
 }
 
+function isGuidedExperienceData(data: unknown): data is GuidedExperienceData {
+  return typeof data === 'object' && data !== null && !Array.isArray(data) && 'candidate' in data && 'current' in data;
+}
+
 function renderSingleCardBlock(
-  cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData,
+  cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | AddToCartData | PassengerDetailsData | ContactDetailsData | GuidedExperienceData | SeatViewerData,
   onFlightIdClick?: (flightId: string) => void,
-  onBoundIdClick?: (boundId: string) => void
-): { title: string; count: number; itemLabel: string; children: React.ReactNode } {
+  onBoundIdClick?: (boundId: string) => void,
+  onGuidedExperienceConfirm?: () => void,
+  useSeatViewerBackground?: boolean
+): { title: string; count: number; itemLabel: string; hideHeader?: boolean; children: React.ReactNode } {
   if (isFlightsSearchData(cardData)) {
     return {
       title: 'Available Flights',
@@ -111,29 +121,46 @@ function renderSingleCardBlock(
       children: <ContactDetailsCard contact={cardData} />,
     };
   }
+  if (isGuidedExperienceData(cardData)) {
+    return {
+      title: 'Guided Experience',
+      count: 1,
+      itemLabel: 'experience',
+      hideHeader: true,
+      children: (
+        <GuidedExperienceCard
+          data={cardData}
+          onConfirm={onGuidedExperienceConfirm}
+          transformImageUrl={useSeatViewerBackground ? toSeatViewerBackgroundUrl : undefined}
+        />
+      ),
+    };
+  }
   return { title: '', count: 0, itemLabel: '', children: null };
 }
 
-export default function MessageCards({ cardData, onFlightIdClick, onBoundIdClick }: MessageCardsProps) {
+export default function MessageCards({ cardData, onFlightIdClick, onBoundIdClick, onGuidedExperienceConfirm, useSeatViewerBackground }: MessageCardsProps) {
   if (!cardData) return null;
 
   // Multiple card types per message (e.g. fare offers + add-to-cart)
   if (isMessageCardSet(cardData)) {
     const blocks: React.ReactNode[] = [];
-    const order: (keyof MessageCardSet)[] = ['flightsSearch', 'fareSelection', 'addToCart', 'bookingSummary', 'passengerDetails', 'contactDetails'];
+    const order: (keyof MessageCardSet)[] = ['flightsSearch', 'fareSelection', 'addToCart', 'bookingSummary', 'passengerDetails', 'contactDetails', 'guidedExperience', 'seatViewer'];
     for (const key of order) {
       const value = cardData[key];
       if (value == null) continue;
-      const block = renderSingleCardBlock(value, onFlightIdClick, onBoundIdClick);
+      const block = renderSingleCardBlock(value, onFlightIdClick, onBoundIdClick, onGuidedExperienceConfirm, key === 'seatViewer');
       if (block.children == null) continue;
       blocks.push(
         <div key={key} className="message-cards">
-          <div className="message-cards__header">
-            <h3 className="message-cards__title">{block.title}</h3>
-            <span className="message-cards__count">
-              {block.count} {block.itemLabel}{block.count !== 1 ? 's' : ''} found
-            </span>
-          </div>
+          {!block.hideHeader && (
+            <div className="message-cards__header">
+              <h3 className="message-cards__title">{block.title}</h3>
+              <span className="message-cards__count">
+                {block.count} {block.itemLabel}{block.count !== 1 ? 's' : ''} found
+              </span>
+            </div>
+          )}
           <div className="message-cards__items">{block.children}</div>
         </div>
       );
@@ -143,19 +170,21 @@ export default function MessageCards({ cardData, onFlightIdClick, onBoundIdClick
   }
 
   // Legacy: single card type
-  const block = renderSingleCardBlock(cardData, onFlightIdClick, onBoundIdClick);
+  const block = renderSingleCardBlock(cardData, onFlightIdClick, onBoundIdClick, onGuidedExperienceConfirm, useSeatViewerBackground);
   if (block.children == null) {
     console.warn('[MessageCards] No matching card type found! Returning null');
     return null;
   }
   return (
     <div className="message-cards">
-      <div className="message-cards__header">
-        <h3 className="message-cards__title">{block.title}</h3>
-        <span className="message-cards__count">
-          {block.count} {block.itemLabel}{block.count !== 1 ? 's' : ''} found
-        </span>
-      </div>
+      {!block.hideHeader && (
+        <div className="message-cards__header">
+          <h3 className="message-cards__title">{block.title}</h3>
+          <span className="message-cards__count">
+            {block.count} {block.itemLabel}{block.count !== 1 ? 's' : ''} found
+          </span>
+        </div>
+      )}
       <div className="message-cards__items">
         {block.children}
       </div>

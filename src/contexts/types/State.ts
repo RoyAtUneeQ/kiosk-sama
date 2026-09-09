@@ -6,7 +6,7 @@ import type { Event } from "@/types/uneeq/Event";
 import type { Memory, Media, ErrorMessage } from "@/types/utils";
 import type { MicrophoneStatus } from "@/types/microphone";
 import type { StateWrapper } from "@/types/stateManager";
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, MessageCardSet } from "@/types/booking";
+import type { FlightsSearchData, FareSelectionData, BookingSummaryData, GuidedExperienceData, SeatViewerData, MessageCardSet } from "@/types/booking";
 
 export interface LoginInfo {
   languageCode: string;
@@ -58,6 +58,12 @@ export interface State {
 
     // Booking summary data for displaying booking summary
     bookingSummaryData: BookingSummaryData | null;
+
+    // Guided experience data for displaying guided experience cards
+    guidedExperienceData: GuidedExperienceData | null;
+
+    // Seat viewer data for displaying seat viewer cards
+    seatViewerData: SeatViewerData | null;
 
     // Map of message IDs to their associated card data (can have multiple card types per message)
     messageCards: Record<string, MessageCardSet>;

@@ -51,7 +51,7 @@ export class HistorySyncListener implements WebSocketEventListener {
         const isMessageCardSet =
           typeof card === 'object' &&
           !Array.isArray(card) &&
-          ('fareSelection' in card || 'addToCart' in card || 'flightsSearch' in card || 'bookingSummary' in card || 'passengerDetails' in card || 'contactDetails' in card);
+          ('fareSelection' in card || 'addToCart' in card || 'flightsSearch' in card || 'bookingSummary' in card || 'passengerDetails' in card || 'contactDetails' in card || 'guidedExperience' in card || 'seatViewer' in card);
 
         if (isMessageCardSet) {
           if (card.fareSelection != null) session.actions.setFareSelectionData(card.fareSelection as any, messageId);
@@ -60,6 +60,8 @@ export class HistorySyncListener implements WebSocketEventListener {
           if (card.addToCart != null) session.actions.setAddToCartData(card.addToCart as any, messageId);
           if (card.passengerDetails != null) session.actions.setPassengerDetailsData(card.passengerDetails as any, messageId);
           if (card.contactDetails != null) session.actions.setContactDetailsData(card.contactDetails as any, messageId);
+          if (card.guidedExperience != null) session.actions.setGuidedExperienceData(card.guidedExperience as any, messageId);
+          if (card.seatViewer != null) session.actions.setSeatViewerData(card.seatViewer as any, messageId);
           return;
         }
 

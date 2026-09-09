@@ -5,3 +5,4 @@ export { default as SummaryCard } from './booking/SummaryCard/SummaryCard';
 
 // Card dispatcher (used by both Kiosk and Remote pages)
 export { default as MessageCards } from './booking/MessageCards';
+export { default as GuidedExperienceCard } from './guidedExperience/GuidedExperienceCard/GuidedExperienceCard';
