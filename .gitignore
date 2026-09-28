@@ -18,6 +18,7 @@ deployment-config.dev.json
 deployment-config.staging.json
 config.dev.yaml
 config.staging.yaml
+config.miniprem.yaml
 build-analysis.json
 
 node_modules

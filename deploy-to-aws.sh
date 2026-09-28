@@ -58,9 +58,14 @@ select_environment() {
                 CONFIG_FILE="deployment-config.prod.json"
                 APP_CONFIG_FILE="src/assets/config.prod.yaml"
                 ;;
+            miniprem)
+                ENVIRONMENT="miniprem"
+                CONFIG_FILE="deployment-config.miniprem.json"
+                APP_CONFIG_FILE="src/assets/config.miniprem.yaml"
+                ;;
             *)
                 log_error "Unknown environment: $ENVIRONMENT"
-                echo "Valid environments: dev, staging, prod"
+                echo "Valid environments: dev, staging, prod, miniprem"
                 exit 1
                 ;;
         esac
@@ -75,10 +80,11 @@ select_environment() {
     echo "1) dev        - Development (sama-dev.services.uneeq.io)"
     echo "2) staging    - Staging (sama-staging.services.uneeq.io)"
     echo "3) prod       - Production (sama.services.uneeq.io)"
+    echo "4) miniprem   - Miniprem (sama-miniprem.services.uneeq.io)"
     echo
 
     while true; do
-        read -p "Enter environment [1-3]: " env_choice
+        read -p "Enter environment [1-4]: " env_choice
         case $env_choice in
             1|dev)
                 ENVIRONMENT="dev"
@@ -98,8 +104,14 @@ select_environment() {
                 APP_CONFIG_FILE="src/assets/config.prod.yaml"
                 break
                 ;;
+            4|miniprem)
+                ENVIRONMENT="miniprem"
+                CONFIG_FILE="deployment-config.miniprem.json"
+                APP_CONFIG_FILE="src/assets/config.miniprem.yaml"
+                break
+                ;;
             *)
-                echo "Invalid choice. Please enter 1, 2, or 3."
+                echo "Invalid choice. Please enter 1, 2, 3, or 4."
                 ;;
         esac
     done
@@ -344,8 +356,8 @@ verify_config_environment() {
     # Check for environment mismatch
     local mismatch=false
     case "$ENVIRONMENT" in
-        dev)
-            # Dev deployment expects development/dev config
+        dev|miniprem)
+            # Dev and miniprem deployments expect development/dev config
             case "$config_env" in
                 development|dev) mismatch=false ;;
                 *) mismatch=true ;;
@@ -998,7 +1010,7 @@ show_help() {
     echo
     echo "Options:"
     echo "  --help              Show this help message"
-    echo "  --env <env>         Specify environment (dev, staging, prod)"
+    echo "  --env <env>         Specify environment (dev, staging, prod, miniprem)"
     echo "  --force-config      Force recreation of deployment configuration"
     echo "  --skip-analysis     Skip build analysis and optimization step"
     echo "  --no-analysis       Alias for --skip-analysis"
@@ -1015,6 +1027,7 @@ show_help() {
     echo "  dev       Development - sama-dev.services.uneeq.io (dev Flowise)"
     echo "  staging   Staging - sama-staging.services.uneeq.io (prod Flowise for testing)"
     echo "  prod      Production - sama.services.uneeq.io (prod Flowise)"
+    echo "  miniprem  Miniprem - sama-miniprem.services.uneeq.io (enterprise persona)"
     echo
     echo "Features:"
     echo "  - Interactive configuration for S3 buckets and CloudFront"
@@ -1031,9 +1044,11 @@ show_help() {
     echo "  deployment-config.dev.json       Dev deployment configuration"
     echo "  deployment-config.staging.json   Staging deployment configuration"
     echo "  deployment-config.prod.json      Production deployment configuration"
+    echo "  deployment-config.miniprem.json  Miniprem deployment configuration"
     echo "  src/assets/config.dev.yaml       Dev app configuration"
     echo "  src/assets/config.staging.yaml   Staging app configuration"
     echo "  src/assets/config.prod.yaml      Production app configuration"
+    echo "  src/assets/config.miniprem.yaml  Miniprem app configuration"
     echo
     echo "Prerequisites:"
     echo "  - AWS CLI installed and configured"
@@ -1056,7 +1071,7 @@ while [[ $# -gt 0 ]]; do
                 ENVIRONMENT="$2"
                 shift 2
             else
-                log_error "--env requires an argument (dev, staging)"
+                log_error "--env requires an argument (dev, staging, prod, miniprem)"
                 exit 1
             fi
             ;;
