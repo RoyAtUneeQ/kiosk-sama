@@ -1,15 +1,15 @@
 import { useEffect, useCallback } from 'react';
 import type { Config } from '@/types';
 import type { UneeqOptions } from '@/types/uneeq';
-import { defaultUneeqOptions, MessageSender } from '@/types';
-import type { Message } from '@/types/transport/Message';
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, GuidedExperienceData, SeatViewerData } from '@/types/booking';
+import { defaultUneeqOptions } from '@/types';
+import type { MessageCardSet } from '@/types/booking';
 import {
   useUneeq,
   useStateManager,
   useWebSocketAdapter
 } from '@/hooks';
 import { useSession } from '@/contexts/SessionContext';
+import type { State } from '@/contexts/types';
 import { createActionFactory, MessageFactory } from '@/factories';
 import type { WebSocketService } from '@/services';
 
@@ -19,12 +19,9 @@ interface UseKioskOrchestratorParams {
   renderMode: 'cloud' | 'miniprem';
 }
 
-type CardData = FlightsSearchData | FareSelectionData | BookingSummaryData | GuidedExperienceData | SeatViewerData | null;
-
 interface UseKioskOrchestratorReturn {
   websocket: WebSocketService | null;
-  cardData: CardData;
-  lastAssistantMessage: Message | null;
+  cardData: MessageCardSet | null;
   hasCards: boolean;
   handleGuidedExperienceConfirm: () => void;
   useSeatViewerBackground: boolean;
@@ -110,18 +107,20 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
     return () => clearInterval(interval);
   }, [websocket, state.remoteInfo?.connectionId, actions]);
 
-  const useSeatViewerBackground = state.seatViewerData != null;
-  const cardData: CardData = state.seatViewerData ?? state.guidedExperienceData ?? state.bookingSummaryData ?? state.fareSelectionData ?? state.flightsSearchData;
-
-  let lastAssistantMessage: Message | null = null;
+  let cardData: MessageCardSet | null = null;
   for (let i = state.history.length - 1; i >= 0; i--) {
-    if (state.history[i].sender === MessageSender.Assistant) {
-      lastAssistantMessage = state.history[i];
+    const cards = state.messageCards[state.history[i].id];
+    if (hasVisibleCards(cards)) {
+      cardData = cards;
       break;
     }
   }
+  if (!cardData) {
+    cardData = cardsFromSessionFields(state);
+  }
 
-  const hasCards = cardData !== null && lastAssistantMessage !== null;
+  const hasCards = cardData !== null;
+  const useSeatViewerBackground = cardData?.seatViewer != null;
 
   const handleGuidedExperienceConfirm = useCallback(() => {
     actions.addMessageToHistory(MessageFactory.createUserMessage('I confirm'));
@@ -130,9 +129,28 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
   return {
     websocket: websocket ?? null,
     cardData,
-    lastAssistantMessage,
     hasCards,
     handleGuidedExperienceConfirm,
     useSeatViewerBackground
   };
 };
+
+function cardsFromSessionFields(state: State): MessageCardSet | null {
+  const cards: MessageCardSet = {
+    flightsSearch: state.flightsSearchData,
+    fareSelection: state.fareSelectionData,
+    bookingSummary: state.bookingSummaryData,
+    guidedExperience: state.guidedExperienceData,
+    seatViewer: state.seatViewerData,
+  };
+  return hasVisibleCards(cards) ? cards : null;
+}
+
+function hasVisibleCards(cards: MessageCardSet | undefined): cards is MessageCardSet {
+  if (!cards) return false;
+  return Object.values(cards).some((value) => {
+    if (value == null) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    return true;
+  });
+}
