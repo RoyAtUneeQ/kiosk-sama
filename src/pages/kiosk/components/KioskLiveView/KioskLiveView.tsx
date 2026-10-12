@@ -5,12 +5,10 @@ import { QRCode, TopProgressBar } from '@/components';
 import { useSession } from '@/contexts/SessionContext';
 import { defaultUneeqOptions } from '@/types';
 import { MessageCards } from '@/components/features/booking';
-import type { Message } from '@/types/transport/Message';
-import type { FlightsSearchData, FareSelectionData, BookingSummaryData, GuidedExperienceData, SeatViewerData } from '@/types/booking';
+import type { MessageCardSet } from '@/types/booking';
 
 interface KioskLiveViewProps {
-  cardData: FlightsSearchData | FareSelectionData | BookingSummaryData | GuidedExperienceData | SeatViewerData | null;
-  lastAssistantMessage: Message | null;
+  cardData: MessageCardSet | null;
   hasCards: boolean;
   onGuidedExperienceConfirm?: () => void;
   useSeatViewerBackground?: boolean;
@@ -18,7 +16,6 @@ interface KioskLiveViewProps {
 
 function KioskLiveView({
   cardData,
-  lastAssistantMessage,
   hasCards,
   onGuidedExperienceConfirm,
   useSeatViewerBackground
@@ -45,7 +42,7 @@ function KioskLiveView({
           )}
           {state.remoteInfo && <RemoteConnectionInfo info={state.remoteInfo} />}
           {state.media && <MediaContainer {...state.media} />}
-          {hasCards && lastAssistantMessage && cardData && (
+          {hasCards && cardData && (
             <CardContainer>
               <MessageCards
                 cardData={cardData}
