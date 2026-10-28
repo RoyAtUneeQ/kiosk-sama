@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { Config } from '@/types';
 import { useWebSocketAdapter, useViewport } from '@/hooks';
 import { useSession } from '@/contexts/SessionContext';
@@ -19,6 +20,7 @@ interface UseRemoteOrchestratorReturn {
   handleFlightSelection: (flightId: string) => void;
   handleFareSelection: (boundId: string) => void;
   handleGuidedExperienceConfirm: () => void;
+  endSession: () => void;
 }
 
 export const useRemoteOrchestrator = ({ 
@@ -26,6 +28,12 @@ export const useRemoteOrchestrator = ({
   kioskConnectionId 
 }: UseRemoteOrchestratorParams): UseRemoteOrchestratorReturn => {
   const { state, actions } = useSession();
+  const [searchParams] = useSearchParams();
+  const sessionToken = searchParams.get('session') ?? undefined;
+
+  useEffect(() => {
+    actions.setRole('remote');
+  }, [actions]);
 
   useEffect(() => {
     if (config) {
@@ -40,7 +48,7 @@ export const useRemoteOrchestrator = ({
   const { isLargeScreen } = useViewport();
   
   useEffect(() => {
-    if (state.webSocketState !== WebsocketStatus.CONNECTED || !websocket) {
+    if (state.webSocketState !== WebsocketStatus.CONNECTED || !websocket || state.sessionEnded) {
       return;
     }
     if (!kioskConnectionId || kioskConnectionId.trim() === '') {
@@ -53,6 +61,7 @@ export const useRemoteOrchestrator = ({
 
     const userInspect: RemoteSessionInfo = {
       connectionId: state.connectionId,
+      sessionToken,
       userAgent: navigator.userAgent,
       platform: navigator.platform,
       language: navigator.language,
@@ -74,10 +83,10 @@ export const useRemoteOrchestrator = ({
     };
 
     websocket.send(createActionFactory().peerConnect(kioskConnectionId, userInspect));
-  }, [state.webSocketState, kioskConnectionId, state.connectionId, websocket]);
+  }, [state.webSocketState, kioskConnectionId, state.connectionId, websocket, sessionToken, state.sessionEnded]);
 
   useEffect(() => {
-    if (state.history.length === 0) return;
+    if (state.history.length === 0 || state.sessionEnded) return;
     if (!kioskConnectionId || kioskConnectionId.trim() === '' || !websocket) return;
 
     const lastMessage = state.history[state.history.length - 1];
@@ -101,8 +110,8 @@ export const useRemoteOrchestrator = ({
         return;
       }
 
-      if (state.webSocketState !== WebsocketStatus.CONNECTED) {
-        console.warn('[useRemoteOrchestrator] ⚠️ Cannot send card value: WebSocket not connected');
+      if (state.webSocketState !== WebsocketStatus.CONNECTED || state.sessionEnded) {
+        console.warn('[useRemoteOrchestrator] ⚠️ Cannot send card value: WebSocket not connected or session ended');
         return;
       }
 
@@ -120,8 +129,15 @@ export const useRemoteOrchestrator = ({
         { messageId, messageText: messageText }
       );
     },
-    [kioskConnectionId, websocket, actions, state.webSocketState]
+    [kioskConnectionId, websocket, actions, state.webSocketState, state.sessionEnded]
   );
+
+  const endSession = useCallback(() => {
+    if (websocket && kioskConnectionId) {
+      websocket.send(createActionFactory().endSession(kioskConnectionId, 'remote-ended'), true);
+    }
+    actions.setSessionEnded('remote-ended');
+  }, [websocket, kioskConnectionId, actions]);
 
   const handleFlightSelection = useCallback(
     (flightId: string) => {
@@ -158,5 +174,5 @@ export const useRemoteOrchestrator = ({
     [sendCardValue]
   );
 
-  return { websocket: websocket ?? null, isLargeScreen, handleFlightSelection, handleFareSelection, handleGuidedExperienceConfirm};
+  return { websocket: websocket ?? null, isLargeScreen, handleFlightSelection, handleFareSelection, handleGuidedExperienceConfirm, endSession };
 };

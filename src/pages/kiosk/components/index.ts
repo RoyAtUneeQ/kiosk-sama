@@ -1,6 +1,7 @@
 export { default as KioskStartForm } from './KioskStartForm/KioskStartForm';
 export { default as KioskIdleView } from './KioskIdleView/KioskIdleView';
 export { default as RemoteConnectionInfo } from './RemoteConnectionInfo/RemoteConnectionInfo';
+export { default as RemoteReconnectNotice } from './RemoteReconnectNotice/RemoteReconnectNotice';
 export { default as UneeqContainer } from './UneeqContainer/UneeqContainer';
 export { default as LeftSideBar } from './LeftSideBar/LeftSideBar';
 export { default as MediaContainer } from './MediaContainer/MediaContainer';

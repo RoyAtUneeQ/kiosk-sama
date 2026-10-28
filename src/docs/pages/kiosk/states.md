@@ -14,8 +14,14 @@ stateDiagram-v2
     
     state LIVE {
         [*] --> NoRemoteConnected
-        NoRemoteConnected --> RemoteConnected: Remote scans QR code<br/>RegisterRemoteListener
-        RemoteConnected --> NoRemoteConnected: Remote disconnects<br/>PeerDisconnectedListener
+        NoRemoteConnected --> RemoteConnected: Remote scans QR code<br/>RegisterRemoteListener (token valid)
+        RemoteConnected --> AwaitingReconnect: Remote disconnects<br/>PeerDisconnectedListener
+        AwaitingReconnect --> RemoteConnected: Same remote reconnects within 2 min
+        
+        note right of AwaitingReconnect
+            UI: Avatar + reconnect countdown (QR hidden)
+            Timeout ends the session
+        end note
         
         note right of NoRemoteConnected
             UI: Avatar + QR Code + LeftSideBar
@@ -28,8 +34,20 @@ stateDiagram-v2
         end note
     }
     
-    LIVE --> IDLE: Session ended (manual/timeout)
+    LIVE --> LOADING: Session ended (remote End button / reconnect timeout)<br/>endKioskSession restarts Uneeq
+    LIVE --> IDLE: Kiosk page closed/refreshed
 ```
+
+### Session End
+
+`useKioskSessionLifecycle` owns the end-of-session flow:
+
+- `endKioskSession(reason)` sends `sessionControl ended` to the connected remote, calls `resetConversation()` and `rotateSessionToken()`, then `uneeq.endSession()` followed by `startSession()` (status goes back to `LOADING`).
+- `sessionEndRequest` in state lets listeners (e.g. `SessionControlListener` receiving `end` from the remote) trigger `endKioskSession`.
+- `remoteDisconnectedAt` starts a `REMOTE_RECONNECT_GRACE_MS` (2 minutes) timer; a valid re-registration clears it.
+- `pagehide`/`beforeunload` notify the remote with `kiosk-closed`.
+
+Lifecycle state properties: `role`, `sessionToken`, `remoteDisconnectedAt`, `peerOutbox` (actions to specific peers, flushed by `useWebSocketAdapter`), `sessionEndRequest`, `sessionEnded` (remote only).
 
 ### State Properties
 
@@ -116,7 +134,8 @@ return (
         {state.status === SessionStatus.LIVE && (
             <>
                 <LeftSideBar />
-                {!state.remoteInfo && <QRCode />}
+                {!state.remoteInfo && state.remoteDisconnectedAt !== null && <RemoteReconnectNotice />}
+                {!state.remoteInfo && state.remoteDisconnectedAt === null && <QRCode />}
                 {state.remoteInfo && <RemoteConnectionInfo />}
                 {state.media && <MediaContainer {...state.media} />}
             </>

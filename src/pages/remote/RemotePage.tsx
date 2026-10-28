@@ -6,7 +6,7 @@ import { useConfig } from '@/hooks';
 import { useSession } from '@/contexts';
 import { useRemoteOrchestrator } from './hooks/useRemoteOrchestrator';
 
-import { RemoteHeader, MessageList, Suggestions, ChatInput } from './components';
+import { RemoteHeader, MessageList, Suggestions, ChatInput, SessionEndedView } from './components';
 import { MessageCards } from '@/components/features/booking';
 import { GlowBackground } from '@/components';
 import { useCallback } from 'react';
@@ -18,7 +18,7 @@ function RemotePage() {
   const { kioskConnectionId } = useParams<{ kioskConnectionId: string }>();
   const { state, actions } = useSession();
 
-  const { isLargeScreen, handleFlightSelection, handleFareSelection, handleGuidedExperienceConfirm } = useRemoteOrchestrator({ 
+  const { isLargeScreen, handleFlightSelection, handleFareSelection, handleGuidedExperienceConfirm, endSession } = useRemoteOrchestrator({ 
     config, 
     kioskConnectionId: kioskConnectionId ?? null 
   });
@@ -53,32 +53,39 @@ function RemotePage() {
           webSocketState={state.webSocketState}
           kioskConnectionId={kioskConnectionId}
           connectionId={state.connectionId}
-          messages={state.history}
+          messages={state.sessionEnded ? [] : state.history}
+          onEndSession={state.sessionEnded || state.webSocketState !== WebsocketStatus.CONNECTED ? undefined : endSession}
         />
 
-        <MessageList
-          messages={state.history}
-          messageCards={state.messageCards}
-          awaitingPromptResponse={state.awaitingPromptResponse}
-          renderCardsForMessage={(_message, cardData) => (
-            <MessageCards
-              cardData={cardData ?? null}
-              onFlightIdClick={handleFlightSelection}
-              onBoundIdClick={handleFareSelection}
-              onGuidedExperienceConfirm={handleGuidedExperienceConfirm}
+        {state.sessionEnded ? (
+          <SessionEndedView reason={state.sessionEnded} />
+        ) : (
+          <>
+            <MessageList
+              messages={state.history}
+              messageCards={state.messageCards}
+              awaitingPromptResponse={state.awaitingPromptResponse}
+              renderCardsForMessage={(_message, cardData) => (
+                <MessageCards
+                  cardData={cardData ?? null}
+                  onFlightIdClick={handleFlightSelection}
+                  onBoundIdClick={handleFareSelection}
+                  onGuidedExperienceConfirm={handleGuidedExperienceConfirm}
+                />
+              )}
             />
-          )}
-        />
 
-        {state.webSocketState === WebsocketStatus.CONNECTED && state.showSuggestions && (
-          <Suggestions
-            disabled={state.microphoneStatus === MicrophoneStatus.LISTENING}
-            onClose={() => actions.setShowSuggestions(false)}
-            autoHideOnSelect={true}
-          />
+            {state.webSocketState === WebsocketStatus.CONNECTED && state.showSuggestions && (
+              <Suggestions
+                disabled={state.microphoneStatus === MicrophoneStatus.LISTENING}
+                onClose={() => actions.setShowSuggestions(false)}
+                autoHideOnSelect={true}
+              />
+            )}
+
+            <ChatInput disabled={state.webSocketState !== WebsocketStatus.CONNECTED} onSendText={onSendText} />
+          </>
         )}
-
-        <ChatInput disabled={state.webSocketState !== WebsocketStatus.CONNECTED} onSendText={onSendText} />
       </div>
     </div>
   );

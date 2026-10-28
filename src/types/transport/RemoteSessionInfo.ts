@@ -1,5 +1,6 @@
 export type RemoteSessionInfo = {
   connectionId: string; 
+  sessionToken?: string;
 
   // Device Information
   userAgent: string;

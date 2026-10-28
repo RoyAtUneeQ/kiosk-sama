@@ -110,6 +110,56 @@ sequenceDiagram
     Note over Remote, Kiosk: Peer connection established
 ```
 
+### Session Token and Session End
+
+Each QR code is valid for one user session. The kiosk keeps a `sessionToken` in state and encodes it in the QR URL:
+
+```
+/remote/{kioskConnectionId}?session={sessionToken}
+```
+
+The remote reads `?session=` and sends it as `remoteInfo.sessionToken` in `peerConnect`. `RegisterRemoteListener` on the kiosk rejects any remote whose token does not match the current one and replies with a `sessionControl` peer message (`action: 'ended'`, `reason: 'stale-token'`).
+
+Session control messages are regular `peerMessage` payloads:
+
+```typescript
+interface SessionControlMessage {
+    type: 'sessionControl';
+    action: 'end' | 'ended';   // 'end' = remote asks kiosk to end, 'ended' = kiosk informs remote
+    reason: 'kiosk-closed' | 'remote-ended' | 'remote-timeout' | 'stale-token';
+}
+```
+
+`PeerMessageListener` routes them to `SessionControlListener`, which branches on `state.role` (`'kiosk'` or `'remote'`).
+
+| Event | Kiosk | Remote |
+|-------|-------|--------|
+| **Kiosk closed/refreshed** | `pagehide`/`beforeunload` sends `ended: kiosk-closed`; reload gets a new `connectionId` and token | Shows the session-ended screen |
+| **Remote closed/refreshed** | `PeerDisconnected` sets `remoteDisconnectedAt`, hides QR, shows a 2-minute countdown. Reconnecting with the same URL cancels it and re-syncs history | Same URL (same token) reconnects automatically |
+| **Grace period expired** | Ends the session (`remote-timeout`) | Shows the session-ended screen if still open |
+| **End session button** | Receives `end: remote-ended`, ends the session immediately | Shows the session-ended screen |
+
+Ending a session on the kiosk (`useKioskSessionLifecycle.endKioskSession`) notifies the connected remote, clears conversation state, rotates the token and restarts the Uneeq session. The new QR code appears once the avatar is LIVE again.
+
+```mermaid
+sequenceDiagram
+    participant Remote
+    participant Backend
+    participant Kiosk
+    Remote->>Backend: "peerConnect(kioskId, remoteInfo + sessionToken)"
+    Backend->>Kiosk: RegisterRemote
+    alt token matches
+        Kiosk->>Remote: historySync
+    else token stale
+        Kiosk->>Remote: "sessionControl ended: stale-token"
+    end
+    Remote--xBackend: tab closed or refreshed
+    Backend->>Kiosk: PeerDisconnected
+    Kiosk->>Kiosk: start 2 min grace timer, hide QR
+    Note over Kiosk: timeout or End session
+    Kiosk->>Kiosk: reset, rotate token, restart Uneeq, new QR
+```
+
 ### Connection Validation and Health Checks
 
 The system includes multiple validation layers to ensure reliable connections:

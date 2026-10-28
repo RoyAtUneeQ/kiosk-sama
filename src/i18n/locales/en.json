@@ -94,6 +94,20 @@
     "showSettings": "Show settings",
     "hideSettings": "Hide settings"
   },
+  "session": {
+    "waitingForRemote": "Waiting for remote to reconnect",
+    "endSession": "End session",
+    "endSessionConfirm": "End this session? The conversation will be cleared.",
+    "cancel": "Cancel",
+    "endedTitle": "Session ended",
+    "endedReasons": {
+      "kiosk-closed": "The kiosk session has ended.",
+      "remote-ended": "You ended the session. Thank you!",
+      "remote-timeout": "The session ended due to inactivity.",
+      "stale-token": "This QR code is no longer valid."
+    },
+    "scanNewQr": "Scan the new QR code on the kiosk to start again."
+  },
   "suggestions": {
     "hideButton": "Hide",
     "items": [

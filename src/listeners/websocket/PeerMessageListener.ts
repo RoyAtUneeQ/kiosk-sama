@@ -4,6 +4,7 @@ import { WebSocketEventType } from '@/types/transport/WebsocketEventType';
 import type { Message } from '@/types/transport/Message';
 import { MessageSender } from '@/types/transport/MessageSender';
 import { PeerCardMessageListener } from './PeerCardMessageListener';
+import { SessionControlListener } from './SessionControlListener';
 import { MessageFactory } from '@/factories';
 import { WebSocketEventFactory } from '@/factories/WebSocketEventFactory';
 
@@ -24,6 +25,11 @@ export class PeerMessageListener implements WebSocketEventListener {
       if (listener) {
         listener.execute(payload, session);
       }
+      return;
+    }
+
+    if (SessionControlListener.isSessionControl(payload.data)) {
+      SessionControlListener.execute(payload, session);
       return;
     }
     

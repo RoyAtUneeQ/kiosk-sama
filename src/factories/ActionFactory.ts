@@ -1,7 +1,7 @@
 import type {
   WebsocketAction
 } from "@/types/transport/actions";
-import type { RemoteSessionInfo, Message } from "@/types/transport";
+import type { RemoteSessionInfo, Message, SessionEndReason } from "@/types/transport";
 
 export type ActionFactoryDefaults = {
   peerId?: string;
@@ -27,6 +27,8 @@ export interface ActionFactory {
     language?: string,
     model?: string,
   ) => WebsocketAction;
+  endSession: (peerId: string, reason: SessionEndReason) => WebsocketAction;
+  sessionEnded: (peerId: string, reason: SessionEndReason) => WebsocketAction;
   closeSession: () => WebsocketAction;
   ping: () => WebsocketAction;
   withDefaults: (overrides: Partial<ActionFactoryDefaults>) => ActionFactory;
@@ -86,6 +88,18 @@ export const createActionFactory = (
       mimetype,
       language: language ?? defaults.language,
       model: model ?? defaults.model,
+    }),
+
+    endSession: (peerId: string, reason: SessionEndReason): WebsocketAction => ({
+      type: 'peerMessage',
+      peerId,
+      payload: { type: 'sessionControl', action: 'end', reason }
+    }),
+
+    sessionEnded: (peerId: string, reason: SessionEndReason): WebsocketAction => ({
+      type: 'peerMessage',
+      peerId,
+      payload: { type: 'sessionControl', action: 'ended', reason }
     }),
 
     closeSession: (): WebsocketAction => ({

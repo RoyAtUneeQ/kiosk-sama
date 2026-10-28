@@ -1,0 +1,44 @@
+.end-session {
+  position: relative;
+}
+
+.end-session-confirm {
+  position: absolute;
+  right: 0;
+  top: 46px;
+  min-width: 240px;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: rgba(17, 20, 32, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  font-size: 0.8rem;
+  z-index: 20;
+
+  &__text {
+    margin: 0 0 0.75rem;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+
+    button {
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+  }
+
+  &__end {
+    background: #A32F34 !important;
+    border-color: #A32F34 !important;
+  }
+}
