@@ -1,7 +1,7 @@
 import type { CameraDistanceAnchor, CameraHorizontalAnchor, Config, Uneeq } from "@/types";
 // Available for configuration: import type { CameraAnchorOptions } from "@/types";
 import type { SessionStatus } from './';
-import type { Message, RemoteSessionInfo, WebsocketStatus } from "@/types/transport";
+import type { Message, RemoteSessionInfo, WebsocketStatus, SessionEndReason, WebsocketAction } from "@/types/transport";
 import type { Event } from "@/types/uneeq/Event";
 import type { Memory, Media, ErrorMessage } from "@/types/utils";
 import type { MicrophoneStatus } from "@/types/microphone";
@@ -74,4 +74,15 @@ export interface State {
     // Avatar speech state
     isAvatarSpeaking: boolean;
     sentMessageIds: Set<string>;
+
+    // Remote session lifecycle
+    role: AppRole | null;
+    sessionToken: string;
+    remoteDisconnectedAt: number | null;
+    peerOutbox: WebsocketAction[];
+    sessionEndRequest: SessionEndReason | null;
+    uneeqRestartPending: boolean;
+    sessionEnded: SessionEndReason | null;
   }
+
+export type AppRole = 'kiosk' | 'remote';

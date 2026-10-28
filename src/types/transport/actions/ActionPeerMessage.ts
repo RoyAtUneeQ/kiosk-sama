@@ -1,8 +1,8 @@
 import type { ActionBase } from './ActionBase';
-import type { Message } from '../';
+import type { Message, SessionControlMessage } from '../';
 
 export interface ActionPeerMessage extends ActionBase {
   type: 'peerMessage';
   peerId: string;
-  payload: Message;
+  payload: Message | SessionControlMessage;
 }

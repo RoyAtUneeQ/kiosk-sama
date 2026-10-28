@@ -1,4 +1,5 @@
-import { UneeqContainer, RemoteConnectionInfo, LeftSideBar, MediaContainer } from '../';
+import { UneeqContainer, RemoteConnectionInfo, RemoteReconnectNotice, LeftSideBar, MediaContainer } from '../';
+import { REMOTE_RECONNECT_GRACE_MS } from '../../hooks/useKioskSessionLifecycle';
 import { CardContainer } from '../CardContainer/CardContainer';
 import { SessionStatus } from '@/contexts/types';
 import { QRCode, TopProgressBar } from '@/components';
@@ -34,9 +35,12 @@ function KioskLiveView({
       {state.status === SessionStatus.LIVE && (
         <>
           <LeftSideBar />
-          {!state.remoteInfo && (
+          {!state.remoteInfo && state.remoteDisconnectedAt !== null && (
+            <RemoteReconnectNotice disconnectedAt={state.remoteDisconnectedAt} graceMs={REMOTE_RECONNECT_GRACE_MS} />
+          )}
+          {!state.remoteInfo && state.remoteDisconnectedAt === null && (
             <QRCode
-              value={`${window.location.protocol}//${window.location.host}/remote/${state.connectionId}`}
+              value={`${window.location.protocol}//${window.location.host}/remote/${state.connectionId}?session=${state.sessionToken}`}
               size={160}
             />
           )}

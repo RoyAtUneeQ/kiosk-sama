@@ -4,3 +4,5 @@ export { default as Suggestions } from './Suggestions/Suggestions';
 export { default as ChatInput } from './ChatInput/ChatInput';
 export { default as MicrophoneControl } from './MicrophoneControl/MicrophoneControl';
 export { default as CopyConversationButton } from './CopyConversationButton/CopyConversationButton';
+export { default as EndSessionButton } from './EndSessionButton/EndSessionButton';
+export { default as SessionEndedView } from './SessionEndedView/SessionEndedView';

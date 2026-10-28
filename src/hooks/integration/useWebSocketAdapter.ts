@@ -113,6 +113,16 @@ export const useWebSocketAdapter = (props: UseWebSocketProps) => {
   }, [session.state.remoteInfo?.connectionId, session.state.remoteMessageQueue.length]);
 
   useEffect(() => {
+    if (session.state.peerOutbox.length === 0) {
+      return;
+    }
+
+    const outbox = [...session.state.peerOutbox];
+    session.actions.clearPeerOutbox();
+    outbox.forEach((action) => websocketRef.current!.send(action, true));
+  }, [session.state.peerOutbox.length]);
+
+  useEffect(() => {
     const lastMessage = session.state.history[session.state.history.length - 1];
     const remoteConnectionId = session.state.remoteInfo?.connectionId;
 

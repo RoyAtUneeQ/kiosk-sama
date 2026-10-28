@@ -1,4 +1,5 @@
 export * from './SessionLiveListener';
+export * from './SessionEndedListener';
 export * from './SessionReconnectingFinishedListener';
 export * from './DigitalHumanUnmutedListener';
 export * from './PromptRequestListener';

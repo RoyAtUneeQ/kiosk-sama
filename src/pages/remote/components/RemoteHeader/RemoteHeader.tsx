@@ -3,6 +3,7 @@ import React from 'react';
 import { FiLink } from 'react-icons/fi';
 import type { Message } from '@/types/transport/Message';
 import CopyConversationButton from '../CopyConversationButton/CopyConversationButton';
+import EndSessionButton from '../EndSessionButton/EndSessionButton';
 
 interface RemoteHeaderProps {
   title: string;
@@ -10,9 +11,10 @@ interface RemoteHeaderProps {
   kioskConnectionId?: string;
   connectionId?: string | null;
   messages?: Message[];
+  onEndSession?: () => void;
 }
 
-const RemoteHeader: React.FC<RemoteHeaderProps> = ({ title, webSocketState, kioskConnectionId, connectionId, messages = [] }) => {
+const RemoteHeader: React.FC<RemoteHeaderProps> = ({ title, webSocketState, kioskConnectionId, connectionId, messages = [], onEndSession }) => {
   return (
     <div className="chat-header">
       <h1 className="header-title" data-text={title}>{title}</h1>
@@ -39,10 +41,10 @@ const RemoteHeader: React.FC<RemoteHeaderProps> = ({ title, webSocketState, kios
             )}
           </div>
         </div>
+        {onEndSession && <EndSessionButton onEndSession={onEndSession} />}
       </div>
     </div>
   );
 };
 
 export default RemoteHeader;
-

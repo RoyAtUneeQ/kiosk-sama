@@ -1,7 +1,9 @@
 
 import { create } from 'zustand';
+import { v4 as uuidv4 } from 'uuid';
 import { type RemoteSessionInfo, WebsocketStatus, type Uneeq, type Event, type Message, CameraHorizontalAnchor, CameraDistanceAnchor, type Memory, type Config, type Media, type ErrorMessage, MessageSender } from '@/types';
-import { type State, type LoginInfo, SessionStatus } from './types';
+import { type State, type LoginInfo, type AppRole, SessionStatus } from './types';
+import type { SessionEndReason, WebsocketAction } from '@/types/transport';
 import { MicrophoneStatus } from '@/types/microphone';
 import type { StateWrapper } from '@/types/stateManager';
 import type { FlightsSearchData, FareSelectionData, BookingSummaryData, AddToCartData, PassengerDetailsData, ContactDetailsData, GuidedExperienceData, SeatViewerData, MessageCardSet } from '@/types/booking';
@@ -79,6 +81,15 @@ const initialState: State = {
   // Avatar speech state
   isAvatarSpeaking: false,
   sentMessageIds: new Set<string>(),
+
+  // Remote session lifecycle
+  role: null,
+  sessionToken: uuidv4(),
+  remoteDisconnectedAt: null,
+  peerOutbox: [],
+  sessionEndRequest: null,
+  uneeqRestartPending: false,
+  sessionEnded: null,
 };
 
 export type SessionActions = {
@@ -118,6 +129,15 @@ export type SessionActions = {
   clearRemoteMessageQueue: () => void;
   setIsAvatarSpeaking: (isSpeaking: boolean) => void;
   markMessageAsSent: (messageId: string) => void;
+  setRole: (role: AppRole) => void;
+  rotateSessionToken: () => void;
+  setRemoteDisconnectedAt: (timestamp: number | null) => void;
+  queuePeerMessage: (action: WebsocketAction) => void;
+  clearPeerOutbox: () => void;
+  requestSessionEnd: (reason: SessionEndReason | null) => void;
+  setUneeqRestartPending: (pending: boolean) => void;
+  setSessionEnded: (reason: SessionEndReason | null) => void;
+  resetConversation: () => void;
 };      
 
 export interface SessionContextType {
@@ -447,6 +467,52 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         state: {
           ...prev.state,
           sentMessageIds: new Set([...prev.state.sentMessageIds, messageId]),
+        },
+      }));
+    },
+    setRole: (role) => {
+      set((prev) => ({ state: { ...prev.state, role } }));
+    },
+    rotateSessionToken: () => {
+      set((prev) => ({ state: { ...prev.state, sessionToken: uuidv4() } }));
+    },
+    setRemoteDisconnectedAt: (timestamp) => {
+      set((prev) => ({ state: { ...prev.state, remoteDisconnectedAt: timestamp } }));
+    },
+    queuePeerMessage: (action) => {
+      set((prev) => ({ state: { ...prev.state, peerOutbox: [...prev.state.peerOutbox, action] } }));
+    },
+    clearPeerOutbox: () => {
+      set((prev) => ({ state: { ...prev.state, peerOutbox: [] } }));
+    },
+    requestSessionEnd: (reason) => {
+      set((prev) => ({ state: { ...prev.state, sessionEndRequest: reason } }));
+    },
+    setUneeqRestartPending: (pending) => {
+      set((prev) => ({ state: { ...prev.state, uneeqRestartPending: pending } }));
+    },
+    setSessionEnded: (reason) => {
+      set((prev) => ({ state: { ...prev.state, sessionEnded: reason } }));
+    },
+    resetConversation: () => {
+      set((prev) => ({
+        state: {
+          ...prev.state,
+          history: [],
+          messageCards: {},
+          flightsSearchData: null,
+          fareSelectionData: null,
+          bookingSummaryData: null,
+          guidedExperienceData: null,
+          seatViewerData: null,
+          sentMessageIds: new Set<string>(),
+          remoteMessageQueue: [],
+          media: null,
+          awaitingPromptResponse: false,
+          remoteInfo: null,
+          remoteDisconnectedAt: null,
+          showSuggestions: true,
+          vadEnabled: true,
         },
       }));
     },

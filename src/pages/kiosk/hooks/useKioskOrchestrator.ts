@@ -12,6 +12,7 @@ import { useSession } from '@/contexts/SessionContext';
 import type { State } from '@/contexts/types';
 import { createActionFactory, MessageFactory } from '@/factories';
 import type { WebSocketService } from '@/services';
+import { useKioskSessionLifecycle } from './useKioskSessionLifecycle';
 
 interface UseKioskOrchestratorParams {
   config: Config | null;
@@ -48,9 +49,15 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
     }
   }, [config, actions]);
 
+  useEffect(() => {
+    actions.setRole('kiosk');
+  }, [actions]);
+
   const { websocket } = useWebSocketAdapter({
     webSocketUrl: config?.backend?.endpoints?.ws || ''
   });
+
+  useKioskSessionLifecycle(websocket ?? null);
 
   useEffect(() => {
     const remoteConnectionId = state.remoteInfo?.connectionId;
@@ -89,6 +96,7 @@ export const useKioskOrchestrator = (params: UseKioskOrchestratorParams): UseKio
 
         if (consecutiveFailures >= MAX_FAILURES) {
           console.error('[useKioskOrchestrator] ❌ Connection unhealthy after multiple checks, clearing remote info');
+          actions.setRemoteDisconnectedAt(Date.now());
           actions.clearRemoteInfo();
           clearInterval(interval);
           return;
